@@ -35,6 +35,9 @@ fun Navigation() {
             composable(route = Route.EDIT_CATEGORY.name) {
                 EditCategory(navController = navController)
             }
+            composable(route = Route.PAY_DETAIL.name) {
+                PayDetail(navController = navController)
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Menu
@@ -48,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.ExpendItem
 import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
@@ -69,7 +69,12 @@ fun ExpenditureList(navController: NavController, viewModel: MainViewModel = hil
             )
         }
     ) {
-        MainContent(navController = navController, drawerState = drawerState, scope = scope, viewModel = viewModel)
+        MainContent(
+            navController = navController,
+            drawerState = drawerState,
+            scope = scope,
+            viewModel = viewModel
+        )
     }
 }
 
@@ -116,19 +121,19 @@ private fun MainContent(
     viewModel: MainViewModel
 ) {
 //    val EditExpendList by viewModel.expendItem.collectAsState(initial = emptyList())
-    val  EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
+    val EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
     var totalTax by remember {
         mutableStateOf(0)
     }
     LaunchedEffect(EditExpendList) {
         var i = 0
-        EditExpendList.forEach{
+        EditExpendList.forEach {
             i += it.price.toInt()
         }
         totalTax = i
     }
     Scaffold(
-        topBar = { TopBar(drawerState = drawerState, scope = scope) },
+        topBar = { TopBar(drawerState = drawerState, scope = scope, navController = navController) },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "追加")
@@ -178,14 +183,38 @@ private fun MainContent(
                 }
 
             }
-            ListTest(expendItem = EditExpendList)
+//            ListTest(expendItem = EditExpendList)
+            LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
+                items(EditExpendList) { expendItem ->
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .background(Color.White)
+                            .fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = expendItem.name, fontSize = 20.sp)
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(text = "￥${expendItem.price}", fontSize = 20.sp)
+                                Text(text = "支出回数：${expendItem.id}回", fontSize = 14.sp, modifier = Modifier.padding(vertical = 4.dp))
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(drawerState: DrawerState, scope: CoroutineScope) {
+private fun TopBar(drawerState: DrawerState, scope: CoroutineScope, navController: NavController) {
     TopAppBar(
         title = {
             Text(
@@ -209,6 +238,11 @@ private fun TopBar(drawerState: DrawerState, scope: CoroutineScope) {
             ) {
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "メニュー")
             }
+        },
+        actions = {
+            IconButton(onClick = { navController.navigate(Route.PAY_DETAIL.name) }) {
+                Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "詳細")
+            }
         }
     )
 }
@@ -216,7 +250,7 @@ private fun TopBar(drawerState: DrawerState, scope: CoroutineScope) {
 @Composable
 private fun ListTest(expendItem: List<GroupCategory>) {
     LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
-        items(expendItem) {expendItem ->
+        items(expendItem) { expendItem ->
             Column {
                 Text(text = expendItem.name)
                 Text(text = expendItem.price)

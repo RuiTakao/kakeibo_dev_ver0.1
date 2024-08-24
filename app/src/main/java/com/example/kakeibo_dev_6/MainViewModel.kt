@@ -28,6 +28,7 @@ class MainViewModel @Inject constructor(
     val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
     val groupeExpendItem = groupCategoryDao.getAll().distinctUntilChanged()
+    val detailExpendItem = groupCategoryDao.expAll().distinctUntilChanged()
 //    val oneOfCategory = categoryDao.getOneOfCategory(id = cate).distinctUntilChanged()
 
     fun createExpendItem() {
