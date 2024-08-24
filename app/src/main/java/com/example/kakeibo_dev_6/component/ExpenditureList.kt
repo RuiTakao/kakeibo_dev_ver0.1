@@ -33,9 +33,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -113,6 +117,16 @@ private fun MainContent(
 ) {
 //    val EditExpendList by viewModel.expendItem.collectAsState(initial = emptyList())
     val  EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
+    var totalTax by remember {
+        mutableStateOf(0)
+    }
+    LaunchedEffect(EditExpendList) {
+        var i = 0
+        EditExpendList.forEach{
+            i += it.price.toInt()
+        }
+        totalTax = i
+    }
     Scaffold(
         topBar = { TopBar(drawerState = drawerState, scope = scope) },
         floatingActionButton = {
@@ -152,7 +166,7 @@ private fun MainContent(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "7月14日 〜 7月20日", fontSize = 24.sp)
                         Text(
-                            text = "使用額 ￥23,000",
+                            text = "使用額 ￥${totalTax}",
                             fontSize = 16.sp,
                             modifier = Modifier.padding(top = 8.dp)
                         )
@@ -207,7 +221,7 @@ private fun ListTest(expendItem: List<GroupCategory>) {
                 Text(text = expendItem.name)
                 Text(text = expendItem.price)
 //                Text(text = expendItem.category_id)
-                Text(text = expendItem.content)
+                Text(text = expendItem.id.toString())
             }
         }
     }
