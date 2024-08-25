@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
 
@@ -88,37 +91,17 @@ fun PayDetail(navController: NavController, viewModel: MainViewModel = hiltViewM
             }
             LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
                 items(expList) { expItem ->
-                    Text(
-                        text = expItem.price,
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 4.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-//                            .padding(bottom = 16.dp)
-                            .background(Color.White)
-                            .fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                    if (expList.indexOf(expItem) == 0) {
+                        List(expItem = expItem, titleFlag = true)
+                    } else {
+                        if (
+                            expList.get(expList.indexOf(expItem)).payDate !=
+                            expList.get(expList.indexOf(expItem) - 1).payDate
                         ) {
-                            Text(text = expItem.content, fontSize = 20.sp)
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Text(text = "￥${expItem.price}", fontSize = 20.sp)
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "支出編集", modifier = Modifier.size(20.dp))
-                                }
-                            }
+                            List(expItem = expItem, titleFlag = true)
+                        } else {
+                            List(expItem = expItem)
                         }
-                        Text(text = expItem.name, fontSize = 14.sp, modifier = Modifier.padding(start = 16.dp), lineHeight = 1.sp)
                     }
                 }
             }
@@ -146,4 +129,53 @@ private fun TopBar(navController: NavController) {
             }
         }
     )
+}
+
+@Composable
+private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
+    if (titleFlag) {
+        Text(
+            text = expItem.payDate,
+            fontSize = 20.sp,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 4.dp)
+                .padding(top = 16.dp)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Gray))
+    }
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = expItem.content, fontSize = 20.sp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "￥${expItem.price}", fontSize = 20.sp)
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "支出編集",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+        Text(
+            text = expItem.name,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 16.dp),
+            lineHeight = 1.sp
+        )
+    }
 }

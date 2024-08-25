@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface GroupCategoryDao {
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM GroupCategory")
+    @Query("SELECT * FROM GroupCategory ORDER BY payDate DESC")
     fun expAll(): Flow<List<GroupCategory>>
 
     @RewriteQueriesToDropUnusedColumns
