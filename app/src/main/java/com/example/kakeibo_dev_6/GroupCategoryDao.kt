@@ -13,6 +13,6 @@ interface GroupCategoryDao {
     fun expAll(): Flow<List<GroupCategory>>
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT name, SUM(price) AS price, content, COUNT(id) AS id FROM GroupCategory GROUP BY name")
+    @Query("SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate FROM GroupCategory GROUP BY name")
     fun getAll(): Flow<List<GroupCategory>>
 }

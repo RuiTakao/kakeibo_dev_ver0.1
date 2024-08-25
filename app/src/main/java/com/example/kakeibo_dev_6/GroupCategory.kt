@@ -14,5 +14,6 @@ data class GroupCategory (
     val id: Int,
     val name: String,
     val price: String,
-    val content: String
+    val content: String,
+    val payDate: String
 )
