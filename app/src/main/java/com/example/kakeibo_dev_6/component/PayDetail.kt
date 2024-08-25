@@ -42,6 +42,10 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
+import java.lang.IllegalArgumentException
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun PayDetail(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
@@ -135,7 +139,7 @@ private fun TopBar(navController: NavController) {
 private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
     if (titleFlag) {
         Text(
-            text = expItem.payDate,
+            text = SimpleDateFormat("M月d日").format(expItem.payDate.toDate("yyyy-MM-dd")),
             fontSize = 20.sp,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -178,4 +182,20 @@ private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
             lineHeight = 1.sp
         )
     }
+}
+
+fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
+    val format = try {
+        SimpleDateFormat(pattern)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+    val date = format?.let {
+        try {
+            it.parse(this)
+        } catch (e: ParseException) {
+            null
+        }
+    }
+    return date
 }
