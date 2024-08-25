@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,8 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,18 +45,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
+import java.time.Instant
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditExpendItem(
-    navController: NavController,
-    id: Int? = null,
-    viewModel: MainViewModel = hiltViewModel()
+    navController: NavController, id: Int? = null, viewModel: MainViewModel = hiltViewModel()
 ) {
     var payDate by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var category_id by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
+
+    // DatePicker Start
+    val state = rememberDatePickerState()
+    var visible by remember { mutableStateOf(false) }
+
+    // DatePicker End
 
     if (id == null) {
         payDate = ""
@@ -79,44 +91,34 @@ fun EditExpendItem(
         mutableStateOf("カテゴリを選択してください")
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "支出項目編集",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-//                            viewModel.name = value
-                            if (id == null) {
-                                viewModel.payDate = payDate
-                                viewModel.price = price
-                                viewModel.category_id = category_id
-                                viewModel.content = content
-
-                                viewModel.createExpendItem()
-                            } else {
-                                viewModel.updateExpendItem()
-                            }
-                            navController.navigate(Route.EXPENDITURE_LIST.name)
-                        }
-                    ) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
-                    }
-                }
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                text = "支出項目編集", maxLines = 1, overflow = TextOverflow.Ellipsis
             )
-        }
-    ) { paddingValues ->
+        }, navigationIcon = {
+            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+            }
+        }, actions = {
+            IconButton(onClick = {
+//                            viewModel.name = value
+                if (id == null) {
+                    viewModel.payDate = payDate
+                    viewModel.price = price
+                    viewModel.category_id = category_id
+                    viewModel.content = content
+
+                    viewModel.createExpendItem()
+                } else {
+                    viewModel.updateExpendItem()
+                }
+                navController.navigate(Route.EXPENDITURE_LIST.name)
+            }) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+            }
+        })
+    }) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -127,17 +129,51 @@ fun EditExpendItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "日付", modifier = Modifier.width(80.dp))
-                TextField(
-                    value = payDate,
-                    onValueChange = {
-                        payDate = it
-                    },
+//                TextField(
+//                    value = payDate,
+//                    onValueChange = {
+//                        payDate = it
+//                    },
+//                    modifier = Modifier
+//                        .background(Color.White)
+//                        .padding(start = 16.dp)
+//                        .fillMaxWidth()
+//                        .height(48.dp)
+//                )
+
+                // DatePicker Start
+                Box(
                     modifier = Modifier
-                        .background(Color.White)
+                        .background(Color.LightGray)
                         .padding(start = 16.dp)
-                        .fillMaxWidth()
                         .height(48.dp)
-                )
+                        .fillMaxWidth()
+                        .clickable { visible = !visible },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = payDate)
+                    if (visible) {
+                        DatePickerDialog(onDismissRequest = { visible = false }, confirmButton = {
+                            TextButton(onClick = { visible = false }) {
+                                Text(text = "OK")
+                            }
+                        }) {
+                            DatePicker(
+                                state = state
+                            )
+                        }
+                    }
+                }
+
+                var getDate = state.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() }
+                if (getDate == null) {
+                    payDate = ""
+                } else {
+                    payDate = getDate.toString()
+                }
+//                Log.d("Date PiCker", getDate.toString())
+                // DatePicker End
+
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -172,8 +208,7 @@ fun EditExpendItem(
                     Text(text = selectOptionText.value)
                     DropdownMenu(
                         expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false }
-                    ) {
+                        onDismissRequest = { expanded.value = false }) {
                         options.forEach { selectOption ->
                             DropdownMenuItem(text = { Text(text = selectOption.name) }, onClick = {
                                 selectOptionText.value = selectOption.name
