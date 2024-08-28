@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,10 @@ import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun ExpenditureList(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
@@ -120,8 +125,94 @@ private fun MainContent(
     scope: CoroutineScope,
     viewModel: MainViewModel
 ) {
-//    val EditExpendList by viewModel.expendItem.collectAsState(initial = emptyList())
-    val EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
+
+    // 今日の日付
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.time = Date()
+    Log.d("today", calendar.time.toString())
+    val day: Int = calendar.get(Calendar.DAY_OF_WEEK)
+    Log.d("toWeek", DayOfWeek.of(7).toString())
+
+    // 今週の月曜日を求める
+    val firstDay = Calendar.getInstance()
+    firstDay.time = Date()
+    val date: Date
+    when (day) {
+        1 -> {
+            firstDay.add(Calendar.DATE, 0)
+        }
+
+        2 -> {
+            firstDay.add(Calendar.DATE, -1)
+        }
+
+        3 -> {
+            firstDay.add(Calendar.DATE, -2)
+        }
+
+        4 -> {
+            firstDay.add(Calendar.DATE, -3)
+        }
+
+        5 -> {
+            firstDay.add(Calendar.DATE, -4)
+        }
+
+        6 -> {
+            firstDay.add(Calendar.DATE, -5)
+        }
+
+        7 -> {
+            firstDay.add(Calendar.DATE, -6)
+        }
+    }
+    date = firstDay.time
+    Log.d("今週の月曜日", date.toString())
+
+    // 今週の日曜日を求める
+    val lastDay = Calendar.getInstance()
+    lastDay.time = Date()
+    val date2: Date
+    when (day) {
+        1 -> {
+            lastDay.add(Calendar.DATE, +6)
+        }
+
+        2 -> {
+            lastDay.add(Calendar.DATE, +5)
+        }
+
+        3 -> {
+            lastDay.add(Calendar.DATE, +4)
+        }
+
+        4 -> {
+            lastDay.add(Calendar.DATE, +3)
+        }
+
+        5 -> {
+            lastDay.add(Calendar.DATE, +2)
+        }
+
+        6 -> {
+            lastDay.add(Calendar.DATE, +1)
+        }
+
+        7 -> {
+            lastDay.add(Calendar.DATE, +0)
+        }
+    }
+    date2 = lastDay.time
+    Log.d("今週の日曜日", date2.toString())
+
+//    val EditExpendList by viewModel.groupeExpendItem(firstDay = date.toString(), lastDay = date2.toString()).collectAsState(initial = emptyList())
+    val def = SimpleDateFormat("yyyy-MM-dd")
+    Log.d("絞り込みフォーマット確認", def.format(date))
+    val EditExpendList by viewModel.groupeExpendItem(
+        firstDay = def.format(date),
+        lastDay = def.format(date2)
+    ).collectAsState(initial = emptyList())
+//    val EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
     var totalTax by remember {
         mutableStateOf(0)
     }
@@ -133,7 +224,13 @@ private fun MainContent(
         totalTax = i
     }
     Scaffold(
-        topBar = { TopBar(drawerState = drawerState, scope = scope, navController = navController) },
+        topBar = {
+            TopBar(
+                drawerState = drawerState,
+                scope = scope,
+                navController = navController
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "追加")
@@ -169,7 +266,11 @@ private fun MainContent(
                         contentDescription = null
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "7月14日 〜 7月20日", fontSize = 24.sp)
+                        val dd = SimpleDateFormat("M月d日")
+                        Text(
+                            text = "${dd.format(date)} 〜 ${dd.format(date2)}",
+                            fontSize = 24.sp
+                        )
                         Text(
                             text = "使用額 ￥${totalTax}",
                             fontSize = 16.sp,
@@ -202,7 +303,11 @@ private fun MainContent(
                             Text(text = expendItem.name, fontSize = 20.sp)
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(text = "￥${expendItem.price}", fontSize = 20.sp)
-                                Text(text = "支出回数：${expendItem.id}回", fontSize = 14.sp, modifier = Modifier.padding(vertical = 4.dp))
+                                Text(
+                                    text = "支出回数：${expendItem.id}回",
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
                             }
                         }
                     }

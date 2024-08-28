@@ -27,9 +27,14 @@ class MainViewModel @Inject constructor(
 
     val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
-    val groupeExpendItem = groupCategoryDao.getAll().distinctUntilChanged()
+//    val groupeExpendItem = groupCategoryDao.getAll().distinctUntilChanged()
     val detailExpendItem = groupCategoryDao.expAll().distinctUntilChanged()
 //    val oneOfCategory = categoryDao.getOneOfCategory(id = cate).distinctUntilChanged()
+
+    fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
+        val groupCategory = groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+        return groupCategory
+    }
 
     fun createExpendItem() {
         viewModelScope.launch {
