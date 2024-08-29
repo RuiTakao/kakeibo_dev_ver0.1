@@ -98,7 +98,7 @@ fun EditExpendItem(
                 text = "支出項目編集", maxLines = 1, overflow = TextOverflow.Ellipsis
             )
         }, navigationIcon = {
-            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
             }
         }, actions = {
@@ -114,7 +114,7 @@ fun EditExpendItem(
                 } else {
                     viewModel.updateExpendItem()
                 }
-                navController.navigate(Route.EXPENDITURE_LIST.name)
+                navController.popBackStack()
             }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
             }

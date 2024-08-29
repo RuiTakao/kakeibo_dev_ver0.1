@@ -1,6 +1,5 @@
 package com.example.kakeibo_dev_6.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,7 +58,8 @@ import com.example.kakeibo_dev_6.route.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
 
@@ -140,94 +140,10 @@ private fun MainContent(
     sDay: String,
     lDay: String
 ) {
-
-    // 今日の日付
-    val calendar: Calendar = Calendar.getInstance()
-    calendar.time = Date()
-    Log.d("today", calendar.time.toString())
-    val day: Int = calendar.get(Calendar.DAY_OF_WEEK)
-    Log.d("toWeek", DayOfWeek.of(7).toString())
-
-    // 今週の月曜日を求める
-    val firstDay = Calendar.getInstance()
-    firstDay.time = Date()
-    val date: Date
-    when (day) {
-        1 -> {
-            firstDay.add(Calendar.DATE, 0)
-        }
-
-        2 -> {
-            firstDay.add(Calendar.DATE, -1)
-        }
-
-        3 -> {
-            firstDay.add(Calendar.DATE, -2)
-        }
-
-        4 -> {
-            firstDay.add(Calendar.DATE, -3)
-        }
-
-        5 -> {
-            firstDay.add(Calendar.DATE, -4)
-        }
-
-        6 -> {
-            firstDay.add(Calendar.DATE, -5)
-        }
-
-        7 -> {
-            firstDay.add(Calendar.DATE, -6)
-        }
-    }
-    date = firstDay.time
-    Log.d("今週の月曜日", date.toString())
-
-    // 今週の日曜日を求める
-    val lastDay = Calendar.getInstance()
-    lastDay.time = Date()
-    val date2: Date
-    when (day) {
-        1 -> {
-            lastDay.add(Calendar.DATE, +6)
-        }
-
-        2 -> {
-            lastDay.add(Calendar.DATE, +5)
-        }
-
-        3 -> {
-            lastDay.add(Calendar.DATE, +4)
-        }
-
-        4 -> {
-            lastDay.add(Calendar.DATE, +3)
-        }
-
-        5 -> {
-            lastDay.add(Calendar.DATE, +2)
-        }
-
-        6 -> {
-            lastDay.add(Calendar.DATE, +1)
-        }
-
-        7 -> {
-            lastDay.add(Calendar.DATE, +0)
-        }
-    }
-    date2 = lastDay.time
-    Log.d("今週の日曜日", date2.toString())
-
-//    val EditExpendList by viewModel.groupeExpendItem(firstDay = date.toString(), lastDay = date2.toString()).collectAsState(initial = emptyList())
-    val def = SimpleDateFormat("yyyy-MM-dd")
-    Log.d("絞り込みフォーマット確認", def.format(date))
     val EditExpendList by viewModel.groupeExpendItem(
-        firstDay = def.format(date),
-        lastDay = def.format(date2)
+        firstDay = sDay,
+        lastDay = lDay
     ).collectAsState(initial = emptyList())
-//    val EditExpendList by viewModel.groupeExpendItem.collectAsState(initial = emptyList())
     var totalTax by remember {
         mutableStateOf(0)
     }
@@ -261,11 +177,10 @@ private fun MainContent(
             controlContent(
                 totalTax = totalTax,
                 dateProperty = dateProperty,
-                startDate = date,
-                lastDate = date2,
+                startDate = sDay.toDate("yyyy-MM-dd"),
+                lastDate = lDay.toDate("yyyy-MM-dd"),
                 navController = navController
             )
-//            ListTest(expendItem = EditExpendList)
             LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
                 items(EditExpendList) { expendItem ->
                     Column(
@@ -302,12 +217,12 @@ private fun MainContent(
 private fun controlContent(
     totalTax: Int,
     dateProperty: String,
-    startDate: Date,
-    lastDate: Date,
+    startDate: Date?,
+    lastDate: Date?,
     navController: NavController
 ) {
     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
-        controlSpanContent(navController = navController)
+        controlSpanContent(dateProperty = dateProperty, navController = navController)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -323,24 +238,27 @@ private fun controlContent(
                     "day" -> {
                         val dd = SimpleDateFormat("M月d日")
                         Text(
-                            text = dd.format(startDate),
+                            text = if (startDate != null) dd.format(startDate) else "",
                             fontSize = 24.sp
                         )
                     }
+
                     "week" -> {
                         val dd = SimpleDateFormat("M月d日")
                         Text(
-                            text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
+                            text = "${if (startDate != null) dd.format(startDate) else ""} 〜 ${if (lastDate != null) dd.format(lastDate) else ""}",
                             fontSize = 24.sp
                         )
                     }
+
                     "month" -> {
                         val dd = SimpleDateFormat("M月")
                         Text(
-                            text = dd.format(startDate),
+                            text = if (startDate != null) dd.format(startDate) else "",
                             fontSize = 24.sp
                         )
                     }
+
                     else -> {
                         val dd = SimpleDateFormat("M月d日")
                         Text(
@@ -349,11 +267,6 @@ private fun controlContent(
                         )
                     }
                 }
-//                val dd = SimpleDateFormat("M月d日")
-//                Text(
-//                    text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
-//                    fontSize = 24.sp
-//                )
                 Text(
                     text = "使用額 ￥${totalTax}",
                     fontSize = 16.sp,
@@ -370,7 +283,7 @@ private fun controlContent(
 }
 
 @Composable
-private fun controlSpanContent(navController: NavController) {
+private fun controlSpanContent(dateProperty: String, navController: NavController) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -378,7 +291,13 @@ private fun controlSpanContent(navController: NavController) {
             .padding(top = 8.dp)
     ) {
         TextButton(
-            onClick = { navController.navigate("${Route.EXPENDITURE_LIST.name}/day/2024-08-01/2024-08-31") },
+            onClick = {
+                val def = SimpleDateFormat("yyyy-MM-dd")
+                val date = def.format(Date())
+                navController.navigate(
+                    "${Route.EXPENDITURE_LIST.name}/day/${date}/${date}"
+                )
+            },
             content = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "日", fontSize = 16.sp)
@@ -387,11 +306,24 @@ private fun controlSpanContent(navController: NavController) {
                         modifier = Modifier
                             .height(2.dp)
                             .width(20.dp)
-                            .background(Color.Transparent)
+                            .background(if (dateProperty == "day") MaterialTheme.colorScheme.primary else Color.Transparent)
                     )
                 }
             })
-        TextButton(onClick = { /*TODO*/ }, content = {
+        TextButton(onClick = {
+            val def = SimpleDateFormat("yyyy-MM-dd")
+            val calendar: Calendar = Calendar.getInstance()
+            val firstDay = Calendar.getInstance()
+            val lastDay = Calendar.getInstance()
+            calendar.time = Date()
+            firstDay.add(Calendar.DATE, (calendar.get(Calendar.DAY_OF_WEEK) - 1) * -1)
+            lastDay.add(Calendar.DATE, 7 - calendar.get(Calendar.DAY_OF_WEEK))
+            val firstDate = def.format(firstDay.time)
+            val lastDate = def.format(lastDay.time)
+            navController.navigate(
+                "${Route.EXPENDITURE_LIST.name}/week/${firstDate}/${lastDate}"
+            )
+        }, content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "週", fontSize = 16.sp)
                 Spacer(modifier = Modifier.height(2.dp))
@@ -399,12 +331,17 @@ private fun controlSpanContent(navController: NavController) {
                     modifier = Modifier
                         .height(2.dp)
                         .width(20.dp)
-                        .background(Color.Gray)
+                        .background(if (dateProperty == "week") MaterialTheme.colorScheme.primary else Color.Transparent)
                 )
             }
         })
         TextButton(
-            onClick = { navController.navigate("${Route.EXPENDITURE_LIST.name}/month/2024-08-01/2024-08-31") },
+            onClick = {
+                val date = LocalDate.now()
+                val firstDate = date.with(TemporalAdjusters.firstDayOfMonth())
+                val lastDate = date.with(TemporalAdjusters.lastDayOfMonth())
+                navController.navigate("${Route.EXPENDITURE_LIST.name}/month/${firstDate}/${lastDate}")
+            },
             content = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "月", fontSize = 16.sp)
@@ -413,7 +350,7 @@ private fun controlSpanContent(navController: NavController) {
                         modifier = Modifier
                             .height(2.dp)
                             .width(20.dp)
-                            .background(Color.Transparent)
+                            .background(if (dateProperty == "month") MaterialTheme.colorScheme.primary else Color.Transparent)
                     )
                 }
             })
@@ -465,18 +402,4 @@ private fun TopBar(drawerState: DrawerState, scope: CoroutineScope, navControlle
             }
         }
     )
-}
-
-@Composable
-private fun ListTest(expendItem: List<GroupCategory>) {
-    LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
-        items(expendItem) { expendItem ->
-            Column {
-                Text(text = expendItem.name)
-                Text(text = expendItem.price)
-//                Text(text = expendItem.category_id)
-                Text(text = expendItem.id.toString())
-            }
-        }
-    }
 }

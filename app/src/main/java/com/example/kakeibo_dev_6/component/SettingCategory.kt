@@ -105,7 +105,7 @@ private fun TopBar(navController: NavController) {
             containerColor = Color(0xFFF7F7F7)
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
             }
         },
