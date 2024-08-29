@@ -128,9 +128,12 @@ private fun TopBar(navController: NavController) {
             containerColor = MaterialTheme.colorScheme.primary
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
             }
+//            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
+//                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
+//            }
         }
     )
 }
@@ -161,7 +164,7 @@ private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = expItem.content, fontSize = 20.sp)
+            Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -179,7 +182,7 @@ private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
             text = expItem.name,
             fontSize = 14.sp,
             modifier = Modifier.padding(start = 16.dp),
-            lineHeight = 1.sp
+            lineHeight = 0.sp
         )
     }
 }

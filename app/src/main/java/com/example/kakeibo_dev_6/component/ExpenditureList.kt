@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +33,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -61,7 +64,13 @@ import java.util.Calendar
 import java.util.Date
 
 @Composable
-fun ExpenditureList(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
+fun ExpenditureList(
+    navController: NavController,
+    viewModel: MainViewModel = hiltViewModel(),
+    dateProperty: String? = null,
+    startDate: String? = null,
+    lastDate: String? = null
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
@@ -78,7 +87,10 @@ fun ExpenditureList(navController: NavController, viewModel: MainViewModel = hil
             navController = navController,
             drawerState = drawerState,
             scope = scope,
-            viewModel = viewModel
+            viewModel = viewModel,
+            dateProperty = if (dateProperty != null) dateProperty else "",
+            sDay = if (startDate != null) startDate else "",
+            lDay = if (lastDate != null) lastDate else ""
         )
     }
 }
@@ -123,7 +135,10 @@ private fun MainContent(
     navController: NavController,
     drawerState: DrawerState,
     scope: CoroutineScope,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    dateProperty: String,
+    sDay: String,
+    lDay: String
 ) {
 
     // 今日の日付
@@ -243,47 +258,13 @@ private fun MainContent(
                 .background(color = Color(0xFFF7F7F7))
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                ) {
-                    Text(text = "日", fontSize = 16.sp)
-                    Text(text = "週", fontSize = 16.sp)
-                    Text(text = "月", fontSize = 16.sp)
-                    Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp, horizontal = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
-                        contentDescription = null
-                    )
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        val dd = SimpleDateFormat("M月d日")
-                        Text(
-                            text = "${dd.format(date)} 〜 ${dd.format(date2)}",
-                            fontSize = 24.sp
-                        )
-                        Text(
-                            text = "使用額 ￥${totalTax}",
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
-                        contentDescription = null
-                    )
-                }
-
-            }
+            controlContent(
+                totalTax = totalTax,
+                dateProperty = dateProperty,
+                startDate = date,
+                lastDate = date2,
+                navController = navController
+            )
 //            ListTest(expendItem = EditExpendList)
             LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
                 items(EditExpendList) { expendItem ->
@@ -314,6 +295,140 @@ private fun MainContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun controlContent(
+    totalTax: Int,
+    dateProperty: String,
+    startDate: Date,
+    lastDate: Date,
+    navController: NavController
+) {
+    Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
+        controlSpanContent(navController = navController)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                contentDescription = null
+            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                when (dateProperty) {
+                    "day" -> {
+                        val dd = SimpleDateFormat("M月d日")
+                        Text(
+                            text = dd.format(startDate),
+                            fontSize = 24.sp
+                        )
+                    }
+                    "week" -> {
+                        val dd = SimpleDateFormat("M月d日")
+                        Text(
+                            text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
+                            fontSize = 24.sp
+                        )
+                    }
+                    "month" -> {
+                        val dd = SimpleDateFormat("M月")
+                        Text(
+                            text = dd.format(startDate),
+                            fontSize = 24.sp
+                        )
+                    }
+                    else -> {
+                        val dd = SimpleDateFormat("M月d日")
+                        Text(
+                            text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
+                            fontSize = 24.sp
+                        )
+                    }
+                }
+//                val dd = SimpleDateFormat("M月d日")
+//                Text(
+//                    text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
+//                    fontSize = 24.sp
+//                )
+                Text(
+                    text = "使用額 ￥${totalTax}",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun controlSpanContent(navController: NavController) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        TextButton(
+            onClick = { navController.navigate("${Route.EXPENDITURE_LIST.name}/day/2024-08-01/2024-08-31") },
+            content = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "日", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .height(2.dp)
+                            .width(20.dp)
+                            .background(Color.Transparent)
+                    )
+                }
+            })
+        TextButton(onClick = { /*TODO*/ }, content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "週", fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(2.dp)
+                        .width(20.dp)
+                        .background(Color.Gray)
+                )
+            }
+        })
+        TextButton(
+            onClick = { navController.navigate("${Route.EXPENDITURE_LIST.name}/month/2024-08-01/2024-08-31") },
+            content = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "月", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .height(2.dp)
+                            .width(20.dp)
+                            .background(Color.Transparent)
+                    )
+                }
+            })
+        IconButton(onClick = { /*TODO*/ }, content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
+                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(2.dp)
+                        .width(20.dp)
+                        .background(Color.Transparent)
+                )
+            }
+        })
     }
 }
 

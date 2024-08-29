@@ -17,6 +17,21 @@ fun Navigation() {
     val navController = rememberNavController()
     Kakeibo_dev_6Theme {
         NavHost(navController = navController, startDestination = Route.EXPENDITURE_LIST.name) {
+            composable(
+                route = "${Route.EXPENDITURE_LIST.name}/{dateProperty}/{startDay}/{lastDay}",
+                arguments = listOf(
+                    navArgument("dateProperty") { type = NavType.StringType },
+                    navArgument("startDay") { type = NavType.StringType },
+                    navArgument("lastDay") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                ExpenditureList(
+                    navController = navController,
+                    dateProperty = backStackEntry.arguments?.getString("dateProperty"),
+                    startDate = backStackEntry.arguments?.getString("startDay"),
+                    lastDate = backStackEntry.arguments?.getString("lastDay")
+                )
+            }
             composable(route = Route.EXPENDITURE_LIST.name) {
                 ExpenditureList(navController = navController)
             }
@@ -28,9 +43,12 @@ fun Navigation() {
             }
             composable(
                 route = "${Route.EDIT_CATEGORY.name}/{id}",
-                arguments = listOf(navArgument("id", ) { type = NavType.IntType })
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
             ) { backStackEntry ->
-                EditCategory(navController = navController, id = backStackEntry.arguments?.getInt("id"))
+                EditCategory(
+                    navController = navController,
+                    id = backStackEntry.arguments?.getInt("id")
+                )
             }
             composable(route = Route.EDIT_CATEGORY.name) {
                 EditCategory(navController = navController)
