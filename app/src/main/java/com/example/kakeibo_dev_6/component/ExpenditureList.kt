@@ -3,6 +3,7 @@ package com.example.kakeibo_dev_6.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,14 +52,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.weekLastDate
+import com.example.kakeibo_dev_6.weekStartDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
@@ -88,9 +93,9 @@ fun ExpenditureList(
             drawerState = drawerState,
             scope = scope,
             viewModel = viewModel,
-            dateProperty = if (dateProperty != null) dateProperty else "",
-            sDay = if (startDate != null) startDate else "",
-            lDay = if (lastDate != null) lastDate else ""
+            dateProperty = dateProperty?.let { dateProperty } ?: "",
+            startDate = startDate?.let { startDate } ?: "",
+            lastDate = lastDate?.let { lastDate } ?: ""
         )
     }
 }
@@ -137,23 +142,9 @@ private fun MainContent(
     scope: CoroutineScope,
     viewModel: MainViewModel,
     dateProperty: String,
-    sDay: String,
-    lDay: String
+    startDate: String,
+    lastDate: String
 ) {
-    val EditExpendList by viewModel.groupeExpendItem(
-        firstDay = sDay,
-        lastDay = lDay
-    ).collectAsState(initial = emptyList())
-    var totalTax by remember {
-        mutableStateOf(0)
-    }
-    LaunchedEffect(EditExpendList) {
-        var i = 0
-        EditExpendList.forEach {
-            i += it.price.toInt()
-        }
-        totalTax = i
-    }
     Scaffold(
         topBar = {
             TopBar(
@@ -168,43 +159,89 @@ private fun MainContent(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .background(color = Color(0xFFF7F7F7))
-                .fillMaxSize()
-        ) {
-            controlContent(
-                totalTax = totalTax,
+        if (viewModel.mainPageState) {
+            Column(
+                modifier = Modifier.padding(padding)
+            ) {
+                TextButton(onClick = { viewModel.mainPageState = true }) {
+                    Text(text = "eeeeee")
+                }
+            }
+        } else {
+            body(
+                navController = navController,
                 dateProperty = dateProperty,
-                startDate = sDay.toDate("yyyy-MM-dd"),
-                lastDate = lDay.toDate("yyyy-MM-dd"),
-                navController = navController
+                startDate = startDate,
+                lastDate = lastDate,
+                padding = padding,
+                viewModel = viewModel
             )
-            LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
-                items(EditExpendList) { expendItem ->
-                    Column(
+        }
+    }
+}
+
+@Composable
+private fun body(
+    navController: NavController,
+    dateProperty: String,
+    startDate: String,
+    lastDate: String,
+    padding: PaddingValues,
+    viewModel: MainViewModel
+) {
+    val df = SimpleDateFormat("yyyy-MM-dd")
+    val EditExpendList by viewModel.groupeExpendItem(
+        firstDay = df.format(viewModel.startDate),
+        lastDay = df.format(viewModel.lastDate)
+    ).collectAsState(initial = emptyList())
+    var totalTax by remember {
+        mutableStateOf(0)
+    }
+    LaunchedEffect(EditExpendList) {
+        var i = 0
+        EditExpendList.forEach {
+            i += it.price.toInt()
+        }
+        totalTax = i
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(padding)
+            .background(color = Color(0xFFF7F7F7))
+            .fillMaxSize()
+    ) {
+        controlContent(
+            totalTax = totalTax,
+            dateProperty = dateProperty,
+            startDate = startDate.toDate("yyyy-MM-dd"),
+            lastDate = lastDate.toDate("yyyy-MM-dd"),
+            navController = navController,
+            viewModel = viewModel
+        )
+        LazyColumn(modifier = Modifier.padding(top = 32.dp)) {
+            items(EditExpendList) { expendItem ->
+                Column(
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .background(Color.White)
+                        .fillMaxWidth()
+                ) {
+                    Row(
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .background(Color.White)
-                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = expendItem.name, fontSize = 20.sp)
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(text = "￥${expendItem.price}", fontSize = 20.sp)
-                                Text(
-                                    text = "支出回数：${expendItem.id}回",
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                            }
+                        Text(text = expendItem.name, fontSize = 20.sp)
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(text = "￥${expendItem.price}", fontSize = 20.sp)
+                            Text(
+                                text = "支出回数：${expendItem.id}回",
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
                         }
                     }
                 }
@@ -219,10 +256,11 @@ private fun controlContent(
     dateProperty: String,
     startDate: Date?,
     lastDate: Date?,
-    navController: NavController
+    navController: NavController,
+    viewModel: MainViewModel
 ) {
     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
-        controlSpanContent(dateProperty = dateProperty, navController = navController)
+        controlSpanContent(dateProperty = dateProperty, navController = navController, viewModel = viewModel)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -234,35 +272,39 @@ private fun controlContent(
                 contentDescription = null
             )
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                when (dateProperty) {
+                when (viewModel.dateProperty) {
                     "day" -> {
-                        val dd = SimpleDateFormat("M月d日")
+                        val df = SimpleDateFormat("M月d日")
                         Text(
-                            text = if (startDate != null) dd.format(startDate) else "",
+                            text = df.format(viewModel.startDate),
                             fontSize = 24.sp
                         )
                     }
 
                     "week" -> {
-                        val dd = SimpleDateFormat("M月d日")
+                        val df = SimpleDateFormat("M月d日")
                         Text(
-                            text = "${if (startDate != null) dd.format(startDate) else ""} 〜 ${if (lastDate != null) dd.format(lastDate) else ""}",
+                            text = "${df.format(viewModel.startDate)} 〜 ${df.format(viewModel.lastDate)}",
                             fontSize = 24.sp
                         )
                     }
 
                     "month" -> {
-                        val dd = SimpleDateFormat("M月")
+                        val df = SimpleDateFormat("M月")
                         Text(
-                            text = if (startDate != null) dd.format(startDate) else "",
+                            text = startDate?.let { df.format(startDate) } ?: "",
                             fontSize = 24.sp
                         )
                     }
 
                     else -> {
-                        val dd = SimpleDateFormat("M月d日")
+                        val df = SimpleDateFormat("M月d日")
                         Text(
-                            text = "${dd.format(startDate)} 〜 ${dd.format(lastDate)}",
+                            text = "${
+                                startDate?.let { df.format(startDate) } ?: ""
+                            } 〜 ${
+                                lastDate?.let { df.format(lastDate) } ?: ""
+                            }",
                             fontSize = 24.sp
                         )
                     }
@@ -283,7 +325,7 @@ private fun controlContent(
 }
 
 @Composable
-private fun controlSpanContent(dateProperty: String, navController: NavController) {
+private fun controlSpanContent(dateProperty: String, navController: NavController, viewModel: MainViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -294,9 +336,12 @@ private fun controlSpanContent(dateProperty: String, navController: NavControlle
             onClick = {
                 val def = SimpleDateFormat("yyyy-MM-dd")
                 val date = def.format(Date())
-                navController.navigate(
-                    "${Route.EXPENDITURE_LIST.name}/day/${date}/${date}"
-                )
+//                navController.navigate(
+//                    "${Route.EXPENDITURE_LIST.name}/day/${date}/${date}"
+//                )
+                viewModel.startDate = Date()
+                viewModel.lastDate = Date()
+                viewModel.dateProperty = "day"
             },
             content = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -320,9 +365,12 @@ private fun controlSpanContent(dateProperty: String, navController: NavControlle
             lastDay.add(Calendar.DATE, 7 - calendar.get(Calendar.DAY_OF_WEEK))
             val firstDate = def.format(firstDay.time)
             val lastDate = def.format(lastDay.time)
-            navController.navigate(
-                "${Route.EXPENDITURE_LIST.name}/week/${firstDate}/${lastDate}"
-            )
+//            navController.navigate(
+//                "${Route.EXPENDITURE_LIST.name}/week/${firstDate}/${lastDate}"
+//            )
+            viewModel.startDate = weekStartDate()
+            viewModel.lastDate = weekLastDate()
+            viewModel.dateProperty = "week"
         }, content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "週", fontSize = 16.sp)
@@ -340,7 +388,11 @@ private fun controlSpanContent(dateProperty: String, navController: NavControlle
                 val date = LocalDate.now()
                 val firstDate = date.with(TemporalAdjusters.firstDayOfMonth())
                 val lastDate = date.with(TemporalAdjusters.lastDayOfMonth())
-                navController.navigate("${Route.EXPENDITURE_LIST.name}/month/${firstDate}/${lastDate}")
+//                navController.navigate("${Route.EXPENDITURE_LIST.name}/month/${firstDate}/${lastDate}")
+//                viewModel.mainPageState = false
+                viewModel.startDate = Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                viewModel.lastDate = Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                viewModel.dateProperty = "month"
             },
             content = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -354,7 +406,7 @@ private fun controlSpanContent(dateProperty: String, navController: NavControlle
                     )
                 }
             })
-        IconButton(onClick = { /*TODO*/ }, content = {
+        IconButton(onClick = { viewModel.mainPageState = true }, content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
                 Spacer(modifier = Modifier.height(2.dp))

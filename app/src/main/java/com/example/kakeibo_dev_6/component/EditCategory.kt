@@ -61,7 +61,7 @@ fun EditCategory(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Route.CATEGORY_SETTING.name) }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
                     }
                 },
@@ -75,7 +75,7 @@ fun EditCategory(
                             } else {
                                 viewModel.updateCategory()
                             }
-                            navController.navigate(Route.CATEGORY_SETTING.name)
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(imageVector = Icons.Default.Check, contentDescription = "登録")

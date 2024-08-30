@@ -3,6 +3,7 @@ package com.example.kakeibo_dev_6
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,9 +30,9 @@ class MainViewModel @Inject constructor(
 
     val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
-//    val groupeExpendItem = groupCategoryDao.getAll().distinctUntilChanged()
     val detailExpendItem = groupCategoryDao.expAll().distinctUntilChanged()
-//    val oneOfCategory = categoryDao.getOneOfCategory(id = cate).distinctUntilChanged()
+
+    var mainPageState by mutableStateOf(false)
 
     fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
         val groupCategory = groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
@@ -95,4 +98,31 @@ class MainViewModel @Inject constructor(
     }
 
 
+
+
+
+
+
+
+    var startDate by mutableStateOf(weekStartDate())
+    var lastDate by mutableStateOf(weekLastDate())
+    var dateProperty by mutableStateOf("week")
+
+
+
+}
+
+fun weekStartDate() :Date {
+    val calendar: Calendar = Calendar.getInstance()
+    val firstDay = Calendar.getInstance()
+    calendar.time = Date()
+    firstDay.add(Calendar.DATE, (calendar.get(Calendar.DAY_OF_WEEK) - 1) * -1)
+    return firstDay.time
+}
+fun weekLastDate() :Date {
+    val calendar: Calendar = Calendar.getInstance()
+    val lastDay = Calendar.getInstance()
+    calendar.time = Date()
+    lastDay.add(Calendar.DATE, 7 - calendar.get(Calendar.DAY_OF_WEEK))
+    return lastDay.time
 }

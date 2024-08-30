@@ -131,9 +131,6 @@ private fun TopBar(navController: NavController) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
             }
-//            IconButton(onClick = { navController.navigate(Route.EXPENDITURE_LIST.name) }) {
-//                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
-//            }
         }
     )
 }
