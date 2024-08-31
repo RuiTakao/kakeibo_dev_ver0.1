@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchContext
+import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchDialog
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.TopBar
 import java.lang.IllegalArgumentException
 import java.text.ParseException
@@ -50,6 +52,8 @@ fun ExpenditureDetail(
         sort = viewModel.sort
     ).collectAsState(initial = emptyList())
 
+    val isShowSearchDialog = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopBar(navController = navController)
@@ -67,15 +71,16 @@ fun ExpenditureDetail(
                     .padding(top = 32.dp)
             ) {
                 TotalTax(expList = expList)
-                SearchContext(viewModel = viewModel)
+                SearchContext(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
             }
             ListContent(expList = expList)
         }
+        SearchDialog(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
     }
 }
 
 @Composable
-fun TotalTax(expList: List<GroupCategory>) {
+private fun TotalTax(expList: List<GroupCategory>) {
     var totalTax by remember { mutableStateOf(0) }
     LaunchedEffect(expList) {
         var i = 0
