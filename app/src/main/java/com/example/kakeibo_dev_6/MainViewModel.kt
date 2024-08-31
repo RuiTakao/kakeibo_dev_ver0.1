@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val expendItemDao: ExpendItemDao,
     private val categoryDao: CategoryDao,
     private val groupCategoryDao: GroupCategoryDao
-): ViewModel() {
+) : ViewModel() {
     var payDate by mutableStateOf("")
     var category_id by mutableStateOf("")
     var content by mutableStateOf("")
@@ -31,19 +31,33 @@ class MainViewModel @Inject constructor(
     val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 
-    fun detailExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
-        val groupCategory = groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
-        return groupCategory
+    fun detailExpendItem(
+        firstDay: String,
+        lastDay: String,
+        sort: Boolean
+    ): Flow<List<GroupCategory>> {
+        return if (sort) {
+            groupCategoryDao.expAllAsc(firstDay = firstDay, lastDay = lastDay)
+                .distinctUntilChanged()
+        } else {
+            groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+        }
     }
 
     fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
-        val groupCategory = groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+        val groupCategory =
+            groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
         return groupCategory
     }
 
     fun createExpendItem() {
         viewModelScope.launch {
-            val newExpendItem = ExpendItem(payDate = payDate, category_id = category_id, content = content, price = price)
+            val newExpendItem = ExpendItem(
+                payDate = payDate,
+                category_id = category_id,
+                content = content,
+                price = price
+            )
             expendItemDao.insertExpendItem(newExpendItem)
         }
     }
@@ -100,31 +114,26 @@ class MainViewModel @Inject constructor(
     }
 
 
-
-
-
-
-
-
     var startDate by mutableStateOf(weekStartDate())
     var lastDate by mutableStateOf(weekLastDate())
     var dateProperty by mutableStateOf("week")
 
 
-
     var payDetailStartDate by mutableStateOf(weekStartDate())
     var payDetailLastDate by mutableStateOf(weekLastDate())
     var payDetailDateProperty by mutableStateOf("week")
+    var sort by mutableStateOf(false)
 }
 
-fun weekStartDate() :Date {
+fun weekStartDate(): Date {
     val calendar: Calendar = Calendar.getInstance()
     val firstDay = Calendar.getInstance()
     calendar.time = Date()
     firstDay.add(Calendar.DATE, (calendar.get(Calendar.DAY_OF_WEEK) - 1) * -1)
     return firstDay.time
 }
-fun weekLastDate() :Date {
+
+fun weekLastDate(): Date {
     val calendar: Calendar = Calendar.getInstance()
     val lastDay = Calendar.getInstance()
     calendar.time = Date()
