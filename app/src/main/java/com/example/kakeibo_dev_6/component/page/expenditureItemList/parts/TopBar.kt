@@ -14,13 +14,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(drawerState: DrawerState, scope: CoroutineScope, navController: NavController) {
+fun TopBar(
+    drawerState: DrawerState,
+    scope: CoroutineScope,
+    navController: NavController,
+    viewModel: MainViewModel
+) {
     TopAppBar(
         title = {
             Text(
@@ -46,7 +53,12 @@ fun TopBar(drawerState: DrawerState, scope: CoroutineScope, navController: NavCo
             }
         },
         actions = {
-            IconButton(onClick = { navController.navigate(Route.PAY_DETAIL.name) }) {
+            IconButton(onClick = {
+                val df = SimpleDateFormat("yyyy-MM-dd")
+                val startDate = df.format(viewModel.startDate)
+                val lastDate = df.format(viewModel.lastDate)
+                navController.navigate("${Route.PAY_DETAIL.name}/${startDate}/${lastDate}")
+            }) {
                 Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "詳細")
             }
         }

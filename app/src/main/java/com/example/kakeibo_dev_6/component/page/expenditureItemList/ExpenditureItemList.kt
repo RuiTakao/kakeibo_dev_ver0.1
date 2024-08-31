@@ -60,7 +60,8 @@ fun ExpenditureItemList(
                 TopBar(
                     drawerState = drawerState,
                     scope = scope,
-                    navController = navController
+                    navController = navController,
+                    viewModel = viewModel
                 )
             },
             floatingActionButton = {
