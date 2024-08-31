@@ -30,9 +30,11 @@ class MainViewModel @Inject constructor(
 
     val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
-    val detailExpendItem = groupCategoryDao.expAll().distinctUntilChanged()
 
-    var mainPageState by mutableStateOf(false)
+    fun detailExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
+        val groupCategory = groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+        return groupCategory
+    }
 
     fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
         val groupCategory = groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
@@ -110,6 +112,9 @@ class MainViewModel @Inject constructor(
 
 
 
+    var payDetailStartDate by mutableStateOf(weekStartDate())
+    var payDetailLastDate by mutableStateOf(weekLastDate())
+    var payDetailDateProperty by mutableStateOf("week")
 }
 
 fun weekStartDate() :Date {

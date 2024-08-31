@@ -1,7 +1,9 @@
 package com.example.kakeibo_dev_6.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,7 +51,11 @@ import java.util.Date
 
 @Composable
 fun PayDetail(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
-    val expList by viewModel.detailExpendItem.collectAsState(initial = emptyList())
+    val df = SimpleDateFormat("yyyy-MM-dd")
+    val expList by viewModel.detailExpendItem(
+        firstDay = df.format(viewModel.payDetailStartDate),
+        lastDay = df.format(viewModel.payDetailLastDate)
+    ).collectAsState(initial = emptyList())
     var totalTax by remember {
         mutableStateOf(0)
     }
@@ -78,7 +84,7 @@ fun PayDetail(navController: NavController, viewModel: MainViewModel = hiltViewM
                     .padding(top = 32.dp)
             ) {
                 Text(text = "￥${totalTax}", fontSize = 24.sp)
-                Column(
+                Box(
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .background(color = Color(0xFFD9D9D9), shape = RoundedCornerShape(8))
@@ -87,9 +93,21 @@ fun PayDetail(navController: NavController, viewModel: MainViewModel = hiltViewM
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        Text(text = "表示期間： 7月14日 〜 7月20日", fontSize = 14.sp)
+                        val df = SimpleDateFormat("M月d日")
+                        Text(
+                            text = "表示期間： ${df.format(viewModel.payDetailStartDate)} 〜 ${
+                                df.format(
+                                    viewModel.payDetailLastDate
+                                )
+                            }", fontSize = 14.sp
+                        )
                         Text(text = "カテゴリー： すべて", fontSize = 14.sp)
                         Text(text = "表示順： 日付降順", fontSize = 14.sp)
+                    }
+                    IconButton(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "検索")
                     }
                 }
             }
@@ -147,40 +165,38 @@ private fun List(expItem: GroupCategory, titleFlag: Boolean = false) {
                 .padding(top = 16.dp)
         )
     } else {
-        Spacer(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Gray))
+        Spacer(
+            modifier = Modifier
+                .height(1.dp)
+                .fillMaxWidth()
+                .background(Color.Gray)
+        )
     }
     Column(
         modifier = Modifier
+            .clickable {  }
             .background(Color.White)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
+
     ) {
         Row(
             modifier = Modifier
-                .padding(start = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
-            Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "￥${expItem.price}", fontSize = 20.sp)
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "支出編集",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+            Column {
+                Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
+                Text(
+                    text = expItem.name,
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    fontSize = 14.sp,
+                    lineHeight = 0.sp
+                )
             }
+            Text(text = "￥${expItem.price}", fontSize = 20.sp)
         }
-        Text(
-            text = expItem.name,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 16.dp),
-            lineHeight = 0.sp
-        )
     }
 }
 
