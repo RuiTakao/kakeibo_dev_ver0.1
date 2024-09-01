@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.component
+package com.example.kakeibo_dev_6.component.page.editCategory
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

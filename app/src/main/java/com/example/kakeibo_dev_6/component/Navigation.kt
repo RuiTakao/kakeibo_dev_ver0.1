@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.kakeibo_dev_6.component.page.editCategory.EditCategory
+import com.example.kakeibo_dev_6.component.page.editExpenditureItem.EditExpenditureItem
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDetail
 import com.example.kakeibo_dev_6.component.page.expenditureItemDetail.ExpenditureItemDetail
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
@@ -61,16 +63,7 @@ fun Navigation() {
                 SettingCategory(navController = navController)
             }
 
-
-
-
-
-
-
-            composable(route = Route.EDIT_EXPENDITURE.name) {
-                EditExpendItem(navController = navController)
-            }
-
+            // カテゴリー編集
             composable(
                 route = "${Route.EDIT_CATEGORY.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -80,10 +73,20 @@ fun Navigation() {
                     id = backStackEntry.arguments?.getInt("id")
                 )
             }
+
+            // カテゴリー登録
             composable(route = Route.EDIT_CATEGORY.name) {
                 EditCategory(navController = navController)
             }
 
+
+
+
+
+
+            composable(route = Route.EDIT_EXPENDITURE.name) {
+                EditExpenditureItem(navController = navController)
+            }
         }
     }
 }
