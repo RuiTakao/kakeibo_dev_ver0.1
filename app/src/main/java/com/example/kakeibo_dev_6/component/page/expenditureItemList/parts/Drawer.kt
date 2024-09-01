@@ -51,7 +51,13 @@ fun Drawer(
             NavigationDrawerItem(
                 label = { Text(text = "カテゴリ設定") },
                 selected = true,
-                onClick = { navController.navigate(Route.CATEGORY_SETTING.name) })
+                onClick = {
+                    scope.launch {
+                        drawerState.apply { close() }
+                    }
+                    navController.navigate(Route.CATEGORY_SETTING.name)
+                }
+            )
         }
     }
 }
