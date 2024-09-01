@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component.page.expenditureDetail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ fun ExpenditureDetail(
     navController: NavController,
     startDate: String? = null,
     lastDate: String? = null,
+    categoryId: String? = null,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val df = SimpleDateFormat("yyyy-MM-dd")
@@ -45,11 +47,19 @@ fun ExpenditureDetail(
         lastDate.toDate("yyyy-MM-dd")
     } ?: viewModel.lastDate
 
+    categoryId?.let { viewModel.selectCategory = categoryId.toInt() }
+    val categories by viewModel.category.collectAsState(initial = emptyList())
+    categories.forEach{
+       if (viewModel.selectCategory == it.id) {
+           viewModel.selectCategoryName = it.name
+       }
+    }
+
     val expList by viewModel.detailExpendItem(
         firstDay = df.format(viewModel.payDetailStartDate),
         lastDay = df.format(viewModel.payDetailLastDate),
         sort = viewModel.sort,
-        categoryId = viewModel.selectCategory
+        categoryId = categoryId?.let { viewModel.selectCategory } ?: viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 
     val isShowSearchDialog = remember { mutableStateOf(false) }

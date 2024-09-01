@@ -32,7 +32,7 @@ interface GroupCategoryDao {
 
     @RewriteQueriesToDropUnusedColumns
     @Query("" +
-            "SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate FROM GroupCategory " +
+            "SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate, category_id FROM GroupCategory " +
             "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
             "GROUP BY name" +
             "")

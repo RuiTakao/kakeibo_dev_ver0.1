@@ -24,14 +24,16 @@ fun Navigation() {
                 ExpenditureItemList(navController = navController)
             }
             composable(
-                route = "${Route.PAY_DETAIL.name}/{startDate}/{lastDate}",
+                route = "${Route.PAY_DETAIL.name}/{categoryId}/{startDate}/{lastDate}",
                 arguments = listOf(
+                    navArgument("categoryId") { type = NavType.StringType },
                     navArgument("startDate") { type = NavType.StringType },
                     navArgument("lastDate") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 ExpenditureDetail(
                     navController = navController,
+                    categoryId = backStackEntry.arguments?.getString("categoryId"),
                     startDate = backStackEntry.arguments?.getString("startDate"),
                     lastDate = backStackEntry.arguments?.getString("lastDate")
                 )

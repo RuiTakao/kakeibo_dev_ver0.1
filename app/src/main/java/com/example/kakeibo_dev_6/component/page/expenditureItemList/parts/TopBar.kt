@@ -3,6 +3,7 @@ package com.example.kakeibo_dev_6.component.page.expenditureItemList.parts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -57,9 +58,9 @@ fun TopBar(
                 val df = SimpleDateFormat("yyyy-MM-dd")
                 val startDate = df.format(viewModel.startDate)
                 val lastDate = df.format(viewModel.lastDate)
-                navController.navigate("${Route.PAY_DETAIL.name}/${startDate}/${lastDate}")
+                navController.navigate("${Route.PAY_DETAIL.name}/0/${startDate}/${lastDate}")
             }) {
-                Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "詳細")
+                Icon(imageVector = Icons.Default.ReceiptLong, contentDescription = "詳細")
             }
         }
     )

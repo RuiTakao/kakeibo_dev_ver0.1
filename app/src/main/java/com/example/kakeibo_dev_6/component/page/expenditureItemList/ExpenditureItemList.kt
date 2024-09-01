@@ -77,7 +77,7 @@ fun ExpenditureItemList(
                     .fillMaxSize(),
                 content = {
                     ControlContent(EditExpendList = EditExpendList, viewModel = viewModel)
-                    ListContent(EditExpendList = EditExpendList)
+                    ListContent(EditExpendList = EditExpendList, navController = navController,viewModel = viewModel)
                 }
             )
         }
