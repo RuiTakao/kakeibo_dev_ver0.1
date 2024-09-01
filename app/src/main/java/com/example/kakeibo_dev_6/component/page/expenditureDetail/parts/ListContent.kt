@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component.page.expenditureDetail.parts
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,26 +19,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.GroupCategory
+import com.example.kakeibo_dev_6.route.Route
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ListContent(expList: List<GroupCategory>) {
+fun ListContent(expList: List<GroupCategory>, navController: NavController) {
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
         items(expList) { expItem ->
             if (expList.indexOf(expItem) == 0) {
-                Item(expItem = expItem, titleFlag = true)
+                Item(expItem = expItem, navController = navController, titleFlag = true)
             } else {
                 if (
                     expList.get(expList.indexOf(expItem)).payDate !=
                     expList.get(expList.indexOf(expItem) - 1).payDate
                 ) {
-                    Item(expItem = expItem, titleFlag = true)
+                    Item(expItem = expItem, navController = navController, titleFlag = true)
                 } else {
-                    Item(expItem = expItem)
+                    Item(expItem = expItem, navController = navController)
                 }
             }
         }
@@ -45,7 +48,7 @@ fun ListContent(expList: List<GroupCategory>) {
 }
 
 @Composable
-private fun Item(expItem: GroupCategory, titleFlag: Boolean = false) {
+private fun Item(expItem: GroupCategory, navController: NavController, titleFlag: Boolean = false) {
     if (titleFlag) {
         val Md = SimpleDateFormat("M月d日")
         Text(
@@ -66,7 +69,12 @@ private fun Item(expItem: GroupCategory, titleFlag: Boolean = false) {
     }
     Column(
         modifier = Modifier
-            .clickable { }
+            .clickable {
+                Log.d("expItem.id", expItem.id.toString())
+//                navController.navigate(
+//                    route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
+//                )
+            }
             .background(Color.White)
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()

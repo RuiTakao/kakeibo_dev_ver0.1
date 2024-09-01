@@ -78,6 +78,12 @@ class MainViewModel @Inject constructor(
         return oneOfExpendItem
     }
 
+    fun OneOfGroupCategory(id: Int): Flow<GroupCategory> {
+        return groupCategoryDao.OneOfGroupCategory(id = id).distinctUntilChanged()
+    }
+
+    var setGroupCategory: GroupCategory? = null
+
     var editingCategory: Category? = null
 
     var editingExpendItem: ExpendItem? = null

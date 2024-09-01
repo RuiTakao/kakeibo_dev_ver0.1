@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDetail
+import com.example.kakeibo_dev_6.component.page.expenditureItemDetail.ExpenditureItemDetail
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
 import com.example.kakeibo_dev_6.route.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
@@ -20,9 +21,13 @@ fun Navigation() {
             navController = navController,
             startDestination = Route.EXPENDITURE_ITEM_LIST.name
         ) {
+
+            // 支出項目ページ
             composable(route = Route.EXPENDITURE_ITEM_LIST.name) {
                 ExpenditureItemList(navController = navController)
             }
+
+            // 支出項目　明細ページ
             composable(
                 route = "${Route.PAY_DETAIL.name}/{categoryId}/{startDate}/{lastDate}",
                 arguments = listOf(
@@ -36,6 +41,17 @@ fun Navigation() {
                     categoryId = backStackEntry.arguments?.getString("categoryId"),
                     startDate = backStackEntry.arguments?.getString("startDate"),
                     lastDate = backStackEntry.arguments?.getString("lastDate")
+                )
+            }
+
+            // 支出項目　詳細
+            composable(
+                route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {backStackEntry ->
+                ExpenditureItemDetail(
+                    navController = navController,
+                    id = backStackEntry.arguments?.getInt("id")
                 )
             }
 

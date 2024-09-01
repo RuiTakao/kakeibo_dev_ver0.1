@@ -83,7 +83,7 @@ fun ExpenditureDetail(
                 TotalTax(expList = expList)
                 SearchContext(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
             }
-            ListContent(expList = expList)
+            ListContent(expList = expList, navController = navController)
         }
         SearchDialog(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
     }

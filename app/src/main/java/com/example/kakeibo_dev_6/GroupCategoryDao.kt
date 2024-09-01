@@ -37,4 +37,8 @@ interface GroupCategoryDao {
             "GROUP BY name" +
             "")
     fun getAll(firstDay: String, lastDay: String): Flow<List<GroupCategory>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM GroupCategory WHERE id = :id")
+    fun OneOfGroupCategory(id: Int): Flow<GroupCategory>
 }
