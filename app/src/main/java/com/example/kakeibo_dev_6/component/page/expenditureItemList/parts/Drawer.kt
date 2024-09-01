@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

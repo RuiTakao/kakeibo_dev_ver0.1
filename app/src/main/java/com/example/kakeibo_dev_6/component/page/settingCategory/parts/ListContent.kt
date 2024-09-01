@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.MainViewModel
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import kotlinx.coroutines.launch
 
 @Composable

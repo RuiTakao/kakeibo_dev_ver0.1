@@ -1,7 +1,6 @@
 package com.example.kakeibo_dev_6.component.page.expenditureItemList.parts
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.DrawerState
@@ -16,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

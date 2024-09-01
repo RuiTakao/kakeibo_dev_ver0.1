@@ -25,7 +25,7 @@ import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.Contro
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.Drawer
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.TopBar
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import java.text.SimpleDateFormat
 
 @Composable

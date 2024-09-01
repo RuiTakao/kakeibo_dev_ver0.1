@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

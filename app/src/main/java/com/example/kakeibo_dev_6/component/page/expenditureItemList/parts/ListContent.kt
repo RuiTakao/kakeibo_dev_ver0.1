@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.entity.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import java.text.SimpleDateFormat
 
 @Composable

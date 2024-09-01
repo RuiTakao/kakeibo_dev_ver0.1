@@ -12,7 +12,7 @@ import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDet
 import com.example.kakeibo_dev_6.component.page.expenditureItemDetail.ExpenditureItemDetail
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
 import com.example.kakeibo_dev_6.component.page.settingCategory.SettingCategory
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
 
 @Composable
