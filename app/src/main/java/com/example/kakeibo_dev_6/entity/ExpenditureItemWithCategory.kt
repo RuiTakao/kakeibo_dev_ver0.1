@@ -1,16 +1,14 @@
 package com.example.kakeibo_dev_6.entity
 
 import androidx.room.DatabaseView
-import androidx.room.Embedded
-import androidx.room.Relation
 
 @DatabaseView(
-    viewName = "GroupCategory",
+    viewName = "ExpenditureItemWithCategory",
     value = """
         SELECT * From category INNER JOIN expenditureitem ON category.categoryId = expenditureitem.categoryId
     """
 )
-data class GroupCategory (
+data class ExpenditureItemWithCategory (
     val categoryName: String,
     val price: String,
     val content: String,

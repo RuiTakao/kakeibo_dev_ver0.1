@@ -3,10 +3,10 @@ package com.example.kakeibo_dev_6
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.kakeibo_dev_6.dao.CategoryDao
-import com.example.kakeibo_dev_6.dao.ExpendItemDao
-import com.example.kakeibo_dev_6.dao.GroupCategoryDao
+import com.example.kakeibo_dev_6.dao.ExpenditureItemDao
+import com.example.kakeibo_dev_6.dao.ExpenditureItemWithCategoryDao
 import com.example.kakeibo_dev_6.entity.ExpenditureItem
-import com.example.kakeibo_dev_6.entity.GroupCategory
+import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.entity.Category
 
 @Database(
@@ -14,12 +14,12 @@ import com.example.kakeibo_dev_6.entity.Category
         ExpenditureItem::class,
         Category::class
     ],
-    views = [GroupCategory::class],
+    views = [ExpenditureItemWithCategory::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDataBase: RoomDatabase() {
-    abstract fun expendItemDao(): ExpendItemDao
+    abstract fun expenditureItemDao(): ExpenditureItemDao
     abstract fun categoryDao(): CategoryDao
-    abstract fun groupCategoryDao(): GroupCategoryDao
+    abstract fun expenditureItemWithCategoryDao(): ExpenditureItemWithCategoryDao
 }

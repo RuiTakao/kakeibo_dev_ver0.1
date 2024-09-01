@@ -20,14 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.GroupCategory
+import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ListContent(expList: List<GroupCategory>, navController: NavController) {
+fun ListContent(expList: List<ExpenditureItemWithCategory>, navController: NavController) {
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
         items(expList) { expItem ->
             if (expList.indexOf(expItem) == 0) {
@@ -47,7 +47,7 @@ fun ListContent(expList: List<GroupCategory>, navController: NavController) {
 }
 
 @Composable
-private fun Item(expItem: GroupCategory, navController: NavController, titleFlag: Boolean = false) {
+private fun Item(expItem: ExpenditureItemWithCategory, navController: NavController, titleFlag: Boolean = false) {
     if (titleFlag) {
         val Md = SimpleDateFormat("M月d日")
         Text(

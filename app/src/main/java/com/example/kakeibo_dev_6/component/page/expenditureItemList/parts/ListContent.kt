@@ -17,13 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.GroupCategory
+import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.enum.Route
 import java.text.SimpleDateFormat
 
 @Composable
-fun ListContent(EditExpendList: List<GroupCategory>, navController: NavController, viewModel: MainViewModel) {
+fun ListContent(EditExpendList: List<ExpenditureItemWithCategory>, navController: NavController, viewModel: MainViewModel) {
     LazyColumn(
         modifier = Modifier.padding(top = 32.dp),
         content = {
@@ -35,7 +35,7 @@ fun ListContent(EditExpendList: List<GroupCategory>, navController: NavControlle
 }
 
 @Composable
-private fun Item(expendItem: GroupCategory, navController: NavController, viewModel: MainViewModel) {
+private fun Item(expendItem: ExpenditureItemWithCategory, navController: NavController, viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .padding(bottom = 16.dp)

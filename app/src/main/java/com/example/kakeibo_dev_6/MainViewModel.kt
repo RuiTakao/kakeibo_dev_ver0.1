@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kakeibo_dev_6.dao.CategoryDao
-import com.example.kakeibo_dev_6.dao.ExpendItemDao
-import com.example.kakeibo_dev_6.dao.GroupCategoryDao
-import com.example.kakeibo_dev_6.entity.GroupCategory
+import com.example.kakeibo_dev_6.dao.ExpenditureItemDao
+import com.example.kakeibo_dev_6.dao.ExpenditureItemWithCategoryDao
+import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,9 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val expendItemDao: ExpendItemDao,
+    private val expendItemDao: ExpenditureItemDao,
     private val categoryDao: CategoryDao,
-    private val groupCategoryDao: GroupCategoryDao
+    private val groupCategoryDao: ExpenditureItemWithCategoryDao
 ) : ViewModel() {
     var payDate by mutableStateOf("")
     var category_id by mutableStateOf("")
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
         lastDay: String,
         categoryId: Int,
         sort: Boolean
-    ): Flow<List<GroupCategory>> {
+    ): Flow<List<ExpenditureItemWithCategory>> {
         return if (sort) {
             groupCategoryDao.expAllAsc(firstDay = firstDay, lastDay = lastDay, category = categoryId)
                 .distinctUntilChanged()
@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<GroupCategory>> {
+    fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<ExpenditureItemWithCategory>> {
         val groupCategory =
             groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
         return groupCategory
@@ -84,11 +84,11 @@ class MainViewModel @Inject constructor(
         return oneOfExpendItem
     }
 
-    fun OneOfGroupCategory(id: Int): Flow<GroupCategory> {
+    fun OneOfGroupCategory(id: Int): Flow<ExpenditureItemWithCategory> {
         return groupCategoryDao.OneOfGroupCategory(id = id).distinctUntilChanged()
     }
 
-    var setGroupCategory: GroupCategory? = null
+    var setGroupCategory: ExpenditureItemWithCategory? = null
 
     var editingCategory: Category? = null
 

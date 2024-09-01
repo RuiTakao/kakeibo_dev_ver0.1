@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kakeibo_dev_6.entity.GroupCategory
+import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.weekLastDate
 import com.example.kakeibo_dev_6.weekStartDate
@@ -42,7 +42,7 @@ import java.util.Date
 
 @Composable
 fun ControlContent(
-    EditExpendList: List<GroupCategory>,
+    EditExpendList: List<ExpenditureItemWithCategory>,
     viewModel: MainViewModel
 ) {
     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
@@ -264,7 +264,7 @@ private fun NextButton(viewModel: MainViewModel) {
 
 // 支出合計
 @Composable
-private fun TotalTax(EditExpendList: List<GroupCategory>) {
+private fun TotalTax(EditExpendList: List<ExpenditureItemWithCategory>) {
     var totalTax by remember {
         mutableStateOf(0)
     }

@@ -9,7 +9,7 @@ import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ExpendItemDao {
+interface ExpenditureItemDao {
 
     @Insert
     suspend fun insertExpenditureItem(expenditureItem: ExpenditureItem)

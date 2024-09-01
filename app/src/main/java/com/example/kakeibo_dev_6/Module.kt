@@ -20,12 +20,12 @@ object Module {
 
     // 支出項目テーブル作成
     @Provides
-    fun provideDao(db: AppDataBase) = db.expendItemDao()
+    fun provideExpenditureItemDao(db: AppDataBase) = db.expenditureItemDao()
 
     // カテゴリテーブル作成
     @Provides
-    fun provideDaos(db: AppDataBase) = db.categoryDao()
+    fun provideCategoryDao(db: AppDataBase) = db.categoryDao()
 
     @Provides
-    fun provideDaoss(db: AppDataBase) = db.groupCategoryDao()
+    fun provideExpenditureItemWithCategoryDao(db: AppDataBase) = db.expenditureItemWithCategoryDao()
 }
