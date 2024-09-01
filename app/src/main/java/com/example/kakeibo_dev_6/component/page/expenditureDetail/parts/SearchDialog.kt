@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -34,9 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +67,7 @@ fun SearchDialog(isShowSearchDialog: MutableState<Boolean>, viewModel: MainViewM
                         viewModel = viewModel
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    SelectDateSortBox(value = sort, viewModel = viewModel)
+                    SelectDateSortBox(value = sort)
                 }
                 Row(
                     horizontalArrangement = Arrangement.End,
@@ -97,15 +99,27 @@ private fun DateDurationField() {
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(bottom = 4.dp)
     )
-    TextField(
-        value = value,
-        onValueChange = {
-            value = it
-        },
+    Box(
+        contentAlignment = Alignment.CenterStart,
         modifier = Modifier
-            .width(250.dp)
-            .background(Color.White)
-    )
+            .size(260.dp, 50.dp)
+            .drawBehind {
+                drawLine(
+                    color =  Color.Gray,
+                    start =  Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 2.dp.toPx()
+                )
+            }
+            .background(color = Color.LightGray)
+            .clickable { }
+    ) {
+        Text(
+            text = "2024年12月25日 ～ 2024年12月31日",
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
 }
 
 // カテゴリのセレクトボックス
@@ -125,8 +139,7 @@ private fun SelectCategoryBox(
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
-            .size(250.dp, 50.dp)
-            .height(50.dp)
+            .size(260.dp, 50.dp)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
@@ -146,15 +159,15 @@ private fun SelectCategoryBox(
             modifier = Modifier.width(250.dp)
         ) {
             DropdownMenuItem(text = { Text(text = "すべて") }, onClick = {
+                expanded.value = false
                 selectCategory.value = 0
                 selectCategoryName.value = "すべて"
-                expanded.value = false
             })
             categories.forEach { selectOption ->
                 DropdownMenuItem(text = { Text(text = selectOption.name) }, onClick = {
+                    expanded.value = false
                     selectCategory.value = selectOption.id
                     selectCategoryName.value = selectOption.name
-                    expanded.value = false
                 })
             }
         }
@@ -163,7 +176,7 @@ private fun SelectCategoryBox(
 
 // 表示順のセレクトボックス
 @Composable
-private fun SelectDateSortBox(value: MutableState<Boolean>, viewModel: MainViewModel) {
+private fun SelectDateSortBox(value: MutableState<Boolean>) {
     val expanded = remember { mutableStateOf(false) }
     Text(
         text = "表示順",
@@ -173,7 +186,7 @@ private fun SelectDateSortBox(value: MutableState<Boolean>, viewModel: MainViewM
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
-            .size(250.dp, 50.dp)
+            .size(260.dp, 50.dp)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
@@ -194,7 +207,7 @@ private fun SelectDateSortBox(value: MutableState<Boolean>, viewModel: MainViewM
         DropdownMenu(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false },
-            modifier = Modifier.width(250.dp)
+            modifier = Modifier.width(260.dp)
         ) {
             DropdownMenuItem(
                 text = { Text(text = "日付降順") },
