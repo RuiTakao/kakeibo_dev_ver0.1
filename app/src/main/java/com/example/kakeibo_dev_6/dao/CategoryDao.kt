@@ -17,7 +17,7 @@ interface CategoryDao {
     @Query("SELECT * FROM Category")
     fun loadAllCategories(): Flow<List<Category>>
 
-    @Query("SELECT * FROM Category WHERE id = :id")
+    @Query("SELECT * FROM Category WHERE categoryId = :id")
     fun getOneOfCategory(id: Int): Flow<Category>
 
     @Update
@@ -25,7 +25,4 @@ interface CategoryDao {
 
     @Delete
     suspend fun deleteCategory(category: Category)
-
-//    @Query("SELECT * FROM Category, ExpendItem")
-//    fun loadAllGroupeExpend(): Flow<List<GroupCategory>>
 }

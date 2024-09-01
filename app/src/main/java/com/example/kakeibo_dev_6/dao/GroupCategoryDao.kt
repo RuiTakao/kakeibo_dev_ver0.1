@@ -14,7 +14,7 @@ interface GroupCategoryDao {
             "SELECT * FROM GroupCategory WHERE CASE " +
             "WHEN :category = 0 " +
             "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
-            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND id = :category " +
+            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND categoryId = :category " +
             "END " +
             "ORDER BY payDate DESC " +
             "")
@@ -25,7 +25,7 @@ interface GroupCategoryDao {
             "SELECT * FROM GroupCategory WHERE CASE " +
             "WHEN :category = 0 " +
             "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
-            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND id = :category " +
+            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND categoryId = :category " +
             "END " +
             "ORDER BY payDate ASC " +
             "")
@@ -33,13 +33,13 @@ interface GroupCategoryDao {
 
     @RewriteQueriesToDropUnusedColumns
     @Query("" +
-            "SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate, category_id FROM GroupCategory " +
+            "SELECT categoryName, SUM(price) AS price, content, COUNT(categoryId) AS categoryId, payDate, expenditureId FROM GroupCategory " +
             "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
-            "GROUP BY name" +
+            "GROUP BY categoryName" +
             "")
     fun getAll(firstDay: String, lastDay: String): Flow<List<GroupCategory>>
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM GroupCategory WHERE id = :id")
+    @Query("SELECT * FROM GroupCategory WHERE expenditureId = :id")
     fun OneOfGroupCategory(id: Int): Flow<GroupCategory>
 }

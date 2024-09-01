@@ -43,7 +43,7 @@ private fun Item(expendItem: GroupCategory, navController: NavController, viewMo
                 val df = SimpleDateFormat("yyyy-MM-dd")
                 val startDate = df.format(viewModel.startDate)
                 val lastDate = df.format(viewModel.lastDate)
-                navController.navigate("${Route.PAY_DETAIL.name}/${expendItem.category_id}/${startDate}/${lastDate}")
+                navController.navigate("${Route.PAY_DETAIL.name}/${expendItem.categoryId}/${startDate}/${lastDate}")
             }
             .background(Color.White)
             .fillMaxWidth()
@@ -55,11 +55,11 @@ private fun Item(expendItem: GroupCategory, navController: NavController, viewMo
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = expendItem.name, fontSize = 20.sp)
+            Text(text = expendItem.categoryName, fontSize = 20.sp)
             Column(horizontalAlignment = Alignment.End) {
                 Text(text = "￥${expendItem.price}", fontSize = 20.sp)
                 Text(
-                    text = "支出回数：${expendItem.id}回",
+                    text = "支出回数：${expendItem.categoryId}回",
                     fontSize = 14.sp,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )

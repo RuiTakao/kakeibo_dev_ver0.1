@@ -164,10 +164,10 @@ private fun SelectCategoryBox(
                 selectCategoryName.value = "すべて"
             })
             categories.forEach { selectOption ->
-                DropdownMenuItem(text = { Text(text = selectOption.name) }, onClick = {
+                DropdownMenuItem(text = { Text(text = selectOption.categoryName) }, onClick = {
                     expanded.value = false
-                    selectCategory.value = selectOption.id
-                    selectCategoryName.value = selectOption.name
+                    selectCategory.value = selectOption.categoryId
+                    selectCategoryName.value = selectOption.categoryName
                 })
             }
         }

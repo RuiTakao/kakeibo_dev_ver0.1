@@ -58,10 +58,10 @@ fun ExpenditureItemDetail(
 
                 Log.d("expenditureItem", expenditureItem.toString())
 
-                id.value = expenditureItem!!.id
+                id.value = expenditureItem!!.expenditureId
                 payDate.value = yMd.format(expenditureItem!!.payDate.toDate("yyyy-MM-dd"))
                 price.value = expenditureItem!!.price
-                category_id.value = expenditureItem!!.category_id
+                category_id.value = expenditureItem!!.categoryId
                 content.value = expenditureItem!!.content
                 viewModel.editingExpendItem = expenditureItem
             }
@@ -103,8 +103,8 @@ fun ExpenditureItemDetail(
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     categories.forEach{
-                        if (it.id.toString() == category_id.value) {
-                            Text(text = it.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        if (it.categoryId.toString() == category_id.value) {
+                            Text(text = it.categoryName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))

@@ -82,7 +82,7 @@ fun EditExpenditureItem(
             val isExpendItem = editExpendItem != null
             payDate = if (isExpendItem) editExpendItem!!.payDate else ""
             price = if (isExpendItem) editExpendItem!!.price else ""
-            category_id = if (isExpendItem) editExpendItem!!.category_id else ""
+            category_id = if (isExpendItem) editExpendItem!!.categoryId else ""
             content = if (isExpendItem) editExpendItem!!.content else ""
 
             viewModel.editingExpendItem = editExpendItem
@@ -220,9 +220,9 @@ fun EditExpenditureItem(
                         onDismissRequest = { expanded.value = false }
                     ) {
                         options.forEach { selectOption ->
-                            DropdownMenuItem(text = { Text(text = selectOption.name) }, onClick = {
-                                selectOptionText.value = selectOption.name
-                                category_id = selectOption.id.toString()
+                            DropdownMenuItem(text = { Text(text = selectOption.categoryName) }, onClick = {
+                                selectOptionText.value = selectOption.categoryName
+                                category_id = selectOption.categoryId.toString()
                                 expanded.value = false
                             })
                         }

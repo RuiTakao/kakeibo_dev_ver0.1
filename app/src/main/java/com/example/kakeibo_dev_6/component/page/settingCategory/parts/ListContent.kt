@@ -47,11 +47,11 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = it.name)
+                Text(text = it.categoryName)
                 SettingDropDownMenu(
                     category = it,
                     onClickEdit = {
-                        navController.navigate("${Route.EDIT_CATEGORY.name}/${it.id}")
+                        navController.navigate("${Route.EDIT_CATEGORY.name}/${it.categoryId}")
                     },
                     onClickDelete = {
                         viewModel.deleteCategory(it)

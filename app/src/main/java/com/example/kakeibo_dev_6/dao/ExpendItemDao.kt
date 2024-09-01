@@ -5,24 +5,24 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.kakeibo_dev_6.entity.ExpendItem
+import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExpendItemDao {
 
     @Insert
-    suspend fun insertExpendItem(expendItem: ExpendItem)
+    suspend fun insertExpenditureItem(expenditureItem: ExpenditureItem)
 
-    @Query("SELECT * FROM ExpendItem")
-    fun loadAllExpendItems(): Flow<List<ExpendItem>>
+    @Query("SELECT * FROM ExpenditureItem")
+    fun loadAllExpenditureItems(): Flow<List<ExpenditureItem>>
 
-    @Query("SELECT * FROM ExpendItem WHERE id = :id")
-    fun getOneOfExpendItem(id: Int): Flow<ExpendItem>
+    @Query("SELECT * FROM ExpenditureItem WHERE expenditureId = :id")
+    fun loadExpenditureItem(id: Int): Flow<ExpenditureItem>
 
     @Update
-    suspend fun updateExpendItem(expendItem: ExpendItem)
+    suspend fun updateExpenditureItem(expenditureItem: ExpenditureItem)
 
     @Delete
-    suspend fun deleteExpendItem(expendItem: ExpendItem)
+    suspend fun deleteExpenditureItem(expenditureItem: ExpenditureItem)
 }

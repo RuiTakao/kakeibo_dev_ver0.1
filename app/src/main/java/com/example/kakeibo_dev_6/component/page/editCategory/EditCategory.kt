@@ -43,7 +43,7 @@ fun EditCategory(
     } else {
         val category by viewModel.setEditingCategory(id = id).collectAsState(initial = null)
         LaunchedEffect(category) {
-            value = if (category != null) category!!.name else ""
+            value = if (category != null) category!!.categoryName else ""
             viewModel.editingCategory = category
         }
     }

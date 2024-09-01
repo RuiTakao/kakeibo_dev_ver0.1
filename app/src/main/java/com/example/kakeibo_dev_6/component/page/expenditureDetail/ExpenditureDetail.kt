@@ -49,8 +49,8 @@ fun ExpenditureDetail(
     categoryId?.let { viewModel.selectCategory = categoryId.toInt() }
     val categories by viewModel.category.collectAsState(initial = emptyList())
     categories.forEach{
-       if (viewModel.selectCategory == it.id) {
-           viewModel.selectCategoryName = it.name
+       if (viewModel.selectCategory == it.categoryId) {
+           viewModel.selectCategoryName = it.categoryName
        }
     }
 

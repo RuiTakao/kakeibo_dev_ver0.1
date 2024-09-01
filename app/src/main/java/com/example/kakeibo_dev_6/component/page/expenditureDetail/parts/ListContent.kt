@@ -69,7 +69,7 @@ private fun Item(expItem: GroupCategory, navController: NavController, titleFlag
     Column(
         modifier = Modifier
             .clickable {
-                Log.d("expItem.id", expItem.id.toString())
+//                Log.d("expItem.id", expItem.id.toString())
 //                navController.navigate(
 //                    route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
 //                )
@@ -88,7 +88,7 @@ private fun Item(expItem: GroupCategory, navController: NavController, titleFlag
             Column {
                 Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
                 Text(
-                    text = expItem.name,
+                    text = expItem.categoryName,
                     modifier = Modifier.padding(vertical = 4.dp),
                     fontSize = 14.sp,
                     lineHeight = 0.sp

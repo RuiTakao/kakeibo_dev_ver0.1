@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.kakeibo_dev_6.dao.CategoryDao
 import com.example.kakeibo_dev_6.dao.ExpendItemDao
 import com.example.kakeibo_dev_6.dao.GroupCategoryDao
-import com.example.kakeibo_dev_6.entity.ExpendItem
 import com.example.kakeibo_dev_6.entity.GroupCategory
 import com.example.kakeibo_dev_6.entity.Category
+import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
     var name by mutableStateOf("")
     var order by mutableStateOf(0)
 
-    val expendItem = expendItemDao.loadAllExpendItems().distinctUntilChanged()
+    val expendItem = expendItemDao.loadAllExpenditureItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 
     fun detailExpendItem(
@@ -57,19 +57,19 @@ class MainViewModel @Inject constructor(
 
     fun createExpendItem() {
         viewModelScope.launch {
-            val newExpendItem = ExpendItem(
+            val newExpendItem = ExpenditureItem(
                 payDate = payDate,
-                category_id = category_id,
+                categoryId = category_id,
                 content = content,
                 price = price
             )
-            expendItemDao.insertExpendItem(newExpendItem)
+            expendItemDao.insertExpenditureItem(newExpendItem)
         }
     }
 
     fun createCategory() {
         viewModelScope.launch {
-            val newCategory = Category(name = name, order = order)
+            val newCategory = Category(categoryName = name, categoryOrder = order)
             categoryDao.insertCategory(newCategory)
         }
     }
@@ -79,8 +79,8 @@ class MainViewModel @Inject constructor(
         return oneOfCategory
     }
 
-    fun setEditingExpendItem(id: Int): Flow<ExpendItem> {
-        val oneOfExpendItem = expendItemDao.getOneOfExpendItem(id = id).distinctUntilChanged()
+    fun setEditingExpendItem(id: Int): Flow<ExpenditureItem> {
+        val oneOfExpendItem = expendItemDao.loadExpenditureItem(id = id).distinctUntilChanged()
         return oneOfExpendItem
     }
 
@@ -92,12 +92,12 @@ class MainViewModel @Inject constructor(
 
     var editingCategory: Category? = null
 
-    var editingExpendItem: ExpendItem? = null
+    var editingExpendItem: ExpenditureItem? = null
 
     fun updateCategory() {
         editingCategory?.let { category ->
             viewModelScope.launch {
-                category.name = name
+                category.categoryName = name
                 categoryDao.updateCategory(category)
             }
         }
@@ -107,7 +107,7 @@ class MainViewModel @Inject constructor(
         editingExpendItem?.let { expendItem ->
             viewModelScope.launch {
                 expendItem.content = content
-                expendItemDao.updateExpendItem(expendItem)
+                expendItemDao.updateExpenditureItem(expendItem)
             }
         }
     }
@@ -118,9 +118,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteExpendItem(expendItem: ExpendItem) {
+    fun deleteExpendItem(expendItem: ExpenditureItem) {
         viewModelScope.launch {
-            expendItemDao.deleteExpendItem(expendItem)
+            expendItemDao.deleteExpenditureItem(expendItem)
         }
     }
 

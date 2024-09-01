@@ -32,17 +32,3 @@ fun setUp(viewModel: MainViewModel = hiltViewModel()) {
     viewModel.order = 1
     viewModel.createCategory()
 }
-
-@Composable
-fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
-    val expendItems by viewModel.expendItem.collectAsState(initial = emptyList())
-    val categories by viewModel.category.collectAsState(initial = emptyList())
-    LazyColumn() {
-        items(expendItems) { expendItem ->
-            Text(text = "支出: ${expendItem.content}")
-        }
-        items(categories) { category ->
-            Text(text = "カテゴリー: ${category.name}")
-        }
-    }
-}
