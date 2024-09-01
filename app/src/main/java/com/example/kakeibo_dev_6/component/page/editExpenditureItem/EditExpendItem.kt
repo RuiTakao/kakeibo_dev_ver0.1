@@ -81,9 +81,7 @@ fun EditExpenditureItem(
 
     val categories by viewModel.category.collectAsState(initial = emptyList())
     val options = categories
-    val expanded = remember {
-        mutableStateOf(false)
-    }
+    val expanded = remember { mutableStateOf(false) }
     val selectOptionText = remember {
         mutableStateOf("カテゴリを選択してください")
     }
@@ -99,7 +97,6 @@ fun EditExpenditureItem(
             }
         }, actions = {
             IconButton(onClick = {
-//                            viewModel.name = value
                 if (id == null) {
                     viewModel.payDate = payDate
                     viewModel.price = price
@@ -126,17 +123,6 @@ fun EditExpenditureItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "日付", modifier = Modifier.width(80.dp))
-//                TextField(
-//                    value = payDate,
-//                    onValueChange = {
-//                        payDate = it
-//                    },
-//                    modifier = Modifier
-//                        .background(Color.White)
-//                        .padding(start = 16.dp)
-//                        .fillMaxWidth()
-//                        .height(48.dp)
-//                )
 
                 // DatePicker Start
                 Box(
@@ -162,13 +148,14 @@ fun EditExpenditureItem(
                     }
                 }
 
-                var getDate = state.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate() }
+                var getDate = state.selectedDateMillis?.let {
+                    Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+                }
                 if (getDate == null) {
                     payDate = ""
                 } else {
                     payDate = getDate.toString()
                 }
-//                Log.d("Date PiCker", getDate.toString())
                 // DatePicker End
 
             }
@@ -230,9 +217,7 @@ fun EditExpenditureItem(
                     },
                     modifier = Modifier
                         .background(Color.White)
-                        .padding(start = 16.dp)
                         .fillMaxWidth()
-                        .height(48.dp)
                 )
             }
         }

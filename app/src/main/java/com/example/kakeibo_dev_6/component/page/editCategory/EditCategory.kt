@@ -52,36 +52,7 @@ fun EditCategory(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "カテゴリ編集",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.name = value
-                            if (id == null) {
-                                viewModel.order = 1
-                                viewModel.createCategory()
-                            } else {
-                                viewModel.updateCategory()
-                            }
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
-                    }
-                }
-            )
+            TopBar(value = value, id = id, navController = navController, viewModel = viewModel)
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
@@ -98,4 +69,39 @@ fun EditCategory(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(value: String, id: Int?, navController: NavController, viewModel: MainViewModel) {
+    TopAppBar(
+        title = {
+            Text(
+                text = "カテゴリ編集",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {
+                    viewModel.name = value
+                    if (id == null) {
+                        viewModel.order = 1
+                        viewModel.createCategory()
+                    } else {
+                        viewModel.updateCategory()
+                    }
+                    navController.popBackStack()
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+            }
+        }
+    )
 }
