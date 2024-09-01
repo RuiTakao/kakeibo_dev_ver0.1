@@ -9,14 +9,32 @@ import kotlinx.coroutines.flow.Flow
 interface GroupCategoryDao {
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM GroupCategory WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay ORDER BY payDate DESC")
-    fun expAll(firstDay: String, lastDay: String): Flow<List<GroupCategory>>
+    @Query("" +
+            "SELECT * FROM GroupCategory WHERE CASE " +
+            "WHEN :category = 0 " +
+            "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND id = :category " +
+            "END " +
+            "ORDER BY payDate DESC " +
+            "")
+    fun expAll(firstDay: String, lastDay: String, category: Int): Flow<List<GroupCategory>>
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * FROM GroupCategory WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay ORDER BY payDate ASC")
-    fun expAllAsc(firstDay: String, lastDay: String): Flow<List<GroupCategory>>
+    @Query("" +
+            "SELECT * FROM GroupCategory WHERE CASE " +
+            "WHEN :category = 0 " +
+            "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+            "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND id = :category " +
+            "END " +
+            "ORDER BY payDate ASC " +
+            "")
+    fun expAllAsc(firstDay: String, lastDay: String, category: Int): Flow<List<GroupCategory>>
 
     @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate FROM GroupCategory WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay GROUP BY name")
+    @Query("" +
+            "SELECT name, SUM(price) AS price, content, COUNT(id) AS id, payDate FROM GroupCategory " +
+            "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+            "GROUP BY name" +
+            "")
     fun getAll(firstDay: String, lastDay: String): Flow<List<GroupCategory>>
 }

@@ -1,9 +1,7 @@
 package com.example.kakeibo_dev_6
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,13 +32,14 @@ class MainViewModel @Inject constructor(
     fun detailExpendItem(
         firstDay: String,
         lastDay: String,
+        categoryId: Int,
         sort: Boolean
     ): Flow<List<GroupCategory>> {
         return if (sort) {
-            groupCategoryDao.expAllAsc(firstDay = firstDay, lastDay = lastDay)
+            groupCategoryDao.expAllAsc(firstDay = firstDay, lastDay = lastDay, category = categoryId)
                 .distinctUntilChanged()
         } else {
-            groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+            groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay, category = categoryId).distinctUntilChanged()
         }
     }
 
@@ -123,6 +122,8 @@ class MainViewModel @Inject constructor(
     var payDetailLastDate by mutableStateOf(weekLastDate())
     var payDetailDateProperty by mutableStateOf("week")
     var sort by mutableStateOf(false)
+    var selectCategory by mutableStateOf(0)
+    var selectCategoryName by mutableStateOf("すべて")
 }
 
 fun weekStartDate(): Date {

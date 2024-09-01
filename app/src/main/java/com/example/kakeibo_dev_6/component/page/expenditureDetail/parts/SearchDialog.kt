@@ -27,6 +27,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,6 +44,8 @@ import com.example.kakeibo_dev_6.MainViewModel
 fun SearchDialog(isShowSearchDialog: MutableState<Boolean>, viewModel: MainViewModel) {
     if (isShowSearchDialog.value) {
         val sort = remember { mutableStateOf(viewModel.sort) }
+        val selectCategory = remember { mutableStateOf(viewModel.selectCategory) }
+        val selectCategoryName = remember { mutableStateOf(viewModel.selectCategoryName) }
 
         AlertDialog(
             onDismissRequest = { isShowSearchDialog.value = false },
@@ -55,7 +59,11 @@ fun SearchDialog(isShowSearchDialog: MutableState<Boolean>, viewModel: MainViewM
                 ) {
                     DateDurationField()
                     Spacer(modifier = Modifier.height(16.dp))
-                    SelectCategoryBox()
+                    SelectCategoryBox(
+                        selectCategory = selectCategory,
+                        selectCategoryName = selectCategoryName,
+                        viewModel = viewModel
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     SelectDateSortBox(value = sort, viewModel = viewModel)
                 }
@@ -69,6 +77,8 @@ fun SearchDialog(isShowSearchDialog: MutableState<Boolean>, viewModel: MainViewM
                     TextButton(onClick = {
                         isShowSearchDialog.value = false
                         viewModel.sort = sort.value
+                        viewModel.selectCategory = selectCategory.value
+                        viewModel.selectCategoryName = selectCategoryName.value
                     }) {
                         Text(text = "OK")
                     }
@@ -100,8 +110,13 @@ private fun DateDurationField() {
 
 // カテゴリのセレクトボックス
 @Composable
-private fun SelectCategoryBox() {
+private fun SelectCategoryBox(
+    selectCategory: MutableState<Int>,
+    selectCategoryName: MutableState<String>,
+    viewModel: MainViewModel
+) {
     val expanded = remember { mutableStateOf(false) }
+    val categories by viewModel.category.collectAsState(initial = emptyList())
     Text(
         text = "カテゴリ",
         fontWeight = FontWeight.Bold,
@@ -119,7 +134,7 @@ private fun SelectCategoryBox() {
             )
             .clickable { expanded.value = !expanded.value }
     ) {
-        Text(text = "すべて", modifier = Modifier.padding(start = 10.dp))
+        Text(text = selectCategoryName.value, modifier = Modifier.padding(start = 10.dp))
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "選択アイコン",
@@ -130,20 +145,18 @@ private fun SelectCategoryBox() {
             onDismissRequest = { expanded.value = false },
             modifier = Modifier.width(250.dp)
         ) {
-            DropdownMenuItem(
-                text = { Text(text = "日付降順") },
-                onClick = {
+            DropdownMenuItem(text = { Text(text = "すべて") }, onClick = {
+                selectCategory.value = 0
+                selectCategoryName.value = "すべて"
+                expanded.value = false
+            })
+            categories.forEach { selectOption ->
+                DropdownMenuItem(text = { Text(text = selectOption.name) }, onClick = {
+                    selectCategory.value = selectOption.id
+                    selectCategoryName.value = selectOption.name
                     expanded.value = false
-//                    value.value = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(text = "日付昇順") },
-                onClick = {
-                    expanded.value = false
-//                    value.value = true
-                }
-            )
+                })
+            }
         }
     }
 }

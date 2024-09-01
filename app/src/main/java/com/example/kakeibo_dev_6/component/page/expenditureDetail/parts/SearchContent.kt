@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat
 
 @Composable
 fun SearchContext(isShowSearchDialog: MutableState<Boolean>, viewModel: MainViewModel) {
+
     Box(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -40,7 +41,7 @@ fun SearchContext(isShowSearchDialog: MutableState<Boolean>, viewModel: MainView
                     )
                 }", fontSize = 14.sp
             )
-            Text(text = "カテゴリー： すべて", fontSize = 14.sp, modifier = Modifier.padding(top = 2.dp))
+            Text(text = "カテゴリー： ${viewModel.selectCategoryName}", fontSize = 14.sp, modifier = Modifier.padding(top = 2.dp))
             Text(
                 text = "表示順： 日付${if (viewModel.sort) "昇順" else "降順"}",
                 fontSize = 14.sp,
