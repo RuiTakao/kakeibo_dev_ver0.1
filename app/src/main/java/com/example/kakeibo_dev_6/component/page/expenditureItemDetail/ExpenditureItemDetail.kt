@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import java.lang.IllegalArgumentException
 import java.text.ParseException

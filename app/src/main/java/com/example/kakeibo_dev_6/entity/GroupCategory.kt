@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6
+package com.example.kakeibo_dev_6.entity
 
 import androidx.room.DatabaseView
 import androidx.room.Embedded

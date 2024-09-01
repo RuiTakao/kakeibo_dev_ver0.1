@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6
+package com.example.kakeibo_dev_6.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

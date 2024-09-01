@@ -20,8 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.GroupCategory
-import com.example.kakeibo_dev_6.route.Route
+import com.example.kakeibo_dev_6.entity.GroupCategory
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat

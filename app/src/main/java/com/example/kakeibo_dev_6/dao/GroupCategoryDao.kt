@@ -1,8 +1,9 @@
-package com.example.kakeibo_dev_6
+package com.example.kakeibo_dev_6.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import com.example.kakeibo_dev_6.entity.GroupCategory
 import kotlinx.coroutines.flow.Flow
 
 @Dao

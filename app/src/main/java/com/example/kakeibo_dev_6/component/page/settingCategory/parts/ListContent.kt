@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.Category
+import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.route.Route
 import kotlinx.coroutines.launch

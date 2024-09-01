@@ -27,9 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.Category
 import com.example.kakeibo_dev_6.MainViewModel
-import com.example.kakeibo_dev_6.route.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

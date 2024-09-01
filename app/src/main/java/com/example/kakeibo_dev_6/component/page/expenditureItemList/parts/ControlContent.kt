@@ -1,8 +1,6 @@
 package com.example.kakeibo_dev_6.component.page.expenditureItemList.parts
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kakeibo_dev_6.GroupCategory
+import com.example.kakeibo_dev_6.entity.GroupCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.weekLastDate
 import com.example.kakeibo_dev_6.weekStartDate
