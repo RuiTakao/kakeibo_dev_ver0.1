@@ -19,7 +19,7 @@ interface ExpenditureItemJoinCategoryDao {
                 "ORDER BY payDate DESC " +
                 ""
     )
-    fun expAll(
+    fun loadAllExpenditureItemOrderDesc(
         firstDay: String,
         lastDay: String,
         category: Int
@@ -36,7 +36,7 @@ interface ExpenditureItemJoinCategoryDao {
                 "ORDER BY payDate ASC " +
                 ""
     )
-    fun expAllAsc(
+    fun loadAllExpenditureItemOrderAsc(
         firstDay: String,
         lastDay: String,
         category: Int

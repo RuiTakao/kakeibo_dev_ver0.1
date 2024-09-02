@@ -38,21 +38,21 @@ class MainViewModel @Inject constructor(
     val expendItem = expendItemDao.loadAllExpenditureItems().distinctUntilChanged()
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 
-    fun detailExpendItem(
+    fun expenditureItemList(
         firstDay: String,
         lastDay: String,
         categoryId: Int,
         sort: Boolean
     ): Flow<List<ExpenditureItemJoinCategory>> {
         return if (sort) {
-            expenditureItemJoinCategoryDao.expAllAsc(
+            expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderAsc(
                 firstDay = firstDay,
                 lastDay = lastDay,
                 category = categoryId
             )
                 .distinctUntilChanged()
         } else {
-            expenditureItemJoinCategoryDao.expAll(
+            expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderDesc(
                 firstDay = firstDay,
                 lastDay = lastDay,
                 category = categoryId

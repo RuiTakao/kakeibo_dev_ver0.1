@@ -28,15 +28,15 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ListContent(expList: List<ExpenditureItemJoinCategory>, navController: NavController) {
+fun ListContent(expenditureItemList: List<ExpenditureItemJoinCategory>, navController: NavController) {
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-        items(expList) { expItem ->
-            if (expList.indexOf(expItem) == 0) {
+        items(expenditureItemList) { expItem ->
+            if (expenditureItemList.indexOf(expItem) == 0) {
                 Item(expItem = expItem, navController = navController, titleFlag = true)
             } else {
                 if (
-                    expList.get(expList.indexOf(expItem)).payDate !=
-                    expList.get(expList.indexOf(expItem) - 1).payDate
+                    expenditureItemList.get(expenditureItemList.indexOf(expItem)).payDate !=
+                    expenditureItemList.get(expenditureItemList.indexOf(expItem) - 1).payDate
                 ) {
                     Item(expItem = expItem, navController = navController, titleFlag = true)
                 } else {

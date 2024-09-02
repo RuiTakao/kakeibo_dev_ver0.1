@@ -54,7 +54,7 @@ fun ExpenditureDetail(
        }
     }
 
-    val expList by viewModel.detailExpendItem(
+    val expenditureItemList by viewModel.expenditureItemList(
         firstDay = df.format(viewModel.payDetailStartDate),
         lastDay = df.format(viewModel.payDetailLastDate),
         sort = viewModel.sort,
@@ -79,21 +79,21 @@ fun ExpenditureDetail(
                     .padding(horizontal = 16.dp)
                     .padding(top = 32.dp)
             ) {
-                TotalTax(expList = expList)
+                TotalTax(expenditureItemList = expenditureItemList)
                 SearchContext(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
             }
-            ListContent(expList = expList, navController = navController)
+            ListContent(expenditureItemList = expenditureItemList, navController = navController)
         }
         SearchDialog(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
     }
 }
 
 @Composable
-private fun TotalTax(expList: List<ExpenditureItemJoinCategory>) {
+private fun TotalTax(expenditureItemList: List<ExpenditureItemJoinCategory>) {
     var totalTax by remember { mutableStateOf(0) }
-    LaunchedEffect(expList) {
+    LaunchedEffect(expenditureItemList) {
         var i = 0
-        expList.forEach {
+        expenditureItemList.forEach {
             i += it.price.toInt()
         }
         totalTax = i
