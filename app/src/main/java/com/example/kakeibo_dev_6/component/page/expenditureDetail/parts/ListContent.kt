@@ -70,7 +70,6 @@ private fun Item(expItem: ExpenditureItemJoinCategory, navController: NavControl
     Column(
         modifier = Modifier
             .clickable {
-//                Log.d("expItem.id", expItem.id.toString())
                 navController.navigate(
                     route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
                 )

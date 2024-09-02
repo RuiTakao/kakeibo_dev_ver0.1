@@ -42,7 +42,7 @@ import java.util.Date
 
 @Composable
 fun ControlContent(
-    EditExpendList: List<CategorizeExpenditureItem>,
+    categorizeExpenditureItem: List<CategorizeExpenditureItem>,
     viewModel: MainViewModel
 ) {
     Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
@@ -56,7 +56,7 @@ fun ControlContent(
             PrevButton(viewModel = viewModel)
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ShowDurationDate(viewModel = viewModel)
-                TotalTax(EditExpendList = EditExpendList)
+                TotalTax(categorizeExpenditureItem = categorizeExpenditureItem)
             }
             NextButton(viewModel = viewModel)
         }
@@ -264,13 +264,13 @@ private fun NextButton(viewModel: MainViewModel) {
 
 // 支出合計
 @Composable
-private fun TotalTax(EditExpendList: List<CategorizeExpenditureItem>) {
+private fun TotalTax(categorizeExpenditureItem: List<CategorizeExpenditureItem>) {
     var totalTax by remember {
         mutableStateOf(0)
     }
-    LaunchedEffect(EditExpendList) {
+    LaunchedEffect(categorizeExpenditureItem) {
         var i = 0
-        EditExpendList.forEach {
+        categorizeExpenditureItem.forEach {
             i += it.price.toInt()
         }
         totalTax = i

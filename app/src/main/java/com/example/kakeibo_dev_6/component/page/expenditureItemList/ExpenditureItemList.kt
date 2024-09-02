@@ -36,7 +36,7 @@ fun ExpenditureItemList(
 
     // 支出項目取得
     val df = SimpleDateFormat("yyyy-MM-dd")
-    val EditExpendList by viewModel.groupeExpendItem(
+    val categorizeExpenditureItem by viewModel.categorizeExpenditureItem(
         firstDay = df.format(viewModel.startDate),
         lastDay = df.format(viewModel.lastDate)
     ).collectAsState(initial = emptyList())
@@ -76,8 +76,15 @@ fun ExpenditureItemList(
                     .background(color = Color(0xFFF7F7F7))
                     .fillMaxSize(),
                 content = {
-                    ControlContent(EditExpendList = EditExpendList, viewModel = viewModel)
-                    ListContent(EditExpendList = EditExpendList, navController = navController,viewModel = viewModel)
+                    ControlContent(
+                        categorizeExpenditureItem = categorizeExpenditureItem,
+                        viewModel = viewModel
+                    )
+                    ListContent(
+                        categorizeExpenditureItem = categorizeExpenditureItem,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
                 }
             )
         }

@@ -23,19 +23,31 @@ import com.example.kakeibo_dev_6.enum.Route
 import java.text.SimpleDateFormat
 
 @Composable
-fun ListContent(EditExpendList: List<CategorizeExpenditureItem>, navController: NavController, viewModel: MainViewModel) {
+fun ListContent(
+    categorizeExpenditureItem: List<CategorizeExpenditureItem>,
+    navController: NavController,
+    viewModel: MainViewModel
+) {
     LazyColumn(
         modifier = Modifier.padding(top = 32.dp),
         content = {
-            items(EditExpendList) { expendItem ->
-                Item(expendItem = expendItem, navController = navController,viewModel = viewModel)
+            items(categorizeExpenditureItem) {
+                Item(
+                    categorizeExpenditureItem = it,
+                    navController = navController,
+                    viewModel = viewModel
+                )
             }
         }
     )
 }
 
 @Composable
-private fun Item(expendItem: CategorizeExpenditureItem, navController: NavController, viewModel: MainViewModel) {
+private fun Item(
+    categorizeExpenditureItem: CategorizeExpenditureItem,
+    navController: NavController,
+    viewModel: MainViewModel
+) {
     Column(
         modifier = Modifier
             .padding(bottom = 16.dp)
@@ -43,7 +55,9 @@ private fun Item(expendItem: CategorizeExpenditureItem, navController: NavContro
                 val df = SimpleDateFormat("yyyy-MM-dd")
                 val startDate = df.format(viewModel.startDate)
                 val lastDate = df.format(viewModel.lastDate)
-                navController.navigate("${Route.PAY_DETAIL.name}/${expendItem.id}/${startDate}/${lastDate}")
+                navController.navigate(
+                    "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${startDate}/${lastDate}"
+                )
             }
             .background(Color.White)
             .fillMaxWidth()
@@ -55,11 +69,11 @@ private fun Item(expendItem: CategorizeExpenditureItem, navController: NavContro
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = expendItem.categoryName, fontSize = 20.sp)
+            Text(text = categorizeExpenditureItem.categoryName, fontSize = 20.sp)
             Column(horizontalAlignment = Alignment.End) {
-                Text(text = "￥${expendItem.price}", fontSize = 20.sp)
+                Text(text = "￥${categorizeExpenditureItem.price}", fontSize = 20.sp)
                 Text(
-                    text = "支出回数：${expendItem.categoryId}回",
+                    text = "支出回数：${categorizeExpenditureItem.categoryId}回",
                     fontSize = 14.sp,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )

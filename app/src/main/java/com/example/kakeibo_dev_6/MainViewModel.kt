@@ -52,18 +52,23 @@ class MainViewModel @Inject constructor(
             )
                 .distinctUntilChanged()
         } else {
-            expenditureItemJoinCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay, category = categoryId)
+            expenditureItemJoinCategoryDao.expAll(
+                firstDay = firstDay,
+                lastDay = lastDay,
+                category = categoryId
+            )
                 .distinctUntilChanged()
         }
     }
 
-    fun groupeExpendItem(
+    fun categorizeExpenditureItem(
         firstDay: String,
         lastDay: String
     ): Flow<List<CategorizeExpenditureItem>> {
-        val groupCategory =
-            categorizeExpenditureItemDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
-        return groupCategory
+        return categorizeExpenditureItemDao.categorizeExpenditureItem(
+            firstDay = firstDay,
+            lastDay = lastDay
+        ).distinctUntilChanged()
     }
 
     fun createExpendItem() {
