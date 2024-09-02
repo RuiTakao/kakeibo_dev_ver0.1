@@ -1,11 +1,16 @@
 package com.example.kakeibo_dev_6.component.page.expenditureItemList.parts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -13,9 +18,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.enum.Route
 import kotlinx.coroutines.CoroutineScope
@@ -27,11 +37,13 @@ fun Drawer(
     drawerState: DrawerState,
     scope: CoroutineScope
 ) {
-    ModalDrawerSheet(modifier = Modifier.width(256.dp)) {
+    ModalDrawerSheet(modifier = Modifier.width(256.dp), drawerShape = MaterialTheme.shapes.extraSmall) {
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.primary)
                 .fillMaxWidth()
+                .height(64.dp),
+            verticalArrangement = Arrangement.Center
         ) {
             IconButton(onClick = {
                 scope.launch {
@@ -40,24 +52,22 @@ fun Drawer(
                     }
                 }
             }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "閉じる")
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "閉じる",
+                    tint = Color.White
+                )
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.primary)
-        ) {
-            NavigationDrawerItem(
-                label = { Text(text = "カテゴリ設定") },
-                selected = true,
-                onClick = {
-                    scope.launch {
-                        drawerState.apply { close() }
-                    }
-                    navController.navigate(Route.CATEGORY_SETTING.name)
+        TextButton(
+            onClick = {
+                scope.launch {
+                    drawerState.apply { close() }
                 }
-            )
-        }
+                navController.navigate(Route.CATEGORY_SETTING.name)
+            },
+            modifier = Modifier.padding(top = 16.dp),
+            content = { Text(text = "カテゴリ設定", fontSize = 16.sp) }
+        )
     }
 }
