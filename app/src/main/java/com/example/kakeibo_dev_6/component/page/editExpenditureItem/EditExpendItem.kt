@@ -110,12 +110,11 @@ fun EditExpenditureItem(
             }
         }, actions = {
             IconButton(onClick = {
+                viewModel.payDate = payDate
+                viewModel.price = price
+                viewModel.category_id = category_id
+                viewModel.content = content
                 if (id == null) {
-                    viewModel.payDate = payDate
-                    viewModel.price = price
-                    viewModel.category_id = category_id
-                    viewModel.content = content
-
                     viewModel.createExpendItem()
                 } else {
                     viewModel.updateExpendItem()
@@ -175,7 +174,8 @@ fun EditExpenditureItem(
                     Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
                 }
                 val yMd = SimpleDateFormat("y年M月d日")
-                payDate = getDate?.let { getDate.toString() } ?: LocalDate.now().toString()
+                payDate = getDate?.let { getDate.toString() } ?: if (payDate == "") LocalDate.now()
+                    .toString() else payDate
                 viewPayDate = yMd.format(payDate.toDate("yyyy-MM-dd"))
                 // DatePicker End
 
@@ -244,7 +244,8 @@ fun EditExpenditureItem(
                                     selectOptionText.value = selectOption.categoryName
                                     category_id = selectOption.id.toString()
                                     expanded.value = false
-                                })
+                                }
+                            )
                         }
                     }
                 }

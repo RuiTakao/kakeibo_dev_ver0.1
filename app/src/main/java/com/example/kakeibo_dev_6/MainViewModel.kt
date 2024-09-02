@@ -122,6 +122,9 @@ class MainViewModel @Inject constructor(
     fun updateExpendItem() {
         editingExpendItem?.let { expendItem ->
             viewModelScope.launch {
+                expendItem.payDate = payDate
+                expendItem.price = price
+                expendItem.categoryId = category_id
                 expendItem.content = content
                 expendItemDao.updateExpenditureItem(expendItem)
             }
