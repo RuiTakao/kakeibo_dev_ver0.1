@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,42 +62,31 @@ import java.util.Date
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditExpenditureItem(
-    navController: NavController, id: Int? = null, viewModel: MainViewModel = hiltViewModel()
+    navController: NavController,
+    id: Int? = null,
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    var viewPayDate by remember { mutableStateOf("") }
-    var payDate by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var category_id by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-
-    // DatePicker Start
-    val state = rememberDatePickerState()
-    var visible by remember { mutableStateOf(false) }
-    // DatePicker End
+    val payDate = remember { mutableStateOf("") }
+    val price = remember { mutableStateOf("") }
+    val categoryId = remember { mutableStateOf("") }
+    val content = remember { mutableStateOf("") }
 
     if (id == null) {
-        payDate = ""
-        price = ""
-        category_id = ""
-        content = ""
+        payDate.value = ""
+        price.value = ""
+        categoryId.value = ""
+        content.value = ""
     } else {
         val editExpendItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
         LaunchedEffect(editExpendItem) {
             val isExpendItem = editExpendItem != null
-            payDate = if (isExpendItem) editExpendItem!!.payDate else ""
-            price = if (isExpendItem) editExpendItem!!.price else ""
-            category_id = if (isExpendItem) editExpendItem!!.categoryId else ""
-            content = if (isExpendItem) editExpendItem!!.content else ""
+            payDate.value = if (isExpendItem) editExpendItem!!.payDate else ""
+            price.value = if (isExpendItem) editExpendItem!!.price else ""
+            categoryId.value = if (isExpendItem) editExpendItem!!.categoryId else ""
+            content.value = if (isExpendItem) editExpendItem!!.content else ""
 
             viewModel.editingExpendItem = editExpendItem
         }
-    }
-
-    val categories by viewModel.category.collectAsState(initial = emptyList())
-    val options = categories
-    val expanded = remember { mutableStateOf(false) }
-    val selectOptionText = remember {
-        mutableStateOf("カテゴリを選択してください")
     }
 
     Scaffold(topBar = {
@@ -110,10 +100,10 @@ fun EditExpenditureItem(
             }
         }, actions = {
             IconButton(onClick = {
-                viewModel.payDate = payDate
-                viewModel.price = price
-                viewModel.category_id = category_id
-                viewModel.content = content
+                viewModel.payDate = payDate.value
+                viewModel.price = price.value
+                viewModel.category_id = categoryId.value
+                viewModel.content = content.value
                 if (id == null) {
                     viewModel.createExpendItem()
                 } else {
@@ -131,145 +121,160 @@ fun EditExpenditureItem(
                 .padding(top = 32.dp)
                 .padding(horizontal = 16.dp)
         ) {
-            Column {
-
-                // 日付
-                Text(
-                    text = "日付",
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                // DatePicker Start
-                Box(
-                    modifier = Modifier
-                        .size(260.dp, 50.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(
-                            BorderStroke(1.dp, Color.LightGray),
-                            RoundedCornerShape(4.dp)
-                        )
-                        .clickable { visible = !visible },
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(8.dp))
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "選択アイコン",
-                        modifier = Modifier.align(Alignment.CenterEnd)
-                    )
-                    if (visible) {
-                        DatePickerDialog(onDismissRequest = { visible = false }, confirmButton = {
-                            TextButton(onClick = { visible = false }) {
-                                Text(text = "OK")
-                            }
-                        }) {
-                            DatePicker(
-                                state = state
-                            )
-                        }
-                    }
-                }
-
-                var getDate = state.selectedDateMillis?.let {
-                    Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                }
-                val yMd = SimpleDateFormat("y年M月d日")
-                payDate = getDate?.let { getDate.toString() } ?: if (payDate == "") LocalDate.now()
-                    .toString() else payDate
-                viewPayDate = yMd.format(payDate.toDate("yyyy-MM-dd"))
-                // DatePicker End
-
-            }
+            // 日付
+            InputPayDate(payDate = payDate)
             Spacer(modifier = Modifier.height(16.dp))
-
             // 金額
-            Column {
-                Text(
-                    text = "金額",
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                TextField(
-                    value = price,
-                    onValueChange = {
-                        price = it
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier
-                        .background(Color.White)
-                        .width(260.dp)
-                )
-            }
+            InputPrice(price = price)
             Spacer(modifier = Modifier.height(16.dp))
-
             // カテゴリー
-            Column {
-                Text(
-                    text = "カテゴリー",
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .size(260.dp, 50.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(
-                            BorderStroke(1.dp, Color.LightGray),
-                            RoundedCornerShape(4.dp)
-                        )
-                        .clickable { expanded.value = !expanded.value }
-                ) {
-                    categories.forEach {
-                        if (it.id.toString() == category_id) {
-                            selectOptionText.value = it.categoryName
-                        }
-                    }
-                    Text(text = selectOptionText.value, modifier = Modifier.padding(start = 10.dp))
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "選択アイコン",
-                        modifier = Modifier.align(Alignment.CenterEnd)
-                    )
-
-                    DropdownMenu(
-                        expanded = expanded.value,
-                        modifier = Modifier.width(260.dp),
-                        onDismissRequest = { expanded.value = false }
-                    ) {
-                        options.forEach { selectOption ->
-                            DropdownMenuItem(
-                                text = { Text(text = selectOption.categoryName) },
-                                onClick = {
-                                    selectOptionText.value = selectOption.categoryName
-                                    category_id = selectOption.id.toString()
-                                    expanded.value = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
+            InputCategory(category_id = categoryId, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
-            Column {
-                Text(
-                    text = "内容",
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                TextField(
-                    value = content,
-                    onValueChange = {
-                        content = it
-                    },
-                    modifier = Modifier
-                        .background(Color.White)
-                        .width(260.dp)
+            // 内容
+            InputContent(content = content)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun InputPayDate(payDate: MutableState<String>) {
+
+    var viewPayDate by remember { mutableStateOf("") }
+    val state = rememberDatePickerState()
+    var visible by remember { mutableStateOf(false) }
+
+    val getDate = state.selectedDateMillis?.let {
+        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+    }
+    val yMd = SimpleDateFormat("y年M月d日")
+    payDate.value = getDate?.let { getDate.toString() } ?: if (payDate.value == "") LocalDate.now()
+        .toString() else payDate.value
+    viewPayDate = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
+
+    Text(
+        text = "日付",
+        modifier = Modifier.padding(bottom = 4.dp),
+        fontWeight = FontWeight.Bold
+    )
+    Box(
+        modifier = Modifier
+            .size(260.dp, 50.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .border(
+                BorderStroke(1.dp, Color.LightGray),
+                RoundedCornerShape(4.dp)
+            )
+            .clickable { visible = !visible },
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(8.dp))
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "選択アイコン",
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
+        if (visible) {
+            DatePickerDialog(
+                onDismissRequest = { visible = false },
+                confirmButton = {
+                    TextButton(onClick = { visible = false }, content = { Text(text = "OK") })
+                },
+                content = { DatePicker(state = state) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun InputPrice(price: MutableState<String>) {
+    Text(
+        text = "金額",
+        modifier = Modifier.padding(bottom = 4.dp),
+        fontWeight = FontWeight.Bold
+    )
+    TextField(
+        value = price.value,
+        onValueChange = {
+            price.value = it
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier
+            .background(Color.White)
+            .width(260.dp)
+    )
+}
+
+@Composable
+private fun InputCategory(category_id: MutableState<String>, viewModel: MainViewModel) {
+
+    val categories by viewModel.category.collectAsState(initial = emptyList())
+    val expanded = remember { mutableStateOf(false) }
+    val selectOptionText = remember { mutableStateOf("カテゴリを選択してください") }
+    categories.forEach {
+        if (it.id.toString() == category_id.value) {
+            selectOptionText.value = it.categoryName
+        }
+    }
+
+    Text(
+        text = "カテゴリー",
+        modifier = Modifier.padding(bottom = 4.dp),
+        fontWeight = FontWeight.Bold
+    )
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier
+            .size(260.dp, 50.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .border(
+                BorderStroke(1.dp, Color.LightGray),
+                RoundedCornerShape(4.dp)
+            )
+            .clickable { expanded.value = !expanded.value }
+    ) {
+        Text(text = selectOptionText.value, modifier = Modifier.padding(start = 10.dp))
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "選択アイコン",
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
+
+        DropdownMenu(
+            expanded = expanded.value,
+            modifier = Modifier.width(260.dp),
+            onDismissRequest = { expanded.value = false }
+        ) {
+            categories.forEach {
+                DropdownMenuItem(
+                    text = { Text(text = it.categoryName) },
+                    onClick = {
+                        selectOptionText.value = it.categoryName
+                        category_id.value = it.id.toString()
+                        expanded.value = false
+                    }
                 )
             }
         }
     }
+}
+
+@Composable
+private fun InputContent(content: MutableState<String>) {
+    Text(
+        text = "内容",
+        modifier = Modifier.padding(bottom = 4.dp),
+        fontWeight = FontWeight.Bold
+    )
+    TextField(
+        value = content.value,
+        onValueChange = {
+            content.value = it
+        },
+        modifier = Modifier
+            .background(Color.White)
+            .width(260.dp)
+    )
 }
 
 private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
