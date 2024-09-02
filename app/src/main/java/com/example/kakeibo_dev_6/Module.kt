@@ -27,5 +27,8 @@ object Module {
     fun provideCategoryDao(db: AppDataBase) = db.categoryDao()
 
     @Provides
-    fun provideExpenditureItemWithCategoryDao(db: AppDataBase) = db.expenditureItemWithCategoryDao()
+    fun provideCategorizeExpenditureItemDao(db: AppDataBase) = db.categorizeExpenditureItemDao()
+
+    @Provides
+    fun provideExpenditureItemJoinCategoryDao(db: AppDataBase) = db.expenditureItemJoinCategoryDao()
 }

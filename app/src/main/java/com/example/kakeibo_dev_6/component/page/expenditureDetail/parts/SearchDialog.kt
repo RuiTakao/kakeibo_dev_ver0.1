@@ -166,7 +166,7 @@ private fun SelectCategoryBox(
             categories.forEach { selectOption ->
                 DropdownMenuItem(text = { Text(text = selectOption.categoryName) }, onClick = {
                     expanded.value = false
-                    selectCategory.value = selectOption.categoryId
+                    selectCategory.value = selectOption.id
                     selectCategoryName.value = selectOption.categoryName
                 })
             }

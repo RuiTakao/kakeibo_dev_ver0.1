@@ -58,7 +58,7 @@ fun ExpenditureItemDetail(
 
                 Log.d("expenditureItem", expenditureItem.toString())
 
-                id.value = expenditureItem!!.expenditureId
+                id.value = expenditureItem!!.id
                 payDate.value = yMd.format(expenditureItem!!.payDate.toDate("yyyy-MM-dd"))
                 price.value = expenditureItem!!.price
                 category_id.value = expenditureItem!!.categoryId
@@ -103,7 +103,7 @@ fun ExpenditureItemDetail(
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     categories.forEach{
-                        if (it.categoryId.toString() == category_id.value) {
+                        if (it.id.toString() == category_id.value) {
                             Text(text = it.categoryName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         }
                     }

@@ -17,13 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.MainViewModel
+import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.enum.Route
 import java.text.SimpleDateFormat
 
 @Composable
-fun ListContent(EditExpendList: List<ExpenditureItemWithCategory>, navController: NavController, viewModel: MainViewModel) {
+fun ListContent(EditExpendList: List<CategorizeExpenditureItem>, navController: NavController, viewModel: MainViewModel) {
     LazyColumn(
         modifier = Modifier.padding(top = 32.dp),
         content = {
@@ -35,7 +35,7 @@ fun ListContent(EditExpendList: List<ExpenditureItemWithCategory>, navController
 }
 
 @Composable
-private fun Item(expendItem: ExpenditureItemWithCategory, navController: NavController, viewModel: MainViewModel) {
+private fun Item(expendItem: CategorizeExpenditureItem, navController: NavController, viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .padding(bottom = 16.dp)
@@ -43,7 +43,7 @@ private fun Item(expendItem: ExpenditureItemWithCategory, navController: NavCont
                 val df = SimpleDateFormat("yyyy-MM-dd")
                 val startDate = df.format(viewModel.startDate)
                 val lastDate = df.format(viewModel.lastDate)
-                navController.navigate("${Route.PAY_DETAIL.name}/${expendItem.categoryId}/${startDate}/${lastDate}")
+                navController.navigate("${Route.PAY_DETAIL.name}/${expendItem.id}/${startDate}/${lastDate}")
             }
             .background(Color.White)
             .fillMaxWidth()

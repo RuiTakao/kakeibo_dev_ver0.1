@@ -5,12 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kakeibo_dev_6.dao.CategorizeExpenditureItemDao
 import com.example.kakeibo_dev_6.dao.CategoryDao
 import com.example.kakeibo_dev_6.dao.ExpenditureItemDao
-import com.example.kakeibo_dev_6.dao.ExpenditureItemWithCategoryDao
-import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
+import com.example.kakeibo_dev_6.dao.ExpenditureItemJoinCategoryDao
+import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.entity.ExpenditureItem
+import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val expendItemDao: ExpenditureItemDao,
     private val categoryDao: CategoryDao,
-    private val groupCategoryDao: ExpenditureItemWithCategoryDao
+    private val categorizeExpenditureItemDao: CategorizeExpenditureItemDao,
+    private val expenditureItemJoinCategoryDao: ExpenditureItemJoinCategoryDao
 ) : ViewModel() {
     var payDate by mutableStateOf("")
     var category_id by mutableStateOf("")
@@ -40,18 +43,26 @@ class MainViewModel @Inject constructor(
         lastDay: String,
         categoryId: Int,
         sort: Boolean
-    ): Flow<List<ExpenditureItemWithCategory>> {
+    ): Flow<List<ExpenditureItemJoinCategory>> {
         return if (sort) {
-            groupCategoryDao.expAllAsc(firstDay = firstDay, lastDay = lastDay, category = categoryId)
+            expenditureItemJoinCategoryDao.expAllAsc(
+                firstDay = firstDay,
+                lastDay = lastDay,
+                category = categoryId
+            )
                 .distinctUntilChanged()
         } else {
-            groupCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay, category = categoryId).distinctUntilChanged()
+            expenditureItemJoinCategoryDao.expAll(firstDay = firstDay, lastDay = lastDay, category = categoryId)
+                .distinctUntilChanged()
         }
     }
 
-    fun groupeExpendItem(firstDay: String, lastDay: String): Flow<List<ExpenditureItemWithCategory>> {
+    fun groupeExpendItem(
+        firstDay: String,
+        lastDay: String
+    ): Flow<List<CategorizeExpenditureItem>> {
         val groupCategory =
-            groupCategoryDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
+            categorizeExpenditureItemDao.getAll(firstDay = firstDay, lastDay = lastDay).distinctUntilChanged()
         return groupCategory
     }
 
@@ -84,11 +95,11 @@ class MainViewModel @Inject constructor(
         return oneOfExpendItem
     }
 
-    fun OneOfGroupCategory(id: Int): Flow<ExpenditureItemWithCategory> {
-        return groupCategoryDao.OneOfGroupCategory(id = id).distinctUntilChanged()
-    }
+//    fun OneOfGroupCategory(id: Int): Flow<ExpenditureItemWithCategory> {
+//        return groupCategoryDao.OneOfGroupCategory(id = id).distinctUntilChanged()
+//    }
 
-    var setGroupCategory: ExpenditureItemWithCategory? = null
+    var setGroupCategory: CategorizeExpenditureItem? = null
 
     var editingCategory: Category? = null
 

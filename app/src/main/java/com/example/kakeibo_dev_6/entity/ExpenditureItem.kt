@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class ExpenditureItem(
-    @PrimaryKey(autoGenerate = true) val expenditureId: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var payDate: String,
     var categoryId: String,
     var content: String,

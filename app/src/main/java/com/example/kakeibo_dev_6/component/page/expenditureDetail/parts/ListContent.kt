@@ -20,14 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
+import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.enum.Route
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ListContent(expList: List<ExpenditureItemWithCategory>, navController: NavController) {
+fun ListContent(expList: List<ExpenditureItemJoinCategory>, navController: NavController) {
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
         items(expList) { expItem ->
             if (expList.indexOf(expItem) == 0) {
@@ -47,7 +48,7 @@ fun ListContent(expList: List<ExpenditureItemWithCategory>, navController: NavCo
 }
 
 @Composable
-private fun Item(expItem: ExpenditureItemWithCategory, navController: NavController, titleFlag: Boolean = false) {
+private fun Item(expItem: ExpenditureItemJoinCategory, navController: NavController, titleFlag: Boolean = false) {
     if (titleFlag) {
         val Md = SimpleDateFormat("M月d日")
         Text(
@@ -70,9 +71,9 @@ private fun Item(expItem: ExpenditureItemWithCategory, navController: NavControl
         modifier = Modifier
             .clickable {
 //                Log.d("expItem.id", expItem.id.toString())
-//                navController.navigate(
-//                    route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
-//                )
+                navController.navigate(
+                    route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
+                )
             }
             .background(Color.White)
             .padding(vertical = 8.dp, horizontal = 16.dp)

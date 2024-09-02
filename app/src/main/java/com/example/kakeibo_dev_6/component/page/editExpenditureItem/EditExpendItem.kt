@@ -222,7 +222,7 @@ fun EditExpenditureItem(
                         options.forEach { selectOption ->
                             DropdownMenuItem(text = { Text(text = selectOption.categoryName) }, onClick = {
                                 selectOptionText.value = selectOption.categoryName
-                                category_id = selectOption.categoryId.toString()
+                                category_id = selectOption.id.toString()
                                 expanded.value = false
                             })
                         }

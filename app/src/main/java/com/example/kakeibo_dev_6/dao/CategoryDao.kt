@@ -17,7 +17,7 @@ interface CategoryDao {
     @Query("SELECT * FROM Category")
     fun loadAllCategories(): Flow<List<Category>>
 
-    @Query("SELECT * FROM Category WHERE categoryId = :id")
+    @Query("SELECT * FROM Category WHERE id = :id")
     fun getOneOfCategory(id: Int): Flow<Category>
 
     @Update

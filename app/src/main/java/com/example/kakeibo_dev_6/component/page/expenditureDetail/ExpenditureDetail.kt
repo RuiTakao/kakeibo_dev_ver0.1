@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.ExpenditureItemWithCategory
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchContext
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchDialog
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.TopBar
+import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -49,7 +49,7 @@ fun ExpenditureDetail(
     categoryId?.let { viewModel.selectCategory = categoryId.toInt() }
     val categories by viewModel.category.collectAsState(initial = emptyList())
     categories.forEach{
-       if (viewModel.selectCategory == it.categoryId) {
+       if (viewModel.selectCategory == it.id) {
            viewModel.selectCategoryName = it.categoryName
        }
     }
@@ -89,7 +89,7 @@ fun ExpenditureDetail(
 }
 
 @Composable
-private fun TotalTax(expList: List<ExpenditureItemWithCategory>) {
+private fun TotalTax(expList: List<ExpenditureItemJoinCategory>) {
     var totalTax by remember { mutableStateOf(0) }
     LaunchedEffect(expList) {
         var i = 0

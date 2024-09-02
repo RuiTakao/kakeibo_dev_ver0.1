@@ -51,7 +51,7 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
                 SettingDropDownMenu(
                     category = it,
                     onClickEdit = {
-                        navController.navigate("${Route.EDIT_CATEGORY.name}/${it.categoryId}")
+                        navController.navigate("${Route.EDIT_CATEGORY.name}/${it.id}")
                     },
                     onClickDelete = {
                         viewModel.deleteCategory(it)
