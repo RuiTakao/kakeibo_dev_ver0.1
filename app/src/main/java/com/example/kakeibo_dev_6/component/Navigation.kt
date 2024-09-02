@@ -51,7 +51,7 @@ fun Navigation() {
             composable(
                 route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {backStackEntry ->
+            ) { backStackEntry ->
                 ExpenditureItemDetail(
                     navController = navController,
                     id = backStackEntry.arguments?.getInt("id")
@@ -79,11 +79,18 @@ fun Navigation() {
                 EditCategory(navController = navController)
             }
 
+            // 支出項目編集
+            composable(
+                route = "${Route.EDIT_EXPENDITURE.name}/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { backStackEntry ->
+                EditExpenditureItem(
+                    navController = navController,
+                    id = backStackEntry.arguments?.getInt("id")
+                )
+            }
 
-
-
-
-
+            // 支出項目登録
             composable(route = Route.EDIT_EXPENDITURE.name) {
                 EditExpenditureItem(navController = navController)
             }

@@ -1,14 +1,13 @@
 package com.example.kakeibo_dev_6.component.page.editExpenditureItem
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,26 +40,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
+import java.lang.IllegalArgumentException
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditExpenditureItem(
     navController: NavController, id: Int? = null, viewModel: MainViewModel = hiltViewModel()
 ) {
+    var viewPayDate by remember { mutableStateOf("") }
     var payDate by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var category_id by remember { mutableStateOf("") }
@@ -132,7 +135,11 @@ fun EditExpenditureItem(
             Column {
 
                 // 日付
-                Text(text = "日付", modifier = Modifier.padding(bottom = 4.dp), fontWeight = FontWeight.Bold)
+                Text(
+                    text = "日付",
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    fontWeight = FontWeight.Bold
+                )
                 // DatePicker Start
                 Box(
                     modifier = Modifier
@@ -143,9 +150,9 @@ fun EditExpenditureItem(
                             RoundedCornerShape(4.dp)
                         )
                         .clickable { visible = !visible },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    Text(text = payDate)
+                    Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(8.dp))
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "選択アイコン",
@@ -167,11 +174,9 @@ fun EditExpenditureItem(
                 var getDate = state.selectedDateMillis?.let {
                     Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
                 }
-                if (getDate == null) {
-                    payDate = ""
-                } else {
-                    payDate = getDate.toString()
-                }
+                val yMd = SimpleDateFormat("y年M月d日")
+                payDate = getDate?.let { getDate.toString() } ?: LocalDate.now().toString()
+                viewPayDate = yMd.format(payDate.toDate("yyyy-MM-dd"))
                 // DatePicker End
 
             }
@@ -179,7 +184,11 @@ fun EditExpenditureItem(
 
             // 金額
             Column {
-                Text(text = "金額", modifier = Modifier.padding(bottom = 4.dp), fontWeight = FontWeight.Bold)
+                Text(
+                    text = "金額",
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    fontWeight = FontWeight.Bold
+                )
                 TextField(
                     value = price,
                     onValueChange = {
@@ -195,7 +204,11 @@ fun EditExpenditureItem(
 
             // カテゴリー
             Column {
-                Text(text = "カテゴリー", modifier = Modifier.padding(bottom = 4.dp), fontWeight = FontWeight.Bold)
+                Text(
+                    text = "カテゴリー",
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    fontWeight = FontWeight.Bold
+                )
                 Box(
                     contentAlignment = Alignment.CenterStart,
                     modifier = Modifier
@@ -207,6 +220,11 @@ fun EditExpenditureItem(
                         )
                         .clickable { expanded.value = !expanded.value }
                 ) {
+                    categories.forEach {
+                        if (it.id.toString() == category_id) {
+                            selectOptionText.value = it.categoryName
+                        }
+                    }
                     Text(text = selectOptionText.value, modifier = Modifier.padding(start = 10.dp))
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
@@ -220,11 +238,13 @@ fun EditExpenditureItem(
                         onDismissRequest = { expanded.value = false }
                     ) {
                         options.forEach { selectOption ->
-                            DropdownMenuItem(text = { Text(text = selectOption.categoryName) }, onClick = {
-                                selectOptionText.value = selectOption.categoryName
-                                category_id = selectOption.id.toString()
-                                expanded.value = false
-                            })
+                            DropdownMenuItem(
+                                text = { Text(text = selectOption.categoryName) },
+                                onClick = {
+                                    selectOptionText.value = selectOption.categoryName
+                                    category_id = selectOption.id.toString()
+                                    expanded.value = false
+                                })
                         }
                     }
                 }
@@ -232,7 +252,11 @@ fun EditExpenditureItem(
 
             Spacer(modifier = Modifier.height(16.dp))
             Column {
-                Text(text = "内容", modifier = Modifier.padding(bottom = 4.dp), fontWeight = FontWeight.Bold)
+                Text(
+                    text = "内容",
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    fontWeight = FontWeight.Bold
+                )
                 TextField(
                     value = content,
                     onValueChange = {
@@ -245,4 +269,20 @@ fun EditExpenditureItem(
             }
         }
     }
+}
+
+private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
+    val format = try {
+        SimpleDateFormat(pattern)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+    val date = format?.let {
+        try {
+            it.parse(this)
+        } catch (e: ParseException) {
+            null
+        }
+    }
+    return date
 }

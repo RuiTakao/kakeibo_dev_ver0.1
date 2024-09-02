@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
+import com.example.kakeibo_dev_6.enum.Route
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -69,7 +70,7 @@ fun ExpenditureItemDetail(
 
         Scaffold(topBar = {
             TopBar(navController = navController, onClick = {
-
+                navController.navigate("${Route.EDIT_EXPENDITURE.name}/${id.value}")
             })
         }) { padding ->
 
