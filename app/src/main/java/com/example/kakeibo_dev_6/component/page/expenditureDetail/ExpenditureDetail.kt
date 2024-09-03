@@ -80,31 +80,15 @@ fun ExpenditureDetail(
                 .background(color = Color(0xFFF7F7F7))
                 .fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 32.dp)
-            ) {
-                TotalTax(expenditureItemList = expenditureItemList)
-                SearchContext(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
-            }
+            SearchContext(
+                isShowSearchDialog = isShowSearchDialog,
+                expenditureItemList = expenditureItemList,
+                viewModel = viewModel
+            )
             ListContent(expenditureItemList = expenditureItemList, navController = navController)
         }
         SearchDialog(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
     }
-}
-
-@Composable
-private fun TotalTax(expenditureItemList: List<ExpenditureItemJoinCategory>) {
-    var totalTax by remember { mutableStateOf(0) }
-    LaunchedEffect(expenditureItemList) {
-        var i = 0
-        expenditureItemList.forEach {
-            i += it.price.toInt()
-        }
-        totalTax = i
-    }
-    Text(text = "￥${totalTax}", fontSize = 24.sp)
 }
 
 private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
