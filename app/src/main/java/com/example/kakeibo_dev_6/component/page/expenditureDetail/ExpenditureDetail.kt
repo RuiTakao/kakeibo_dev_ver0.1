@@ -81,7 +81,6 @@ fun ExpenditureDetail(
                 .fillMaxSize()
         ) {
             SearchContext(
-                isShowSearchDialog = isShowSearchDialog,
                 expenditureItemList = expenditureItemList,
                 viewModel = viewModel
             )
