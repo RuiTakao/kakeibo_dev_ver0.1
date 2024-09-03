@@ -18,8 +18,4 @@ interface CategorizeExpenditureItemDao {
                 ""
     )
     fun categorizeExpenditureItem(firstDay: String, lastDay: String): Flow<List<CategorizeExpenditureItem>>
-
-//    @RewriteQueriesToDropUnusedColumns
-//    @Query("SELECT * FROM ExpenditureItemWithCategory WHERE expenditureId = :id")
-//    fun OneOfGroupCategory(id: Int): Flow<ExpenditureItemWithCategory>
 }

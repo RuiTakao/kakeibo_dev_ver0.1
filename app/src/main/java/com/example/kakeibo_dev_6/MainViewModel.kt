@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -155,6 +156,7 @@ class MainViewModel @Inject constructor(
     var sort by mutableStateOf(false)
     var selectCategory by mutableStateOf(0)
     var selectCategoryName by mutableStateOf("すべて")
+    var pageTransitionFlg by mutableStateOf(true)
 }
 
 fun weekStartDate(): Date {
