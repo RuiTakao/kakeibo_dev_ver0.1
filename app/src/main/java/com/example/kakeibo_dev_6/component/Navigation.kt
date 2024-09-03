@@ -32,9 +32,10 @@ fun Navigation() {
 
             // 支出項目　明細ページ
             composable(
-                route = "${Route.PAY_DETAIL.name}/{categoryId}/{startDate}/{lastDate}",
+                route = "${Route.PAY_DETAIL.name}/{categoryId}/{dateProperty}/{startDate}/{lastDate}",
                 arguments = listOf(
                     navArgument("categoryId") { type = NavType.StringType },
+                    navArgument("dateProperty") { type = NavType.StringType },
                     navArgument("startDate") { type = NavType.StringType },
                     navArgument("lastDate") { type = NavType.StringType }
                 )
@@ -42,6 +43,7 @@ fun Navigation() {
                 ExpenditureDetail(
                     navController = navController,
                     categoryId = backStackEntry.arguments?.getString("categoryId"),
+                    dateProperty = backStackEntry.arguments?.getString("dateProperty"),
                     startDate = backStackEntry.arguments?.getString("startDate"),
                     lastDate = backStackEntry.arguments?.getString("lastDate")
                 )

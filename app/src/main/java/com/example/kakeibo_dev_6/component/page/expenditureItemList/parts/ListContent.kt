@@ -28,18 +28,15 @@ fun ListContent(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    LazyColumn(
-        modifier = Modifier.padding(top = 32.dp),
-        content = {
-            items(categorizeExpenditureItem) {
-                Item(
-                    categorizeExpenditureItem = it,
-                    navController = navController,
-                    viewModel = viewModel
-                )
-            }
+    LazyColumn(modifier = Modifier.padding(top = 32.dp), content = {
+        items(categorizeExpenditureItem) {
+            Item(
+                categorizeExpenditureItem = it,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
-    )
+    })
 }
 
 @Composable
@@ -48,20 +45,18 @@ private fun Item(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    Column(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .clickable {
-                val df = SimpleDateFormat("yyyy-MM-dd")
-                val startDate = df.format(viewModel.startDate)
-                val lastDate = df.format(viewModel.lastDate)
-                navController.navigate(
-                    "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${startDate}/${lastDate}"
-                )
-            }
-            .background(Color.White)
-            .fillMaxWidth()
-    ) {
+    Column(modifier = Modifier
+        .padding(bottom = 16.dp)
+        .clickable {
+            val df = SimpleDateFormat("yyyy-MM-dd")
+            val startDate = df.format(viewModel.startDate)
+            val lastDate = df.format(viewModel.lastDate)
+            navController.navigate(
+                "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
+            )
+        }
+        .background(Color.White)
+        .fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 4.dp)

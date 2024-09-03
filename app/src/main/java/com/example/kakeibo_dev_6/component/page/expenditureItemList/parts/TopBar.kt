@@ -57,7 +57,7 @@ fun TopBar(
                 val df = SimpleDateFormat("yyyy-MM-dd")
                 val startDate = df.format(viewModel.startDate)
                 val lastDate = df.format(viewModel.lastDate)
-                navController.navigate("${Route.PAY_DETAIL.name}/0/${startDate}/${lastDate}")
+                navController.navigate("${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}")
             }) {
                 Icon(imageVector = Icons.Default.ReceiptLong, contentDescription = "詳細")
             }
