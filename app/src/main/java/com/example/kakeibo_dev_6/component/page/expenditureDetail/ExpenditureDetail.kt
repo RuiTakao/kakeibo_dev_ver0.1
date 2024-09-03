@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchContext
-import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchDialog
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.TopBar
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import java.lang.IllegalArgumentException
@@ -86,7 +85,6 @@ fun ExpenditureDetail(
             )
             ListContent(expenditureItemList = expenditureItemList, navController = navController)
         }
-        SearchDialog(isShowSearchDialog = isShowSearchDialog, viewModel = viewModel)
     }
 }
 
