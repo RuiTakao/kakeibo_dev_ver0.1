@@ -2,7 +2,7 @@ package com.example.kakeibo_dev_6.component.page.settingCategory.parts
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +37,7 @@ fun TopBar(navController: NavController) {
         actions = {
             IconButton(onClick = { navController.navigate(Route.EDIT_CATEGORY.name) }) {
                 Icon(
-                    imageVector = Icons.Outlined.AddCircle,
+                    imageVector = Icons.Outlined.AddBox,
                     contentDescription = "カテゴリ追加"
                 )
             }

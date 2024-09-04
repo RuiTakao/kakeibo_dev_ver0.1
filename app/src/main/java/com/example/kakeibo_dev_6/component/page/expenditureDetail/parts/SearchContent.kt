@@ -67,6 +67,7 @@ fun SearchContext(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
+                .padding(vertical = 16.dp)
                 .fillMaxWidth()
         ) {
             PrevButton(viewModel = viewModel)
@@ -76,7 +77,7 @@ fun SearchContext(
             }
             NextButton(viewModel = viewModel)
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
@@ -157,20 +158,27 @@ private fun ChangeDurationDateText(
     onClick: () -> Unit,
     viewModel: MainViewModel
 ) {
+    val selected = viewModel.payDetailDateProperty == dateProperty
+
     TextButton(
         onClick = onClick,
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = text, fontSize = 16.sp)
+                Text(
+                    text = text,
+                    fontSize = 16.sp,
+                    color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray
+                )
                 Spacer(modifier = Modifier.height(2.dp))
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
                         .width(20.dp)
-                        .background(if (viewModel.payDetailDateProperty == dateProperty) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
                 )
             }
-        }
+        },
+        enabled = if (selected) false else true
     )
 }
 

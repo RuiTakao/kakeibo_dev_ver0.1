@@ -62,9 +62,8 @@ private fun Item(expItem: ExpenditureItemJoinCategory, navController: NavControl
     } else {
         Spacer(
             modifier = Modifier
-                .height(1.dp)
+                .height(4.dp)
                 .fillMaxWidth()
-                .background(Color.Gray)
         )
     }
     Column(

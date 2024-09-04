@@ -2,7 +2,9 @@ package com.example.kakeibo_dev_6.component.page.editCategory
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -29,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategory(
     navController: NavController,
@@ -54,6 +55,7 @@ fun EditCategory(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
+            Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = value,
                 onValueChange = {

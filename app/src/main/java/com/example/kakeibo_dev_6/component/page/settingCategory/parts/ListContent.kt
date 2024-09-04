@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.MainViewModel
@@ -40,14 +41,14 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
         items(items = categories) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 12.dp)
                     .background(Color.White)
                     .fillMaxWidth()
-                    .padding(start = 8.dp),
+                    .padding(start = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = it.categoryName)
+                Text(text = it.categoryName, fontSize = 20.sp)
                 SettingDropDownMenu(
                     category = it,
                     onClickEdit = {
@@ -58,7 +59,7 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
                     }
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }

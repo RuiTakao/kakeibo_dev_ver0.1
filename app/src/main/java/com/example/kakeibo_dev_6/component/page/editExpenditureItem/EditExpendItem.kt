@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -180,7 +181,18 @@ private fun InputPayDate(payDate: MutableState<String>) {
                 confirmButton = {
                     TextButton(onClick = { visible = false }, content = { Text(text = "OK") })
                 },
-                content = { DatePicker(state = state) }
+                content = {
+                    DatePicker(
+                        state = state,
+                        dateValidator = {
+                            if (
+                                Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .isAfter(LocalDate.now())
+                            ) false else true
+                        }
+                    )
+                }
             )
         }
     }
