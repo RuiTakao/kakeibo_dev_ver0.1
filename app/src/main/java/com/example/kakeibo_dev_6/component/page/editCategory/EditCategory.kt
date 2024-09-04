@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
@@ -67,6 +68,14 @@ fun EditCategory(
                     .fillMaxWidth()
                     .background(Color.White)
             )
+            if (viewModel.inputValidateCategoryStatus) {
+                Text(
+                    text = viewModel.inputValidateCategoryText,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
     }
 }
@@ -91,13 +100,22 @@ fun TopBar(value: String, id: Int?, navController: NavController, viewModel: Mai
             IconButton(
                 onClick = {
                     viewModel.name = value
-                    if (id == null) {
-                        viewModel.order = 1
-                        viewModel.createCategory()
+                    if (value == "") {
+                        viewModel.inputValidateCategoryText = "カテゴリーが未入力です。"
+                        viewModel.inputValidateCategoryStatus = true
+                    } else if (value.length > 10) {
+                        viewModel.inputValidateCategoryText = "カテゴリーは10文字以内で入力してください。"
+                        viewModel.inputValidateCategoryStatus = true
                     } else {
-                        viewModel.updateCategory()
+                        viewModel.inputValidateCategoryStatus = false
+                        if (id == null) {
+                            viewModel.order = 1
+                            viewModel.createCategory()
+                        } else {
+                            viewModel.updateCategory()
+                        }
+                        navController.popBackStack()
                     }
-                    navController.popBackStack()
                 }
             ) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "登録")

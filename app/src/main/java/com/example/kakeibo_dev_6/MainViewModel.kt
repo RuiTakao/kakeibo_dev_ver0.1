@@ -157,6 +157,9 @@ class MainViewModel @Inject constructor(
     var selectCategory by mutableStateOf(0)
     var selectCategoryName by mutableStateOf("すべて")
     var pageTransitionFlg by mutableStateOf(true)
+
+    var inputValidateCategoryStatus by mutableStateOf(false)
+    var inputValidateCategoryText by mutableStateOf("")
 }
 
 fun weekStartDate(): Date {

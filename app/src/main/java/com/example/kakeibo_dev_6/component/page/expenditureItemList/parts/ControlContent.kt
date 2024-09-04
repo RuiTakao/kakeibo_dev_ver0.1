@@ -290,7 +290,7 @@ fun DatePickerCustomDate(
     viewCustomDate: MutableState<String>,
     setDate: Date
 ) {
-    val state = rememberDatePickerState()
+    val state = rememberDatePickerState(setDate.time)
     val getDate = state.selectedDateMillis?.let {
         Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
     }
