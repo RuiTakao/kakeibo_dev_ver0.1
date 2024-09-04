@@ -102,16 +102,60 @@ fun EditExpenditureItem(
             }
         }, actions = {
             IconButton(onClick = {
-                viewModel.payDate = payDate.value
-                viewModel.price = price.value
-                viewModel.category_id = categoryId.value
-                viewModel.content = content.value
-                if (id == null) {
-                    viewModel.createExpendItem()
+                var validCount = 0
+
+                if (payDate.value.toDate("yyyy-MM-dd") == null) {
+                    validCount++
+                    viewModel.inputValidatePayDateStatus = true
+                    viewModel.inputValidatePayDateText = "日付を入力してください。"
                 } else {
-                    viewModel.updateExpendItem()
+                    viewModel.inputValidatePayDateStatus = false
                 }
-                navController.popBackStack()
+
+                if (price.value == "") {
+                    validCount++
+                    viewModel.inputValidatePriceStatus = true
+                    viewModel.inputValidatePriceText = "金額を入力してください。"
+                } else if (!checkInt(price.value)) {
+                    validCount++
+                    viewModel.inputValidatePriceStatus = true
+                    viewModel.inputValidatePriceText = "金額が不正です。"
+                } else {
+                    viewModel.inputValidatePriceStatus = false
+                }
+
+                if (categoryId.value == "") {
+                    validCount++
+                    viewModel.inputValidateSelectCategoryText = "カテゴリーが未選択です。"
+                    viewModel.inputValidateSelectCategoryStatus = true
+                } else {
+                    viewModel.inputValidateSelectCategoryStatus = false
+                }
+
+                if (content.value == "") {
+                    validCount++
+                    viewModel.inputValidateContentText = "内容が未入力です。"
+                    viewModel.inputValidateContentStatus = true
+                } else if (content.value.length > 50) {
+                    validCount++
+                    viewModel.inputValidateContentText = "内容は50文字以内で入力してください。"
+                    viewModel.inputValidateContentStatus = true
+                } else {
+                    viewModel.inputValidateContentStatus = false
+                }
+
+                if (validCount == 0) {
+                    viewModel.payDate = payDate.value
+                    viewModel.price = price.value
+                    viewModel.category_id = categoryId.value
+                    viewModel.content = content.value
+                    if (id == null) {
+                        viewModel.createExpendItem()
+                    } else {
+                        viewModel.updateExpendItem()
+                    }
+                    navController.popBackStack()
+                }
             }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
             }
@@ -124,23 +168,23 @@ fun EditExpenditureItem(
                 .padding(horizontal = 16.dp)
         ) {
             // 日付
-            InputPayDate(payDate = payDate)
+            InputPayDate(payDate = payDate, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // 金額
-            InputPrice(price = price)
+            InputPrice(price = price, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // カテゴリー
             InputCategory(category_id = categoryId, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // 内容
-            InputContent(content = content)
+            InputContent(content = content, viewModel = viewModel)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun InputPayDate(payDate: MutableState<String>) {
+private fun InputPayDate(payDate: MutableState<String>, viewModel: MainViewModel) {
 
     var viewPayDate by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
@@ -161,7 +205,7 @@ private fun InputPayDate(payDate: MutableState<String>) {
     )
     Box(
         modifier = Modifier
-            .size(260.dp, 50.dp)
+            .size(280.dp, 50.dp)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
@@ -170,7 +214,7 @@ private fun InputPayDate(payDate: MutableState<String>) {
             .clickable { visible = !visible },
         contentAlignment = Alignment.CenterStart,
     ) {
-        Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(8.dp))
+        Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(10.dp))
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "選択アイコン",
@@ -197,10 +241,17 @@ private fun InputPayDate(payDate: MutableState<String>) {
             )
         }
     }
+    if (viewModel.inputValidatePayDateStatus) {
+        Text(
+            text = viewModel.inputValidatePayDateText,
+            color = Color.Red,
+            fontSize = 14.sp
+        )
+    }
 }
 
 @Composable
-private fun InputPrice(price: MutableState<String>) {
+private fun InputPrice(price: MutableState<String>, viewModel: MainViewModel) {
     Text(
         text = "金額",
         modifier = Modifier.padding(bottom = 4.dp),
@@ -214,8 +265,15 @@ private fun InputPrice(price: MutableState<String>) {
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier
             .background(Color.White)
-            .width(260.dp)
+            .width(280.dp)
     )
+    if (viewModel.inputValidatePriceStatus) {
+        Text(
+            text = viewModel.inputValidatePriceText,
+            color = Color.Red,
+            fontSize = 14.sp
+        )
+    }
 }
 
 @Composable
@@ -223,7 +281,7 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
 
     val categories by viewModel.category.collectAsState(initial = emptyList())
     val expanded = remember { mutableStateOf(false) }
-    val selectOptionText = remember { mutableStateOf("カテゴリを選択してください") }
+    val selectOptionText = remember { mutableStateOf("カテゴリーを選択してください") }
     categories.forEach {
         if (it.id.toString() == category_id.value) {
             selectOptionText.value = it.categoryName
@@ -238,7 +296,7 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
-            .size(260.dp, 50.dp)
+            .size(280.dp, 50.dp)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
@@ -270,10 +328,17 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
             }
         }
     }
+    if (viewModel.inputValidateSelectCategoryStatus) {
+        Text(
+            text = viewModel.inputValidateSelectCategoryText,
+            color = Color.Red,
+            fontSize = 14.sp
+        )
+    }
 }
 
 @Composable
-private fun InputContent(content: MutableState<String>) {
+private fun InputContent(content: MutableState<String>,viewModel: MainViewModel) {
     Text(
         text = "内容",
         modifier = Modifier.padding(bottom = 4.dp),
@@ -286,8 +351,15 @@ private fun InputContent(content: MutableState<String>) {
         },
         modifier = Modifier
             .background(Color.White)
-            .width(260.dp)
+            .width(280.dp)
     )
+    if (viewModel.inputValidateContentStatus) {
+        Text(
+            text = viewModel.inputValidateContentText,
+            color = Color.Red,
+            fontSize = 14.sp
+        )
+    }
 }
 
 private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
@@ -304,4 +376,13 @@ private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
         }
     }
     return date
+}
+
+private fun checkInt(s: String): Boolean {
+    return try {
+        s.toInt()
+        true
+    } catch (e: NumberFormatException) {
+        false
+    }
 }

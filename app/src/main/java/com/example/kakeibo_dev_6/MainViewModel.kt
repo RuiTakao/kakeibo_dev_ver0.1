@@ -160,6 +160,15 @@ class MainViewModel @Inject constructor(
 
     var inputValidateCategoryStatus by mutableStateOf(false)
     var inputValidateCategoryText by mutableStateOf("")
+
+    var inputValidatePayDateStatus by mutableStateOf(false)
+    var inputValidatePayDateText by mutableStateOf("")
+    var inputValidatePriceStatus by mutableStateOf(false)
+    var inputValidatePriceText by mutableStateOf("")
+    var inputValidateSelectCategoryStatus by mutableStateOf(false)
+    var inputValidateSelectCategoryText by mutableStateOf("")
+    var inputValidateContentStatus by mutableStateOf(false)
+    var inputValidateContentText by mutableStateOf("")
 }
 
 fun weekStartDate(): Date {
