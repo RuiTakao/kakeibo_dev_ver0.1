@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,7 +57,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,16 +66,19 @@ fun EditExpenditureItem(
     id: Int? = null,
     viewModel: MainViewModel = hiltViewModel()
 ) {
+    val yMd = SimpleDateFormat("y年M月d日")
     val payDate = remember { mutableStateOf("") }
     val price = remember { mutableStateOf("") }
     val categoryId = remember { mutableStateOf("") }
     val content = remember { mutableStateOf("") }
+    val viewPayDate = remember { mutableStateOf("") }
 
     if (id == null) {
         payDate.value = ""
         price.value = ""
         categoryId.value = ""
         content.value = ""
+        viewPayDate.value = yMd.format(Date())
     } else {
         val editExpendItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
         LaunchedEffect(editExpendItem) {
@@ -86,6 +87,8 @@ fun EditExpenditureItem(
             price.value = if (isExpendItem) editExpendItem!!.price else ""
             categoryId.value = if (isExpendItem) editExpendItem!!.categoryId else ""
             content.value = if (isExpendItem) editExpendItem!!.content else ""
+            viewPayDate.value =
+                if (isExpendItem) yMd.format(editExpendItem!!.payDate.toDate("yyyy-MM-dd")) else ""
 
             viewModel.editingExpendItem = editExpendItem
         }
@@ -168,7 +171,7 @@ fun EditExpenditureItem(
                 .padding(horizontal = 16.dp)
         ) {
             // 日付
-            InputPayDate(payDate = payDate, viewModel = viewModel)
+            InputPayDate(payDate = payDate, viewPayDate = viewPayDate, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // 金額
             InputPrice(price = price, viewModel = viewModel)
@@ -184,19 +187,14 @@ fun EditExpenditureItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun InputPayDate(payDate: MutableState<String>, viewModel: MainViewModel) {
+private fun InputPayDate(
+    payDate: MutableState<String>,
+    viewPayDate: MutableState<String>,
+    viewModel: MainViewModel
+) {
 
-    var viewPayDate by remember { mutableStateOf("") }
-    val state = rememberDatePickerState()
-    var visible by remember { mutableStateOf(false) }
-
-    val getDate = state.selectedDateMillis?.let {
-        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-    }
     val yMd = SimpleDateFormat("y年M月d日")
-    payDate.value = getDate?.let { getDate.toString() } ?: if (payDate.value == "") LocalDate.now()
-        .toString() else payDate.value
-    viewPayDate = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
+    var visible by remember { mutableStateOf(false) }
 
     Text(
         text = "日付",
@@ -214,13 +212,22 @@ private fun InputPayDate(payDate: MutableState<String>, viewModel: MainViewModel
             .clickable { visible = !visible },
         contentAlignment = Alignment.CenterStart,
     ) {
-        Text(text = viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(10.dp))
+        Text(text = viewPayDate.value, fontSize = 16.sp, modifier = Modifier.padding(10.dp))
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "選択アイコン",
             modifier = Modifier.align(Alignment.CenterEnd)
         )
         if (visible) {
+            val setState = payDate.value?.let { payDate.value.toDate("yyyy-MM-dd") } ?: Date()
+            val state = rememberDatePickerState(setState.time)
+            val getDate = state.selectedDateMillis?.let {
+                Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+            }
+            payDate.value =
+                getDate?.let { getDate.toString() } ?: if (payDate.value == "") LocalDate.now()
+                    .toString() else payDate.value
+            viewPayDate.value = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
             DatePickerDialog(
                 onDismissRequest = { visible = false },
                 confirmButton = {
@@ -338,7 +345,7 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
 }
 
 @Composable
-private fun InputContent(content: MutableState<String>,viewModel: MainViewModel) {
+private fun InputContent(content: MutableState<String>, viewModel: MainViewModel) {
     Text(
         text = "内容",
         modifier = Modifier.padding(bottom = 4.dp),
