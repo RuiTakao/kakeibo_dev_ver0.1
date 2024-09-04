@@ -185,8 +185,7 @@ private fun ChangeDurationDateCustom(viewModel: MainViewModel) {
                         .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
                 )
             }
-        },
-        enabled = if (selected) false else true
+        }
     )
 
     if (isShowCustomDateDialog.value) {
@@ -202,7 +201,7 @@ private fun ChangeDurationDateCustom(viewModel: MainViewModel) {
         AlertDialog(onDismissRequest = { isShowCustomDateDialog.value = false }) {
             Column(
                 modifier = Modifier
-                    .background(Color.White)
+                    .background(Color.White).width(320.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,

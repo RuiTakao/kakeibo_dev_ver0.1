@@ -1,9 +1,7 @@
 package com.example.kakeibo_dev_6.component.page.expenditureDetail.parts
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,22 +11,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -39,19 +39,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.MainViewModel
-import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.weekLastDate
 import com.example.kakeibo_dev_6.weekStartDate
+import java.lang.IllegalArgumentException
+import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
@@ -136,18 +138,7 @@ private fun ChangeDurationDateRow(viewModel: MainViewModel) {
             },
             viewModel = viewModel
         )
-        IconButton(onClick = { }, content = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
-                Spacer(modifier = Modifier.height(2.dp))
-                Spacer(
-                    modifier = Modifier
-                        .height(2.dp)
-                        .width(20.dp)
-                        .background(Color.Transparent)
-                )
-            }
-        })
+        ChangeDurationDateCustom(viewModel = viewModel)
     }
 }
 
@@ -182,6 +173,168 @@ private fun ChangeDurationDateText(
     )
 }
 
+// 表示期間切り替えカスタム
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChangeDurationDateCustom(viewModel: MainViewModel) {
+
+    val selected = viewModel.payDetailDateProperty == "custom"
+
+    val isShowCustomDateDialog = remember { mutableStateOf(false) }
+
+    IconButton(
+        onClick = { isShowCustomDateDialog.value = true },
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    contentDescription = null,
+                    tint = if (selected) MaterialTheme.colorScheme.primary else Color.Gray
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(2.dp)
+                        .width(20.dp)
+                        .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                )
+            }
+        }
+    )
+
+    if (isShowCustomDateDialog.value) {
+
+        val startCustomDate = remember { mutableStateOf("") }
+        val startViewCustomDate = remember { mutableStateOf("") }
+        val startVisible = remember { mutableStateOf(false) }
+
+        val lastCustomDate = remember { mutableStateOf("") }
+        val lastViewCustomDate = remember { mutableStateOf("") }
+        val lastVisible = remember { mutableStateOf(false) }
+
+        AlertDialog(onDismissRequest = { isShowCustomDateDialog.value = false }) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White).width(320.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = "カレンダー",
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "表示期間",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    TextButton(onClick = { startVisible.value = !startVisible.value }) {
+                        Text(text = startViewCustomDate.value)
+                    }
+                    Text(text = "～")
+                    TextButton(onClick = { lastVisible.value = !lastVisible.value }) {
+                        Text(text = lastViewCustomDate.value)
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                ) {
+                    TextButton(onClick = { isShowCustomDateDialog.value = false }) {
+                        Text(text = "キャンセル")
+                    }
+                    TextButton(
+                        onClick = {
+                            isShowCustomDateDialog.value = false
+                            viewModel.payDetailDateProperty = "custom"
+                            viewModel.payDetailStartDate = startCustomDate.value.toDate("yyyy-MM-dd")!!
+                            viewModel.payDetailLastDate = lastCustomDate.value.toDate("yyyy-MM-dd")!!
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
+                }
+            }
+        }
+
+        DatePickerCustomDate(
+            visible = startVisible,
+            customDate = startCustomDate,
+            viewCustomDate = startViewCustomDate,
+            setDate = viewModel.payDetailStartDate
+        )
+
+        DatePickerCustomDate(
+            visible = lastVisible,
+            customDate = lastCustomDate,
+            viewCustomDate = lastViewCustomDate,
+            setDate = viewModel.payDetailLastDate
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerCustomDate(
+    visible: MutableState<Boolean>,
+    customDate: MutableState<String>,
+    viewCustomDate: MutableState<String>,
+    setDate: Date
+) {
+    val state = rememberDatePickerState()
+    val getDate = state.selectedDateMillis?.let {
+        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+    }
+    val yMd = SimpleDateFormat("y年M月d日")
+    val df = SimpleDateFormat("yyyy-MM-dd")
+    customDate.value =
+        getDate?.let { getDate.toString() } ?: df.format(setDate)
+    viewCustomDate.value = yMd.format(customDate.value.toDate("yyyy-MM-dd"))
+
+    if (visible.value) {
+        DatePickerDialog(
+            onDismissRequest = { visible.value = false },
+            confirmButton = {
+                TextButton(onClick = { visible.value = false }, content = { Text(text = "OK") })
+            },
+            content = {
+                DatePicker(
+                    state = state,
+                    dateValidator = {
+                        if (
+                            Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                                .isAfter(LocalDate.now())
+                        ) false else true
+                    }
+                )
+            }
+        )
+    }
+}
 
 // 表示する期間
 @Composable
@@ -195,6 +348,8 @@ private fun ShowDurationDate(viewModel: MainViewModel) {
             "${Md.format(viewModel.payDetailStartDate)} 〜 ${Md.format(viewModel.payDetailLastDate)}"
 
         "month" -> text = M.format(viewModel.payDetailStartDate)
+        "custom" -> text =
+            "${Md.format(viewModel.payDetailStartDate)} 〜 ${Md.format(viewModel.payDetailLastDate)}"
     }
     Text(text = text, fontSize = 24.sp)
 }
@@ -237,6 +392,30 @@ private fun PrevButton(viewModel: MainViewModel) {
                         Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
                     viewModel.payDetailLastDate =
                         Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+
+                "custom" -> {
+
+                    // 開始日と終了日をLocalDateに変換
+                    val diffStartDate =
+                        viewModel.payDetailStartDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    val diffLastDate =
+                        viewModel.payDetailLastDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    // 終了日と開始日の差分を調べる
+
+                    val diff = ChronoUnit.DAYS.between(diffStartDate, diffLastDate)
+                    Log.d("diff", diff.toString())
+                    // 開始日、終了日それぞれに差分を引いて再代入
+                    val getStartDate = Calendar.getInstance()
+                    val getLastDate = Calendar.getInstance()
+                    getStartDate.time = viewModel.payDetailStartDate
+                    getLastDate.time = viewModel.payDetailLastDate
+                    getStartDate.add(Calendar.DATE, diff.toInt() * -1)
+                    getLastDate.add(Calendar.DATE, diff.toInt() * -1)
+                    viewModel.payDetailStartDate = getStartDate.time
+                    viewModel.payDetailLastDate = getLastDate.time
                 }
             }
         }
@@ -287,6 +466,30 @@ private fun NextButton(viewModel: MainViewModel) {
                         Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
                     viewModel.payDetailLastDate =
                         Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+
+                "custom" -> {
+
+                    // 開始日と終了日をLocalDateに変換
+                    val diffStartDate =
+                        viewModel.payDetailStartDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    val diffLastDate =
+                        viewModel.payDetailLastDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    // 終了日と開始日の差分を調べる
+
+                    val diff = ChronoUnit.DAYS.between(diffStartDate, diffLastDate)
+                    Log.d("diff", diff.toString())
+                    // 開始日、終了日それぞれに差分を引いて再代入
+                    val getStartDate = Calendar.getInstance()
+                    val getLastDate = Calendar.getInstance()
+                    getStartDate.time = viewModel.payDetailStartDate
+                    getLastDate.time = viewModel.payDetailLastDate
+                    getStartDate.add(Calendar.DATE, diff.toInt())
+                    getLastDate.add(Calendar.DATE, diff.toInt())
+                    viewModel.payDetailStartDate = getStartDate.time
+                    viewModel.payDetailLastDate = getLastDate.time
                 }
             }
         },
@@ -373,7 +576,7 @@ private fun SelectDateSortBox(viewModel: MainViewModel) {
 
     val sort = remember { mutableStateOf(viewModel.sort) }
     val expanded = remember { mutableStateOf(false) }
-    
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -410,4 +613,20 @@ private fun SelectDateSortBox(viewModel: MainViewModel) {
             )
         }
     }
+}
+
+private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
+    val format = try {
+        SimpleDateFormat(pattern)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+    val date = format?.let {
+        try {
+            it.parse(this)
+        } catch (e: ParseException) {
+            null
+        }
+    }
+    return date
 }
