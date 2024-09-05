@@ -9,10 +9,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,6 +28,7 @@ import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.Drawer
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.TopBar
 import com.example.kakeibo_dev_6.enum.Route
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
 
 @Composable
@@ -33,6 +36,11 @@ fun ExpenditureItemList(
     navController: NavController,
     viewModel: MainViewModel = hiltViewModel()
 ) {
+
+//    val systemUiController = rememberSystemUiController()
+//    SideEffect {
+//        systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.background)
+//    }
 
     // 支出項目取得
     val df = SimpleDateFormat("yyyy-MM-dd")

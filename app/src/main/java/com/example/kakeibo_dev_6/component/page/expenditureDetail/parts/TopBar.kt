@@ -2,7 +2,6 @@ package com.example.kakeibo_dev_6.component.page.expenditureDetail.parts
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,15 +34,6 @@ fun TopBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "戻る",
-                    tint = Color.White
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Outlined.Home,
-                    contentDescription = "詳細",
                     tint = Color.White
                 )
             }

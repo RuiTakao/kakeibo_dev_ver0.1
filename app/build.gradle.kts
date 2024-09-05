@@ -73,6 +73,8 @@ dependencies {
     // マテリアルアイコン拡張
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.20.3")
+
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 

@@ -108,6 +108,7 @@ fun EditExpenditureItem(
                 var validCount = 0
 
                 if (payDate.value.toDate("yyyy-MM-dd") == null) {
+                    Log.d("payDate", payDate.value)
                     validCount++
                     viewModel.inputValidatePayDateStatus = true
                     viewModel.inputValidatePayDateText = "日付を入力してください。"
