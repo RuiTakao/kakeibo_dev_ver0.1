@@ -67,6 +67,7 @@ fun EditExpenditureItem(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val yMd = SimpleDateFormat("y年M月d日")
+    val df = SimpleDateFormat("yyyy-MM-dd")
     val payDate = remember { mutableStateOf("") }
     val price = remember { mutableStateOf("") }
     val categoryId = remember { mutableStateOf("") }
@@ -74,7 +75,7 @@ fun EditExpenditureItem(
     val viewPayDate = remember { mutableStateOf("") }
 
     if (id == null) {
-        payDate.value = ""
+        payDate.value = df.format(Date())
         price.value = ""
         categoryId.value = ""
         content.value = ""
@@ -108,7 +109,6 @@ fun EditExpenditureItem(
                 var validCount = 0
 
                 if (payDate.value.toDate("yyyy-MM-dd") == null) {
-                    Log.d("payDate", payDate.value)
                     validCount++
                     viewModel.inputValidatePayDateStatus = true
                     viewModel.inputValidatePayDateText = "日付を入力してください。"
