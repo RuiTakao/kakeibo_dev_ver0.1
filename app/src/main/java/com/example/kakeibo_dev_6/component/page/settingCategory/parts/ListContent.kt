@@ -97,15 +97,6 @@ private fun SettingDropDownMenu(
             ) {
                 Text(text = "編集")
             }
-            TextButton(
-                onClick = {
-                    showMenu = false
-                    onClickDelete(category)
-                },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(text = "削除", color = Color.Red)
-            }
         }
     }
 }

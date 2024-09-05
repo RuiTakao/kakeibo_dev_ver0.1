@@ -57,8 +57,6 @@ fun ExpenditureItemDetail(
             expenditureItem?.let {
                 val yMd = SimpleDateFormat("y年M月d日")
 
-                Log.d("expenditureItem", expenditureItem.toString())
-
                 id.value = expenditureItem!!.id
                 payDate.value = yMd.format(expenditureItem!!.payDate.toDate("yyyy-MM-dd"))
                 price.value = expenditureItem!!.price
