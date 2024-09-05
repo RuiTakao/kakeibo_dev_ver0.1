@@ -1,7 +1,10 @@
 package com.example.kakeibo_dev_6.component.page.expenditureItemDetail
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -9,11 +12,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +43,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenditureItemDetail(
     navController: NavController,
@@ -44,7 +52,10 @@ fun ExpenditureItemDetail(
 ) {
     id?.let {
 
-        val expenditureItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
+        val isShowDialog = remember { mutableStateOf(false) }
+
+        val expenditureItem by viewModel.setEditingExpendItem(id = id)
+            .collectAsState(initial = null)
         val categories by viewModel.category.collectAsState(initial = emptyList())
 
         val id = remember { mutableStateOf(0) }
@@ -101,9 +112,13 @@ fun ExpenditureItemDetail(
                         color = Color.Gray,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    categories.forEach{
+                    categories.forEach {
                         if (it.id.toString() == category_id.value) {
-                            Text(text = it.categoryName, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = it.categoryName,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -116,17 +131,41 @@ fun ExpenditureItemDetail(
                     Text(text = content.value, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(48.dp))
-                IconButton(
-                    onClick = {
-                        viewModel.deleteExpendItem(viewModel.editingExpendItem!!)
-                        navController.popBackStack()
-                    }
-                ) {
+                IconButton(onClick = { isShowDialog.value = true }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "削除",
                         tint = Color.Red
                     )
+                }
+                if (isShowDialog.value) {
+                    AlertDialog(onDismissRequest = { isShowDialog.value = !isShowDialog.value }) {
+                        Column(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = MaterialTheme.shapes.extraLarge
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(text = "支出項目を削除しますか？")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(onClick = { isShowDialog.value = false }) {
+                                    Text(text = "キャンセル")
+                                }
+                                TextButton(onClick = {
+                                    viewModel.deleteExpendItem(viewModel.editingExpendItem!!)
+                                    navController.popBackStack()
+                                }) {
+                                    Text(text = "OK")
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
