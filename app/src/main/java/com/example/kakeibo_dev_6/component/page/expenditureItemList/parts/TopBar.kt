@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
@@ -33,7 +34,8 @@ fun TopBar(
             Text(
                 text = "支出項目",
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.White
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -49,7 +51,11 @@ fun TopBar(
                     }
                 }
             ) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "メニュー")
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "メニュー",
+                    tint = Color.White
+                )
             }
         },
         actions = {
@@ -59,7 +65,11 @@ fun TopBar(
                 val lastDate = df.format(viewModel.lastDate)
                 navController.navigate("${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}")
             }) {
-                Icon(imageVector = Icons.Default.ReceiptLong, contentDescription = "詳細")
+                Icon(
+                    imageVector = Icons.Default.ReceiptLong,
+                    contentDescription = "詳細",
+                    tint = Color.White
+                )
             }
         }
     )
