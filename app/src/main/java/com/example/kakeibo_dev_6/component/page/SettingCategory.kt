@@ -36,14 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.enum.Route
+import com.example.kakeibo_dev_6.viewModel.SettingCategoryViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingCategory(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
+fun SettingCategory(
+    navController: NavController,
+    viewModel: SettingCategoryViewModel = hiltViewModel()
+) {
 
     Scaffold(
         topBar = {

@@ -8,9 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kakeibo_dev_6.component.page.EditCategory
 import com.example.kakeibo_dev_6.component.page.EditExpenditureItem
-import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDetail
+import com.example.kakeibo_dev_6.component.page.ExpenditureDetail
 import com.example.kakeibo_dev_6.component.page.ExpenditureItemDetail
-import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
+import com.example.kakeibo_dev_6.component.page.ExpenditureItemList
 import com.example.kakeibo_dev_6.component.page.SettingCategory
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
