@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,7 +22,8 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchContext
-import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.TopBar
+import com.example.kakeibo_dev_6.component.parts.fab.FAButton
+import com.example.kakeibo_dev_6.component.parts.topBar.MainTopBar
 import com.example.kakeibo_dev_6.enum.Route
 import java.lang.IllegalArgumentException
 import java.text.ParseException
@@ -69,13 +70,17 @@ fun ExpenditureDetail(
 
     Scaffold(
         topBar = {
-            TopBar(navController = navController)
+            MainTopBar(title = "支出項目 明細", navigation = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "戻る",
+                        tint = Color.White
+                    )
+                }
+            }, actions = {})
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "追加")
-            }
-        }
+        floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) }
     ) { padding ->
         Column(
             modifier = Modifier

@@ -2,14 +2,18 @@ package com.example.kakeibo_dev_6.component.page.expenditureItemList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -29,9 +33,11 @@ import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.ControlContent
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.Drawer
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.ListContent
-import com.example.kakeibo_dev_6.component.page.expenditureItemList.parts.TopBar
+import com.example.kakeibo_dev_6.component.parts.fab.FAButton
+import com.example.kakeibo_dev_6.component.parts.topBar.MainTopBar
 import com.example.kakeibo_dev_6.enum.Route
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 @Composable
@@ -68,21 +74,42 @@ fun ExpenditureItemList(
     ) {
         Scaffold(
             topBar = {
-                TopBar(
-                    drawerState = drawerState,
-                    scope = scope,
-                    navController = navController,
-                    viewModel = viewModel
+                MainTopBar(
+                    title = "支出項目",
+                    navigation = {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "メニュー",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            val df = SimpleDateFormat("yyyy-MM-dd")
+                            val startDate = df.format(viewModel.startDate)
+                            val lastDate = df.format(viewModel.lastDate)
+                            navController.navigate("${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ReceiptLong,
+                                contentDescription = "詳細",
+                                tint = Color.White
+                            )
+                        }
+                    }
                 )
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) },
-                    containerColor = Color(0xFF854A2A)
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "追加", tint = Color.White, modifier = Modifier.size(32.dp))
-                }
-            }
+            floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) }
         ) { padding ->
             Column(
                 modifier = Modifier
