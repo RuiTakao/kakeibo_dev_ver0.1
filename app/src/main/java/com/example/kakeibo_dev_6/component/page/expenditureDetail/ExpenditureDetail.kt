@@ -87,7 +87,11 @@ fun ExpenditureDetail(
                 expenditureItemList = expenditureItemList,
                 viewModel = viewModel
             )
-            ListContent(expenditureItemList = expenditureItemList, navController = navController)
+            ListContent(
+                expenditureItemList = expenditureItemList,
+                navController = navController,
+                viewModel = viewModel
+            )
         }
     }
 }

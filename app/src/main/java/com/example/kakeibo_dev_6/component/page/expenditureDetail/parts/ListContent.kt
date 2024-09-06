@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.enum.Route
 import java.lang.IllegalArgumentException
@@ -28,19 +29,33 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ListContent(expenditureItemList: List<ExpenditureItemJoinCategory>, navController: NavController) {
+fun ListContent(
+    expenditureItemList: List<ExpenditureItemJoinCategory>,
+    navController: NavController,
+    viewModel: MainViewModel
+) {
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
         items(expenditureItemList) { expItem ->
             if (expenditureItemList.indexOf(expItem) == 0) {
-                Item(expItem = expItem, navController = navController, titleFlag = true)
+                Item(
+                    expItem = expItem,
+                    navController = navController,
+                    titleFlag = true,
+                    viewModel = viewModel
+                )
             } else {
                 if (
                     expenditureItemList.get(expenditureItemList.indexOf(expItem)).payDate !=
                     expenditureItemList.get(expenditureItemList.indexOf(expItem) - 1).payDate
                 ) {
-                    Item(expItem = expItem, navController = navController, titleFlag = true)
+                    Item(
+                        expItem = expItem,
+                        navController = navController,
+                        titleFlag = true,
+                        viewModel = viewModel
+                    )
                 } else {
-                    Item(expItem = expItem, navController = navController)
+                    Item(expItem = expItem, navController = navController, viewModel = viewModel)
                 }
             }
         }
@@ -48,23 +63,32 @@ fun ListContent(expenditureItemList: List<ExpenditureItemJoinCategory>, navContr
 }
 
 @Composable
-private fun Item(expItem: ExpenditureItemJoinCategory, navController: NavController, titleFlag: Boolean = false) {
+private fun Item(
+    expItem: ExpenditureItemJoinCategory,
+    navController: NavController,
+    titleFlag: Boolean = false,
+    viewModel: MainViewModel
+) {
     if (titleFlag) {
-        val Md = SimpleDateFormat("M月d日")
-        Text(
-            text = Md.format(expItem.payDate.toDate("yyyy-MM-dd")),
-            fontSize = 20.sp,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 4.dp)
-                .padding(top = 16.dp)
-        )
+        if (viewModel.payDetailDateProperty != "day") {
+            val Md = SimpleDateFormat("M月d日")
+            Text(
+                text = Md.format(expItem.payDate.toDate("yyyy-MM-dd")),
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 4.dp)
+                    .padding(top = 16.dp)
+            )
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     } else {
-        Spacer(
-            modifier = Modifier
-                .height(4.dp)
-                .fillMaxWidth()
-        )
+        if (viewModel.payDetailDateProperty != "day") {
+            Spacer(modifier = Modifier.height(4.dp))
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
     Column(
         modifier = Modifier
