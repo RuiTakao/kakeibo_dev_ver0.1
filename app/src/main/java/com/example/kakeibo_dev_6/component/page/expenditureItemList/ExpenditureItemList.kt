@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DrawerValue
@@ -20,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
@@ -37,10 +40,10 @@ fun ExpenditureItemList(
     viewModel: MainViewModel = hiltViewModel()
 ) {
 
-//    val systemUiController = rememberSystemUiController()
-//    SideEffect {
-//        systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.background)
-//    }
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
+    }
 
     // 支出項目取得
     val df = SimpleDateFormat("yyyy-MM-dd")
@@ -73,15 +76,18 @@ fun ExpenditureItemList(
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "追加")
+                FloatingActionButton(
+                    onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) },
+                    containerColor = Color(0xFF854A2A)
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "追加", tint = Color.White, modifier = Modifier.size(32.dp))
                 }
             }
         ) { padding ->
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .background(color = Color(0xFFF7F7F7))
+                    .background(color = Color(0xFFF8F5E3))
                     .fillMaxSize(),
                 content = {
                     ControlContent(

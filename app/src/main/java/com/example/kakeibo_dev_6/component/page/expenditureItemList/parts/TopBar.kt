@@ -39,7 +39,7 @@ fun TopBar(
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = Color(0xFF854A2A)
         ),
         navigationIcon = {
             IconButton(
