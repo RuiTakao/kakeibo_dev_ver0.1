@@ -18,7 +18,6 @@ class DisplaySwitchAreaViewModel @Inject constructor(
     var startDate by mutableStateOf(weekStartDate())
     var lastDate by mutableStateOf(weekLastDate())
     var dateProperty by mutableStateOf("week")
-    var selectCategoryName by mutableStateOf("すべて")
     var selectCategory by mutableStateOf(0)
     var sort by mutableStateOf(false)
     var pageTransitionFlg by mutableStateOf(true)

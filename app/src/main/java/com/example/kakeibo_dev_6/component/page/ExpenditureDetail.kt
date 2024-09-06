@@ -70,12 +70,6 @@ fun ExpenditureDetail(
         categoryId?.let { displaySwitchAreaViewModel.selectCategory = categoryId.toInt() }
         displaySwitchAreaViewModel.pageTransitionFlg = false
     }
-    val categories by displaySwitchAreaViewModel.category.collectAsState(initial = emptyList())
-    categories.forEach {
-        if (displaySwitchAreaViewModel.selectCategory == it.id) {
-            displaySwitchAreaViewModel.selectCategoryName = it.categoryName
-        }
-    }
     val expenditureItemList by expenditureDetailViewModel.expenditureItemList(
         firstDay = df.format(displaySwitchAreaViewModel.startDate),
         lastDay = df.format(displaySwitchAreaViewModel.lastDate),
@@ -120,7 +114,6 @@ fun ExpenditureDetail(
                             expItem = it,
                             navController = navController,
                             titleFlag = true,
-                            expenditureDetailViewModel = expenditureDetailViewModel,
                             displaySwitchAreaViewModel = displaySwitchAreaViewModel
                         )
                     } else {
@@ -132,14 +125,12 @@ fun ExpenditureDetail(
                                 expItem = it,
                                 navController = navController,
                                 titleFlag = true,
-                                expenditureDetailViewModel = expenditureDetailViewModel,
                                 displaySwitchAreaViewModel = displaySwitchAreaViewModel
                             )
                         } else {
                             Item(
                                 expItem = it,
                                 navController = navController,
-                                expenditureDetailViewModel = expenditureDetailViewModel,
                                 displaySwitchAreaViewModel = displaySwitchAreaViewModel
                             )
                         }
@@ -156,7 +147,6 @@ private fun Item(
     expItem: ExpenditureItemJoinCategory,
     navController: NavController,
     titleFlag: Boolean = false,
-    expenditureDetailViewModel: ExpenditureDetailViewModel = hiltViewModel(),
     displaySwitchAreaViewModel: DisplaySwitchAreaViewModel = hiltViewModel()
 ) {
     if (titleFlag) {
