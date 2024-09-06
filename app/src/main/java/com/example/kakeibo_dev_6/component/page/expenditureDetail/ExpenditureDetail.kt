@@ -23,8 +23,8 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.ListContent
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchContext
-import com.example.kakeibo_dev_6.component.parts.fab.FAButton
-import com.example.kakeibo_dev_6.component.parts.topBar.MainTopBar
+import com.example.kakeibo_dev_6.component.parts.FAButton
+import com.example.kakeibo_dev_6.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.enum.Route
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.lang.IllegalArgumentException

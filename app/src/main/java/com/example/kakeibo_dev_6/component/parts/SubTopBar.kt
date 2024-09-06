@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.component.parts.topBar
+package com.example.kakeibo_dev_6.component.parts
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api

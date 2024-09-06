@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.component.parts.fab
+package com.example.kakeibo_dev_6.component.parts
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
