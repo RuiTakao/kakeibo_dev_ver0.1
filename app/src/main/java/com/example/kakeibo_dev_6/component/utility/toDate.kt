@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.utility
+package com.example.kakeibo_dev_6.component.utility
 
 import java.lang.IllegalArgumentException
 import java.text.ParseException

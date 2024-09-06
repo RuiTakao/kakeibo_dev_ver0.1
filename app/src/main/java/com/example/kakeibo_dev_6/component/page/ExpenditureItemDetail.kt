@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.enum.Route
-import com.example.kakeibo_dev_6.utility.toDate
+import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 import java.text.SimpleDateFormat
 
