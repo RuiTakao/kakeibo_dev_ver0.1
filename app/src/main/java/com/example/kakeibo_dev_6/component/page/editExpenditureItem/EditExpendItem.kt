@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -96,81 +98,89 @@ fun EditExpenditureItem(
     }
 
     Scaffold(topBar = {
-        TopAppBar(title = {
-            Text(
-                text = "支出項目編集", maxLines = 1, overflow = TextOverflow.Ellipsis
-            )
-        }, navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-            }
-        }, actions = {
-            IconButton(onClick = {
-                var validCount = 0
-
-                if (payDate.value.toDate("yyyy-MM-dd") == null) {
-                    validCount++
-                    viewModel.inputValidatePayDateStatus = true
-                    viewModel.inputValidatePayDateText = "日付を入力してください。"
-                } else {
-                    viewModel.inputValidatePayDateStatus = false
+        TopAppBar(
+            title = {
+                Text(
+                    text = "支出項目編集", maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color(0xFFF8F5E3)
+            ),
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
                 }
+            },
+            actions = {
+                IconButton(onClick = {
+                    var validCount = 0
 
-                if (price.value == "") {
-                    validCount++
-                    viewModel.inputValidatePriceStatus = true
-                    viewModel.inputValidatePriceText = "金額を入力してください。"
-                } else if (!checkInt(price.value)) {
-                    validCount++
-                    viewModel.inputValidatePriceStatus = true
-                    viewModel.inputValidatePriceText = "金額が不正です。"
-                } else {
-                    viewModel.inputValidatePriceStatus = false
-                }
-
-                if (categoryId.value == "") {
-                    validCount++
-                    viewModel.inputValidateSelectCategoryText = "カテゴリーが未選択です。"
-                    viewModel.inputValidateSelectCategoryStatus = true
-                } else {
-                    viewModel.inputValidateSelectCategoryStatus = false
-                }
-
-                if (content.value == "") {
-                    validCount++
-                    viewModel.inputValidateContentText = "内容が未入力です。"
-                    viewModel.inputValidateContentStatus = true
-                } else if (content.value.length > 50) {
-                    validCount++
-                    viewModel.inputValidateContentText = "内容は50文字以内で入力してください。"
-                    viewModel.inputValidateContentStatus = true
-                } else {
-                    viewModel.inputValidateContentStatus = false
-                }
-
-                if (validCount == 0) {
-                    viewModel.payDate = payDate.value
-                    viewModel.price = price.value
-                    viewModel.category_id = categoryId.value
-                    viewModel.content = content.value
-                    if (id == null) {
-                        viewModel.createExpendItem()
+                    if (payDate.value.toDate("yyyy-MM-dd") == null) {
+                        validCount++
+                        viewModel.inputValidatePayDateStatus = true
+                        viewModel.inputValidatePayDateText = "日付を入力してください。"
                     } else {
-                        viewModel.updateExpendItem()
+                        viewModel.inputValidatePayDateStatus = false
                     }
-                    navController.popBackStack()
+
+                    if (price.value == "") {
+                        validCount++
+                        viewModel.inputValidatePriceStatus = true
+                        viewModel.inputValidatePriceText = "金額を入力してください。"
+                    } else if (!checkInt(price.value)) {
+                        validCount++
+                        viewModel.inputValidatePriceStatus = true
+                        viewModel.inputValidatePriceText = "金額が不正です。"
+                    } else {
+                        viewModel.inputValidatePriceStatus = false
+                    }
+
+                    if (categoryId.value == "") {
+                        validCount++
+                        viewModel.inputValidateSelectCategoryText = "カテゴリーが未選択です。"
+                        viewModel.inputValidateSelectCategoryStatus = true
+                    } else {
+                        viewModel.inputValidateSelectCategoryStatus = false
+                    }
+
+                    if (content.value == "") {
+                        validCount++
+                        viewModel.inputValidateContentText = "内容が未入力です。"
+                        viewModel.inputValidateContentStatus = true
+                    } else if (content.value.length > 50) {
+                        validCount++
+                        viewModel.inputValidateContentText = "内容は50文字以内で入力してください。"
+                        viewModel.inputValidateContentStatus = true
+                    } else {
+                        viewModel.inputValidateContentStatus = false
+                    }
+
+                    if (validCount == 0) {
+                        viewModel.payDate = payDate.value
+                        viewModel.price = price.value
+                        viewModel.category_id = categoryId.value
+                        viewModel.content = content.value
+                        if (id == null) {
+                            viewModel.createExpendItem()
+                        } else {
+                            viewModel.updateExpendItem()
+                        }
+                        navController.popBackStack()
+                    }
+                }) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
                 }
-            }) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
-            }
-        })
+            })
     }) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(top = 32.dp)
+                .background(Color(0xFFF8F5E3))
                 .padding(horizontal = 16.dp)
+                .fillMaxSize()
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
             // 日付
             InputPayDate(payDate = payDate, viewPayDate = viewPayDate, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
@@ -205,6 +215,7 @@ private fun InputPayDate(
     Box(
         modifier = Modifier
             .size(280.dp, 50.dp)
+            .background(Color.White)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
@@ -305,6 +316,7 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .size(280.dp, 50.dp)
+            .background(Color.White)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),

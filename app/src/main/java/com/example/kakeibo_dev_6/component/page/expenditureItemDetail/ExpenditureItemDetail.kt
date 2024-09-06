@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -83,7 +85,13 @@ fun ExpenditureItemDetail(
             })
         }) { padding ->
 
-            Column(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .background(Color(0xFFF8F5E3))
+                    .fillMaxSize()
+
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -183,6 +191,9 @@ private fun TopBar(navController: NavController, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFF8F5E3)
+        ),
         navigationIcon = {
             IconButton(onClick = {
                 navController.popBackStack()

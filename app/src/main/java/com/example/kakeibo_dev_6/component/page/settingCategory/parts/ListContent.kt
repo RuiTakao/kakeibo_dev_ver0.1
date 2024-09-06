@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +43,7 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
+                    .shadow(elevation = 5.dp)
                     .background(Color.White)
                     .fillMaxWidth()
                     .padding(start = 12.dp),
@@ -53,9 +55,6 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
                     category = it,
                     onClickEdit = {
                         navController.navigate("${Route.EDIT_CATEGORY.name}/${it.id}")
-                    },
-                    onClickDelete = {
-                        viewModel.deleteCategory(it)
                     }
                 )
             }
@@ -67,8 +66,7 @@ fun ListContent(navController: NavController, viewModel: MainViewModel) {
 @Composable
 private fun SettingDropDownMenu(
     category: Category,
-    onClickEdit: (Category) -> Unit,
-    onClickDelete: (Category) -> Unit
+    onClickEdit: (Category) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var showMenu by remember { mutableStateOf(false) }

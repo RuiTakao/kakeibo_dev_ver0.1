@@ -29,7 +29,7 @@ fun ListContent(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    LazyColumn(modifier = Modifier.padding(top = 32.dp), content = {
+    LazyColumn(modifier = Modifier.padding(top = 32.dp).padding(bottom = 80.dp), content = {
         items(categorizeExpenditureItem) {
             Item(
                 categorizeExpenditureItem = it,

@@ -29,7 +29,7 @@ fun SettingCategory(navController: NavController, viewModel: MainViewModel = hil
         Column(
             modifier = Modifier
                 .padding(padding)
-                .background(Color(0xFFF7F7F7))
+                .background(Color(0xFFF8F5E3))
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(24.dp))

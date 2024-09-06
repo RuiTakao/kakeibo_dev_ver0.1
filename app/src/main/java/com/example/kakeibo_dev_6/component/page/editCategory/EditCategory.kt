@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,7 +67,12 @@ fun EditCategory(
             TopBar(value = value, id = id, navController = navController, viewModel = viewModel)
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(Color(0xFFF8F5E3))
+        ) {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = value,
@@ -140,6 +147,9 @@ fun TopBar(value: String, id: Int?, navController: NavController, viewModel: Mai
                 overflow = TextOverflow.Ellipsis
             )
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFF8F5E3)
+        ),
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")

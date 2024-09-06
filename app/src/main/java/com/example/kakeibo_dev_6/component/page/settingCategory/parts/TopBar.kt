@@ -27,7 +27,7 @@ fun TopBar(navController: NavController) {
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFF7F7F7)
+            containerColor = Color(0xFFF8F5E3)
         ),
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
