@@ -1,6 +1,5 @@
-package com.example.kakeibo_dev_6.component.page.editExpenditureItem
+package com.example.kakeibo_dev_6.component.page
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.MainViewModel
+import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -66,7 +65,7 @@ import java.util.Date
 fun EditExpenditureItem(
     navController: NavController,
     id: Int? = null,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: EditExpenditureItemViewModel = hiltViewModel()
 ) {
     val yMd = SimpleDateFormat("y年M月d日")
     val df = SimpleDateFormat("yyyy-MM-dd")
@@ -201,7 +200,7 @@ fun EditExpenditureItem(
 private fun InputPayDate(
     payDate: MutableState<String>,
     viewPayDate: MutableState<String>,
-    viewModel: MainViewModel
+    viewModel: EditExpenditureItemViewModel
 ) {
 
     val yMd = SimpleDateFormat("y年M月d日")
@@ -270,7 +269,7 @@ private fun InputPayDate(
 }
 
 @Composable
-private fun InputPrice(price: MutableState<String>, viewModel: MainViewModel) {
+private fun InputPrice(price: MutableState<String>, viewModel: EditExpenditureItemViewModel) {
     Text(
         text = "金額",
         modifier = Modifier.padding(bottom = 4.dp),
@@ -296,7 +295,10 @@ private fun InputPrice(price: MutableState<String>, viewModel: MainViewModel) {
 }
 
 @Composable
-private fun InputCategory(category_id: MutableState<String>, viewModel: MainViewModel) {
+private fun InputCategory(
+    category_id: MutableState<String>,
+    viewModel: EditExpenditureItemViewModel
+) {
 
     val categories by viewModel.category.collectAsState(initial = emptyList())
     val expanded = remember { mutableStateOf(false) }
@@ -358,7 +360,7 @@ private fun InputCategory(category_id: MutableState<String>, viewModel: MainView
 }
 
 @Composable
-private fun InputContent(content: MutableState<String>, viewModel: MainViewModel) {
+private fun InputContent(content: MutableState<String>, viewModel: EditExpenditureItemViewModel) {
     Text(
         text = "内容",
         modifier = Modifier.padding(bottom = 4.dp),

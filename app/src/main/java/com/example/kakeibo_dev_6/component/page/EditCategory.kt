@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.component.page.editCategory
+package com.example.kakeibo_dev_6.component.page
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,14 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.MainViewModel
+import com.example.kakeibo_dev_6.viewModel.EditCategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategory(
     navController: NavController,
     id: Int? = null,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: EditCategoryViewModel = hiltViewModel()
 ) {
 
     var value by remember { mutableStateOf("") }
@@ -138,7 +138,7 @@ fun EditCategory(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(value: String, id: Int?, navController: NavController, viewModel: MainViewModel) {
+fun TopBar(value: String, id: Int?, navController: NavController, viewModel: EditCategoryViewModel) {
     TopAppBar(
         title = {
             Text(

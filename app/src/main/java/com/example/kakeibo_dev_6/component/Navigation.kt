@@ -6,12 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.kakeibo_dev_6.component.page.editCategory.EditCategory
-import com.example.kakeibo_dev_6.component.page.editExpenditureItem.EditExpenditureItem
+import com.example.kakeibo_dev_6.component.page.EditCategory
+import com.example.kakeibo_dev_6.component.page.EditExpenditureItem
 import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDetail
-import com.example.kakeibo_dev_6.component.page.expenditureItemDetail.ExpenditureItemDetail
+import com.example.kakeibo_dev_6.component.page.ExpenditureItemDetail
 import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
-import com.example.kakeibo_dev_6.component.page.settingCategory.SettingCategory
+import com.example.kakeibo_dev_6.component.page.SettingCategory
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
 
