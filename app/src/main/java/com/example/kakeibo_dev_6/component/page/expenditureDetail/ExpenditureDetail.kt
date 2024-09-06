@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +26,7 @@ import com.example.kakeibo_dev_6.component.page.expenditureDetail.parts.SearchCo
 import com.example.kakeibo_dev_6.component.parts.fab.FAButton
 import com.example.kakeibo_dev_6.component.parts.topBar.MainTopBar
 import com.example.kakeibo_dev_6.enum.Route
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -39,6 +41,12 @@ fun ExpenditureDetail(
     dateProperty: String? = null,
     viewModel: MainViewModel = hiltViewModel()
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
+    }
+
     val df = SimpleDateFormat("yyyy-MM-dd")
     if (viewModel.pageTransitionFlg) {
         viewModel.payDetailStartDate = startDate?.let {
@@ -85,7 +93,7 @@ fun ExpenditureDetail(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .background(color = Color(0xFFF7F7F7))
+                .background(color = Color(0xFFF8F5E3))
                 .fillMaxSize()
         ) {
             SearchContext(

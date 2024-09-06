@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +35,7 @@ fun ListContent(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+    LazyColumn {
         items(expenditureItemList) { expItem ->
             if (expenditureItemList.indexOf(expItem) == 0) {
                 Item(
@@ -78,14 +79,17 @@ private fun Item(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 4.dp)
-                    .padding(top = 16.dp)
+                    .padding(top = 32.dp)
             )
         } else {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
     } else {
         if (viewModel.payDetailDateProperty != "day") {
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier
+                .height(2.dp)
+                .background(Color.LightGray)
+                .fillMaxWidth())
         } else {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -97,13 +101,14 @@ private fun Item(
                     route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
                 )
             }
+            .shadow(elevation = 5.dp)
             .background(Color.White)
-            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
-
     ) {
         Row(
             modifier = Modifier
+                .padding(vertical = 8.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top

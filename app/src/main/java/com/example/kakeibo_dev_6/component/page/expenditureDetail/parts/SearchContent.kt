@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,12 @@ fun SearchContext(
     viewModel: MainViewModel
 ) {
 
-    Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)) {
+    Column(
+        modifier = Modifier
+            .shadow(elevation = 5.dp)
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.onPrimary)
+    ) {
         ChangeDurationDateRow(viewModel = viewModel)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -158,14 +164,14 @@ private fun ChangeDurationDateText(
                 Text(
                     text = text,
                     fontSize = 16.sp,
-                    color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray
+                    color = if (selected) Color(0xFF854A2A) else Color.Gray
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
                         .width(20.dp)
-                        .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
                 )
             }
         },
