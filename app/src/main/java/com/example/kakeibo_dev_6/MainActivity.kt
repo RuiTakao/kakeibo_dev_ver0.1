@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.core.app.AppLaunchChecker
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kakeibo_dev_6.component.Navigation
+import com.example.kakeibo_dev_6.viewModel.EditCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             if (!AppLaunchChecker.hasStartedFromLauncher(applicationContext)) {
                 // 初回起動の場合実行
-                val viewModel: MainViewModel = hiltViewModel()
+                val viewModel: EditCategoryViewModel = hiltViewModel()
                 defaultCategory(viewModel)
             }
 
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun defaultCategory(viewModel: MainViewModel) {
+private fun defaultCategory(viewModel: EditCategoryViewModel) {
 
     viewModel.name = "🏠 生活費"
     viewModel.order = 1

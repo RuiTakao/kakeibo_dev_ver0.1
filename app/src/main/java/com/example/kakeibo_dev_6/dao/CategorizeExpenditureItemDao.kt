@@ -12,10 +12,14 @@ interface CategorizeExpenditureItemDao {
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "" +
-                "SELECT id, categoryName, SUM(price) AS price, COUNT(categoryId) AS categoryId, payDate FROM CategorizeExpenditureItem " +
+                "SELECT id, categoryName, SUM(price) AS price, COUNT(categoryId) AS categoryId, payDate, categoryOrder FROM CategorizeExpenditureItem " +
                 "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
-                "GROUP BY categoryName" +
+                "GROUP BY categoryName " +
+                "ORDER BY categoryOrder ASC" +
                 ""
     )
-    fun categorizeExpenditureItem(firstDay: String, lastDay: String): Flow<List<CategorizeExpenditureItem>>
+    fun categorizeExpenditureItem(
+        firstDay: String,
+        lastDay: String
+    ): Flow<List<CategorizeExpenditureItem>>
 }

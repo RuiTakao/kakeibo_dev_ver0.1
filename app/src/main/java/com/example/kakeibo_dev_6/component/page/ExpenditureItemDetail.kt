@@ -1,6 +1,5 @@
-package com.example.kakeibo_dev_6.component.page.expenditureItemDetail
+package com.example.kakeibo_dev_6.component.page
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,19 +37,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.MainViewModel
 import com.example.kakeibo_dev_6.enum.Route
-import java.lang.IllegalArgumentException
-import java.text.ParseException
+import com.example.kakeibo_dev_6.component.utility.toDate
+import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 import java.text.SimpleDateFormat
-import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenditureItemDetail(
     navController: NavController,
     id: Int?,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: EditExpenditureItemViewModel = hiltViewModel()
 ) {
     id?.let {
 
@@ -209,20 +206,4 @@ private fun TopBar(navController: NavController, onClick: () -> Unit) {
             }
         }
     )
-}
-
-private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
-    val format = try {
-        SimpleDateFormat(pattern)
-    } catch (e: IllegalArgumentException) {
-        null
-    }
-    val date = format?.let {
-        try {
-            it.parse(this)
-        } catch (e: ParseException) {
-            null
-        }
-    }
-    return date
 }

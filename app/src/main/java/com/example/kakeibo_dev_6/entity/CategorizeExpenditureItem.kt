@@ -13,5 +13,6 @@ data class CategorizeExpenditureItem(
     val categoryName: String,
     val price: String,
     val payDate: String,
-    val categoryId: Int
+    val categoryId: Int,
+    val categoryOrder: Int
 )

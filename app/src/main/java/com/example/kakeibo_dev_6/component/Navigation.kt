@@ -6,12 +6,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.kakeibo_dev_6.component.page.editCategory.EditCategory
-import com.example.kakeibo_dev_6.component.page.editExpenditureItem.EditExpenditureItem
-import com.example.kakeibo_dev_6.component.page.expenditureDetail.ExpenditureDetail
-import com.example.kakeibo_dev_6.component.page.expenditureItemDetail.ExpenditureItemDetail
-import com.example.kakeibo_dev_6.component.page.expenditureItemList.ExpenditureItemList
-import com.example.kakeibo_dev_6.component.page.settingCategory.SettingCategory
+import com.example.kakeibo_dev_6.component.page.EditCategory
+import com.example.kakeibo_dev_6.component.page.EditExpenditureItem
+import com.example.kakeibo_dev_6.component.page.ExpenditureDetail
+import com.example.kakeibo_dev_6.component.page.ExpenditureItemDetail
+import com.example.kakeibo_dev_6.component.page.ExpenditureItemList
+import com.example.kakeibo_dev_6.component.page.ReplaceOrderCategory
+import com.example.kakeibo_dev_6.component.page.SettingCategory
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
 
@@ -79,6 +80,11 @@ fun Navigation() {
             // カテゴリー登録
             composable(route = Route.EDIT_CATEGORY.name) {
                 EditCategory(navController = navController)
+            }
+
+            // カテゴリー並び替え
+            composable(route = Route.REPLACE_ORDER_CATEGORY.name) {
+                ReplaceOrderCategory(navController = navController)
             }
 
             // 支出項目編集
