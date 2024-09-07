@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component.page
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.viewModel.EditCategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +50,9 @@ fun EditCategory(
     id: Int? = null,
     viewModel: EditCategoryViewModel = hiltViewModel()
 ) {
+
+    // カテゴリーの最後尾取得
+    val maxOrderCategory by viewModel.maxOrderCategory.collectAsState(initial = null)
 
     var value by remember { mutableStateOf("") }
     if (id == null) {
@@ -64,7 +69,13 @@ fun EditCategory(
 
     Scaffold(
         topBar = {
-            TopBar(value = value, id = id, navController = navController, viewModel = viewModel)
+            TopBar(
+                value = value,
+                id = id,
+                navController = navController,
+                viewModel = viewModel,
+                maxOrderCategory = maxOrderCategory
+            )
         }
     ) { paddingValues ->
         Column(
@@ -138,7 +149,13 @@ fun EditCategory(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(value: String, id: Int?, navController: NavController, viewModel: EditCategoryViewModel) {
+fun TopBar(
+    value: String,
+    id: Int?,
+    navController: NavController,
+    viewModel: EditCategoryViewModel,
+    maxOrderCategory: Category?
+) {
     TopAppBar(
         title = {
             Text(
@@ -168,7 +185,11 @@ fun TopBar(value: String, id: Int?, navController: NavController, viewModel: Edi
                     } else {
                         viewModel.inputValidateCategoryStatus = false
                         if (id == null) {
-                            viewModel.order = 1
+                            maxOrderCategory?.let {
+                                viewModel.order = maxOrderCategory.categoryOrder + 1
+                            } ?: {
+                                viewModel.order = 0
+                            }
                             viewModel.createCategory()
                         } else {
                             viewModel.updateCategory()

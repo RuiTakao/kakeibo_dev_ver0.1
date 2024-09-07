@@ -54,4 +54,6 @@ class EditCategoryViewModel @Inject constructor(
             categoryDao.deleteCategory(category)
         }
     }
+
+    val maxOrderCategory = categoryDao.maxOrderCategory().distinctUntilChanged()
 }

@@ -75,6 +75,8 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.20.3")
 
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 

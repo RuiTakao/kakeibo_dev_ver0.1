@@ -14,11 +14,14 @@ interface CategoryDao {
     @Insert
     suspend fun insertCategory(category: Category)
 
-    @Query("SELECT * FROM Category")
+    @Query("SELECT * FROM Category ORDER BY categoryOrder ASC")
     fun loadAllCategories(): Flow<List<Category>>
 
     @Query("SELECT * FROM Category WHERE id = :id")
     fun getOneOfCategory(id: Int): Flow<Category>
+
+    @Query("SELECT MAX(categoryOrder) AS id, MAX(categoryOrder) AS categoryName, MAX(categoryOrder) AS categoryOrder FROM Category")
+    fun maxOrderCategory(): Flow<Category>
 
     @Update
     suspend fun updateCategory(category: Category)

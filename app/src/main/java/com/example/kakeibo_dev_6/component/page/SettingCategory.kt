@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component.page
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -94,7 +95,8 @@ fun SettingCategory(
                             category = it,
                             onClickEdit = {
                                 navController.navigate("${Route.EDIT_CATEGORY.name}/${it.id}")
-                            }
+                            },
+                            onClickReplaceOrderCategory = { navController.navigate(Route.REPLACE_ORDER_CATEGORY.name) }
                         )
                     }
                     Spacer(modifier = Modifier.height(12.dp))
@@ -107,7 +109,8 @@ fun SettingCategory(
 @Composable
 private fun SettingDropDownMenu(
     category: Category,
-    onClickEdit: (Category) -> Unit
+    onClickEdit: (Category) -> Unit,
+    onClickReplaceOrderCategory: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var showMenu by remember { mutableStateOf(false) }
@@ -135,6 +138,15 @@ private fun SettingDropDownMenu(
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(text = "編集")
+            }
+            TextButton(
+                onClick = {
+                    showMenu = false
+                    onClickReplaceOrderCategory()
+                },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(text = "並替え")
             }
         }
     }
