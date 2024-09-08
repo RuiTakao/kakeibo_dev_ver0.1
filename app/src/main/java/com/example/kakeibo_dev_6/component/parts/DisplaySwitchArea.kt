@@ -17,9 +17,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DatePicker
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,13 +28,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.component.utility.weekLastDate
 import com.example.kakeibo_dev_6.component.utility.weekStartDate
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
@@ -175,9 +174,9 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
 
     val selected = viewModel.dateProperty == "custom"
 
-    val isShowCustomDateDialog = remember { mutableStateOf(false) }
+    val visible = remember { mutableStateOf(false) }
 
-    IconButton(onClick = { isShowCustomDateDialog.value = true }, content = {
+    IconButton(onClick = { visible.value = !visible.value }, content = {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 imageVector = Icons.Default.CalendarMonth,
@@ -194,126 +193,48 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
         }
     })
 
-    if (isShowCustomDateDialog.value) {
+    if (visible.value) {
 
-        val startCustomDate = remember { mutableStateOf("") }
-        val startViewCustomDate = remember { mutableStateOf("") }
-        val startVisible = remember { mutableStateOf(false) }
+        val state = rememberDateRangePickerState(viewModel.startDate.time, viewModel.lastDate.time)
+        val coroutineScope = rememberCoroutineScope()
+        val getStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
+        val getLastDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
 
-        val lastCustomDate = remember { mutableStateOf("") }
-        val lastViewCustomDate = remember { mutableStateOf("") }
-        val lastVisible = remember { mutableStateOf(false) }
+        DatePickerDialog(onDismissRequest = { visible.value = false },
+            confirmButton = {
+//                TextButton(onClick = { visible.value = false }, content = { Text(text = "OK") })
+            },
+            content = {
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    DateRangePicker(
+                        state = state,
+                        dateValidator = {
+                            if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .isAfter(LocalDate.now())
+                            ) false else true
+                        }
+                    )
+                    Button(
+                        onClick = {
+                            visible.value = false
+                            viewModel.dateProperty = "custom"
+                            viewModel.startDate = getStartDate
+                            viewModel.lastDate = getLastDate
+                        },
+                        modifier = Modifier.padding(16.dp),
+                        content = {
+                            Box(
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "OK", color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    )
 
-        AlertDialog(onDismissRequest = { isShowCustomDateDialog.value = false }) {
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .width(320.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF854A2A))
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = "カレンダー",
-                            tint = Color.White
-                        )
-                        Text(
-                            text = "表示期間",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                ) {
-                    TextButton(onClick = { startVisible.value = !startVisible.value }) {
-                        Text(text = startViewCustomDate.value)
-                    }
-                    Text(text = "～")
-                    TextButton(onClick = { lastVisible.value = !lastVisible.value }) {
-                        Text(text = lastViewCustomDate.value)
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp)
-                ) {
-                    TextButton(onClick = { isShowCustomDateDialog.value = false }) {
-                        Text(text = "キャンセル")
-                    }
-                    TextButton(onClick = {
-                        isShowCustomDateDialog.value = false
-                        viewModel.dateProperty = "custom"
-                        viewModel.startDate = startCustomDate.value.toDate("yyyy-MM-dd")!!
-                        viewModel.lastDate = lastCustomDate.value.toDate("yyyy-MM-dd")!!
-                    }) {
-                        Text(text = "OK")
-                    }
                 }
             }
-        }
-
-        DatePickerCustomDate(
-            visible = startVisible,
-            customDate = startCustomDate,
-            viewCustomDate = startViewCustomDate,
-            setDate = viewModel.startDate
         )
-
-        DatePickerCustomDate(
-            visible = lastVisible,
-            customDate = lastCustomDate,
-            viewCustomDate = lastViewCustomDate,
-            setDate = viewModel.lastDate
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerCustomDate(
-    visible: MutableState<Boolean>,
-    customDate: MutableState<String>,
-    viewCustomDate: MutableState<String>,
-    setDate: Date
-) {
-    val state = rememberDatePickerState(setDate.time)
-    val getDate = state.selectedDateMillis?.let {
-        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-    }
-    val yMd = SimpleDateFormat("y年M月d日")
-    val df = SimpleDateFormat("yyyy-MM-dd")
-    customDate.value = getDate?.let { getDate.toString() } ?: df.format(setDate)
-    viewCustomDate.value = yMd.format(customDate.value.toDate("yyyy-MM-dd"))
-
-    if (visible.value) {
-        DatePickerDialog(onDismissRequest = { visible.value = false }, confirmButton = {
-            TextButton(onClick = { visible.value = false }, content = { Text(text = "OK") })
-        }, content = {
-            DatePicker(state = state, dateValidator = {
-                if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                        .isAfter(LocalDate.now())
-                ) false else true
-            })
-        })
     }
 }
 
