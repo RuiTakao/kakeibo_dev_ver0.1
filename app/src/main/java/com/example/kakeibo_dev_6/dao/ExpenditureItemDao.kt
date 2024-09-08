@@ -20,6 +20,9 @@ interface ExpenditureItemDao {
     @Query("SELECT * FROM ExpenditureItem WHERE id = :id")
     fun loadExpenditureItem(id: Int): Flow<ExpenditureItem>
 
+    @Query("SELECT * FROM ExpenditureItem WHERE categoryId = :categoryId")
+    fun isUsedCategory(categoryId: Int): Flow<List<ExpenditureItem>>
+
     @Update
     suspend fun updateExpenditureItem(expenditureItem: ExpenditureItem)
 

@@ -56,6 +56,9 @@ fun EditCategory(
     // カテゴリーの最後尾取得
     val maxOrderCategory by viewModel.maxOrderCategory.collectAsState(initial = null)
 
+    val isUsedCategory by viewModel.isUsedCategory(categoryId = id ?: 0)
+        .collectAsState(initial = null)
+
     var value by remember { mutableStateOf("") }
     if (id == null) {
         value = ""
@@ -108,14 +111,24 @@ fun EditCategory(
                 )
             }
             if (id != null) {
+                val check = isUsedCategory?.size ?: 0
                 Spacer(modifier = Modifier.height(56.dp))
-                IconButton(onClick = { isShowDialog.value = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "削除",
-                        tint = Color.Red
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { isShowDialog.value = true },
+                        enabled = if (check > 0) false else true
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "削除",
+                            tint = if (check > 0) Color.Gray else Color.Red
+                        )
+                    }
+                    if (check > 0) {
+                        Text(text = "このカテゴリーは使用されているため\n削除出来ません", color = Color.Gray, fontSize = 14.sp)
+                    }
                 }
+
                 if (isShowDialog.value) {
                     AlertDialog(onDismissRequest = { isShowDialog.value = !isShowDialog.value }) {
                         Column(

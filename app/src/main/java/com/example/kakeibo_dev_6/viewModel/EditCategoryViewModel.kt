@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kakeibo_dev_6.dao.CategoryDao
+import com.example.kakeibo_dev_6.dao.ExpenditureItemDao
 import com.example.kakeibo_dev_6.entity.Category
+import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditCategoryViewModel @Inject constructor(
-    private val categoryDao: CategoryDao
+    private val categoryDao: CategoryDao,
+    private val expenditureItemDao: ExpenditureItemDao
 ) : ViewModel() {
     var editingCategory: Category? = null
 
@@ -56,4 +59,8 @@ class EditCategoryViewModel @Inject constructor(
     }
 
     val maxOrderCategory = categoryDao.maxOrderCategory().distinctUntilChanged()
+
+    fun isUsedCategory(categoryId: Int): Flow<List<ExpenditureItem>> {
+        return expenditureItemDao.isUsedCategory(categoryId = categoryId)
+    }
 }
