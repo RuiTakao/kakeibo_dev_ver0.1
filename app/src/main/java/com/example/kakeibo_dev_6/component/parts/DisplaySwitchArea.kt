@@ -398,7 +398,13 @@ private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
     }
 }
 
-// nextボタン
+/**
+ * nextボタン
+ *
+ * @param viewModel: DisplaySwitchAreaViewModel
+ *
+ * @return Unit
+ */
 @Composable
 private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
     val lastDate = viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -460,7 +466,7 @@ private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
                 }
             }
         },
-        enabled = if (lastDate.isEqual(LocalDate.now())) false else true,
+        enabled = if (lastDate.isEqual(LocalDate.now()) || lastDate.isAfter(LocalDate.now())) false else true,
     ) {
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null
