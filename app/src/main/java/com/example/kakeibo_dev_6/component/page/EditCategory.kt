@@ -42,13 +42,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.entity.Category
 import com.example.kakeibo_dev_6.viewModel.EditCategoryViewModel
+import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategory(
     navController: NavController,
     id: Int? = null,
-    viewModel: EditCategoryViewModel = hiltViewModel()
+    viewModel: EditCategoryViewModel = hiltViewModel(),
+    editExpenditureItemViewModel: EditExpenditureItemViewModel? = null
 ) {
 
     // カテゴリーの最後尾取得
@@ -74,7 +76,8 @@ fun EditCategory(
                 id = id,
                 navController = navController,
                 viewModel = viewModel,
-                maxOrderCategory = maxOrderCategory
+                maxOrderCategory = maxOrderCategory,
+                editExpenditureItemViewModel = editExpenditureItemViewModel
             )
         }
     ) { paddingValues ->
@@ -154,7 +157,8 @@ fun TopBar(
     id: Int?,
     navController: NavController,
     viewModel: EditCategoryViewModel,
-    maxOrderCategory: Category?
+    maxOrderCategory: Category?,
+    editExpenditureItemViewModel: EditExpenditureItemViewModel?
 ) {
     TopAppBar(
         title = {
@@ -189,6 +193,10 @@ fun TopBar(
                                 viewModel.order = maxOrderCategory.categoryOrder + 1
                             } ?: {
                                 viewModel.order = 0
+                            }
+                            if (editExpenditureItemViewModel != null) {
+                                editExpenditureItemViewModel.firstCategory = viewModel.order
+                                editExpenditureItemViewModel.createCategoryFlg = true
                             }
                             viewModel.createCategory()
                         } else {

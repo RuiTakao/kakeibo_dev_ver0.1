@@ -24,6 +24,11 @@ class EditExpenditureItemViewModel @Inject constructor(
     var content by mutableStateOf("")
     var price by mutableStateOf("")
 
+    var createCategoryFlg by mutableStateOf(false)
+    var firstCategory by mutableStateOf(0)
+
+    val maxOrderCategory = categoryDao.maxOrderCategory().distinctUntilChanged()
+
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 
     fun createExpendItem() {

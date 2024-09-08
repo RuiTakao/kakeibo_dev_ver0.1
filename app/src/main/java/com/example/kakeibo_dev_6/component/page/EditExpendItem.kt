@@ -1,13 +1,16 @@
 package com.example.kakeibo_dev_6.component.page
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -51,6 +55,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.component.utility.checkInt
+import com.example.kakeibo_dev_6.component.utility.toDate
+import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 import java.lang.IllegalArgumentException
 import java.text.ParseException
@@ -187,7 +194,11 @@ fun EditExpenditureItem(
             InputPrice(price = price, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // カテゴリー
-            InputCategory(category_id = categoryId, viewModel = viewModel)
+            InputCategory(
+                category_id = categoryId,
+                navController = navController,
+                viewModel = viewModel
+            )
             Spacer(modifier = Modifier.height(16.dp))
             // 内容
             InputContent(content = content, viewModel = viewModel)
@@ -297,6 +308,7 @@ private fun InputPrice(price: MutableState<String>, viewModel: EditExpenditureIt
 @Composable
 private fun InputCategory(
     category_id: MutableState<String>,
+    navController: NavController,
     viewModel: EditExpenditureItemViewModel
 ) {
 
@@ -304,8 +316,15 @@ private fun InputCategory(
     val expanded = remember { mutableStateOf(false) }
     val selectOptionText = remember { mutableStateOf("カテゴリーを選択してください") }
     categories.forEach {
-        if (it.id.toString() == category_id.value) {
-            selectOptionText.value = it.categoryName
+        if (viewModel.createCategoryFlg) {
+            if (it.categoryOrder == viewModel.firstCategory) {
+                selectOptionText.value = it.categoryName
+                category_id.value = it.id.toString()
+            }
+        } else {
+            if (it.id.toString() == category_id.value) {
+                selectOptionText.value = it.categoryName
+            }
         }
     }
 
@@ -347,7 +366,37 @@ private fun InputCategory(
                         expanded.value = false
                     }
                 )
+                Spacer(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(Color.LightGray)
+                )
             }
+            DropdownMenuItem(
+                text = {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.AddCircle,
+                            contentDescription = "カテゴリー追加"
+                        )
+                        Text(text = "カテゴリー追加", modifier = Modifier.padding(start = 8.dp))
+                    }
+                },
+                onClick = {
+                    expanded.value = false
+                    navController.navigate(Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name)
+                },
+                modifier = Modifier
+                    .background(Color.White)
+                    .height(56.dp)
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(1.dp)
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+            )
         }
     }
     if (viewModel.inputValidateSelectCategoryStatus) {
@@ -381,30 +430,5 @@ private fun InputContent(content: MutableState<String>, viewModel: EditExpenditu
             color = Color.Red,
             fontSize = 14.sp
         )
-    }
-}
-
-private fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
-    val format = try {
-        SimpleDateFormat(pattern)
-    } catch (e: IllegalArgumentException) {
-        null
-    }
-    val date = format?.let {
-        try {
-            it.parse(this)
-        } catch (e: ParseException) {
-            null
-        }
-    }
-    return date
-}
-
-private fun checkInt(s: String): Boolean {
-    return try {
-        s.toInt()
-        true
-    } catch (e: NumberFormatException) {
-        false
     }
 }

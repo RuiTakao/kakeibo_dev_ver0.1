@@ -1,6 +1,8 @@
 package com.example.kakeibo_dev_6.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +17,7 @@ import com.example.kakeibo_dev_6.component.page.ReplaceOrderCategory
 import com.example.kakeibo_dev_6.component.page.SettingCategory
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
+import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 
 @Composable
 fun Navigation() {
@@ -101,6 +104,16 @@ fun Navigation() {
             // 支出項目登録
             composable(route = Route.EDIT_EXPENDITURE.name) {
                 EditExpenditureItem(navController = navController)
+            }
+
+            // 支出登録時、カテゴリー追加する場合のルーティング
+            composable(route = Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name) {backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Route.EDIT_EXPENDITURE.name)
+                }
+
+                val viewModel: EditExpenditureItemViewModel = viewModel(viewModelStoreOwner = parentEntry)
+                EditCategory(navController = navController, editExpenditureItemViewModel = viewModel)
             }
         }
     }
