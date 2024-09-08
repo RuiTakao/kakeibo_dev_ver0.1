@@ -125,7 +125,11 @@ fun EditCategory(
                         )
                     }
                     if (check > 0) {
-                        Text(text = "このカテゴリーは使用されているため\n削除出来ません", color = Color.Gray, fontSize = 14.sp)
+                        Text(
+                            text = "このカテゴリーは使用されているため\n削除出来ません",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
                     }
                 }
 
@@ -176,7 +180,7 @@ fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = "カテゴリ編集",
+                text = if (id == null) "カテゴリー追加" else "カテゴリー編集",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

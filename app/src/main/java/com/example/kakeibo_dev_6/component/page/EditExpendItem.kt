@@ -107,7 +107,9 @@ fun EditExpenditureItem(
         TopAppBar(
             title = {
                 Text(
-                    text = "支出項目編集", maxLines = 1, overflow = TextOverflow.Ellipsis
+                    text = if (id == null) "支出項目 追加" else "支出項目 編集",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -247,8 +249,9 @@ private fun InputPayDate(
                 Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
             }
             payDate.value =
-                getDate?.let { getDate.toString() + " 12:00:00" } ?: if (payDate.value == "") LocalDate.now()
-                    .toString() + " 12:00:00" else payDate.value + " 12:00:00"
+                getDate?.let { getDate.toString() + " 12:00:00" }
+                    ?: if (payDate.value == "") LocalDate.now()
+                        .toString() + " 12:00:00" else payDate.value + " 12:00:00"
             viewPayDate.value = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
             DatePickerDialog(
                 onDismissRequest = { visible = false },

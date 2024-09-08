@@ -115,7 +115,7 @@ fun ReplaceOrderCategory(
                                 .shadow(elevation.value)
                                 .background(Color.White)
                                 .padding(start = 12.dp)
-                                .padding(vertical = 8.dp)
+                                .padding(vertical = 12.dp)
                                 .fillMaxWidth()
                         ) {
                             Text(text = item.categoryName, fontSize = 20.sp)
