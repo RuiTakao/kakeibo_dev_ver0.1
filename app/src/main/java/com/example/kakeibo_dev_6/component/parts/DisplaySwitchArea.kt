@@ -182,14 +182,14 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
             Icon(
                 imageVector = Icons.Default.CalendarMonth,
                 contentDescription = null,
-                tint = if (selected) MaterialTheme.colorScheme.primary else Color.Gray
+                tint = if (selected) Color(0xFF854A2A) else Color.Gray
             )
             Spacer(modifier = Modifier.height(2.dp))
             Spacer(
                 modifier = Modifier
                     .height(2.dp)
                     .width(20.dp)
-                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                    .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
             )
         }
     })
@@ -214,7 +214,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(Color(0xFF854A2A))
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
