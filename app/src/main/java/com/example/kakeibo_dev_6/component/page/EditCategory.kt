@@ -116,17 +116,23 @@ fun EditCategory(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = { isShowDialog.value = true },
-                        enabled = if (check > 0) false else true
+                        enabled = !(check > 0 || id == 1)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "削除",
-                            tint = if (check > 0) Color.Gray else Color.Red
+                            tint = if (check > 0 || id == 1) Color.Gray else Color.Red
                         )
                     }
                     if (check > 0) {
                         Text(
                             text = "このカテゴリーは使用されているため\n削除出来ません",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    } else if (id == 1) {
+                        Text(
+                            text = "このカテゴリーは削除出来ません",
                             color = Color.Gray,
                             fontSize = 14.sp
                         )
