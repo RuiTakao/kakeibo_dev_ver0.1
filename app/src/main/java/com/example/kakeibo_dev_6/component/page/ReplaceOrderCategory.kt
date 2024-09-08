@@ -67,11 +67,14 @@ fun ReplaceOrderCategory(
                     IconButton(
                         onClick = {
                             viewModel.replaceOrderCategory?.let {
-                                var i = 1
-                                viewModel.replaceOrderCategory?.forEach {
-                                    viewModel.categoryOrder = i
-                                    viewModel.updateCategory(it)
+                                var i = viewModel.replaceOrderCategory?.size ?: 0
+                                if (i != 0) {
                                     i++
+                                    viewModel.replaceOrderCategory?.forEach {
+                                        viewModel.categoryOrder = i
+                                        viewModel.updateCategory(it)
+                                        i--
+                                    }
                                 }
                             }
                             navController.popBackStack()

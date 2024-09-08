@@ -15,7 +15,7 @@ interface CategorizeExpenditureItemDao {
                 "SELECT id, categoryName, SUM(price) AS price, COUNT(categoryId) AS categoryId, payDate, categoryOrder FROM CategorizeExpenditureItem " +
                 "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
                 "GROUP BY categoryName " +
-                "ORDER BY categoryOrder ASC" +
+                "ORDER BY categoryOrder DESC" +
                 ""
     )
     fun categorizeExpenditureItem(

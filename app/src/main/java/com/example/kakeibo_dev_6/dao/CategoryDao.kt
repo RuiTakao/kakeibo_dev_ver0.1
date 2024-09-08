@@ -14,7 +14,7 @@ interface CategoryDao {
     @Insert
     suspend fun insertCategory(category: Category)
 
-    @Query("SELECT * FROM Category ORDER BY categoryOrder ASC")
+    @Query("SELECT * FROM Category ORDER BY categoryOrder DESC")
     fun loadAllCategories(): Flow<List<Category>>
 
     @Query("SELECT * FROM Category WHERE id = :id")
