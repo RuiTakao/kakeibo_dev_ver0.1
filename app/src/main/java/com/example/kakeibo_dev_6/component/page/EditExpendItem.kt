@@ -83,7 +83,7 @@ fun EditExpenditureItem(
     val viewPayDate = remember { mutableStateOf("") }
 
     if (id == null) {
-        payDate.value = df.format(Date())
+        payDate.value = df.format(Date()) + " 12:00:00"
         price.value = ""
         categoryId.value = ""
         content.value = ""
@@ -92,7 +92,7 @@ fun EditExpenditureItem(
         val editExpendItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
         LaunchedEffect(editExpendItem) {
             val isExpendItem = editExpendItem != null
-            payDate.value = if (isExpendItem) editExpendItem!!.payDate else ""
+            payDate.value = if (isExpendItem) editExpendItem!!.payDate + " 12:00:00" else ""
             price.value = if (isExpendItem) editExpendItem!!.price else ""
             categoryId.value = if (isExpendItem) editExpendItem!!.categoryId else ""
             content.value = if (isExpendItem) editExpendItem!!.content else ""
@@ -241,14 +241,14 @@ private fun InputPayDate(
             modifier = Modifier.align(Alignment.CenterEnd)
         )
         if (visible) {
-            val setState = payDate.value?.let { payDate.value.toDate("yyyy-MM-dd") } ?: Date()
+            val setState = payDate.value?.let { payDate.value.toDate() } ?: Date()
             val state = rememberDatePickerState(setState.time)
             val getDate = state.selectedDateMillis?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
             }
             payDate.value =
-                getDate?.let { getDate.toString() } ?: if (payDate.value == "") LocalDate.now()
-                    .toString() else payDate.value
+                getDate?.let { getDate.toString() + " 12:00:00" } ?: if (payDate.value == "") LocalDate.now()
+                    .toString() + " 12:00:00" else payDate.value + " 12:00:00"
             viewPayDate.value = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
             DatePickerDialog(
                 onDismissRequest = { visible = false },
