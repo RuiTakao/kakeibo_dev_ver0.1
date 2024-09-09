@@ -196,18 +196,16 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
     if (visible.value) {
 
         val state = rememberDateRangePickerState(viewModel.startDate.time, viewModel.lastDate.time)
-        val coroutineScope = rememberCoroutineScope()
         val getStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
         val getLastDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
 
         DatePickerDialog(onDismissRequest = { visible.value = false },
-            confirmButton = {
-//                TextButton(onClick = { visible.value = false }, content = { Text(text = "OK") })
-            },
+            confirmButton = {},
             content = {
                 Box(contentAlignment = Alignment.BottomEnd) {
                     DateRangePicker(
                         state = state,
+                        showModeToggle = false,
                         dateValidator = {
                             if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                     .toLocalDate()
@@ -223,15 +221,8 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                             viewModel.lastDate = getLastDate
                         },
                         modifier = Modifier.padding(16.dp),
-                        content = {
-                            Box(
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = "OK", color = Color.White, fontWeight = FontWeight.Bold)
-                            }
-                        }
+                        content = { Text(text = "OK") }
                     )
-
                 }
             }
         )
@@ -403,7 +394,7 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
     val selectCategoryName = remember { mutableStateOf("すべて") }
     val expanded = remember { mutableStateOf(false) }
     val categories by viewModel.category.collectAsState(initial = emptyList())
-    categories.forEach{
+    categories.forEach {
         if (it.id == selectCategory.value) {
             selectCategoryName.value = it.categoryName
         }
