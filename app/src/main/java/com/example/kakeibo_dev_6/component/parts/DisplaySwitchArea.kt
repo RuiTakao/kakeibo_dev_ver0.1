@@ -403,6 +403,11 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
     val selectCategoryName = remember { mutableStateOf("すべて") }
     val expanded = remember { mutableStateOf(false) }
     val categories by viewModel.category.collectAsState(initial = emptyList())
+    categories.forEach{
+        if (it.id == selectCategory.value) {
+            selectCategoryName.value = it.categoryName
+        }
+    }
 
     Row(horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
