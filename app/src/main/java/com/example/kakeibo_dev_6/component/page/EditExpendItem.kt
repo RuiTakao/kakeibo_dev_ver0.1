@@ -199,7 +199,8 @@ fun EditExpenditureItem(
             InputCategory(
                 category_id = categoryId,
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                id = id
             )
             Spacer(modifier = Modifier.height(16.dp))
             // 内容
@@ -312,7 +313,8 @@ private fun InputPrice(price: MutableState<String>, viewModel: EditExpenditureIt
 private fun InputCategory(
     category_id: MutableState<String>,
     navController: NavController,
-    viewModel: EditExpenditureItemViewModel
+    viewModel: EditExpenditureItemViewModel,
+    id: Int?
 ) {
 
     val categories by viewModel.category.collectAsState(initial = emptyList())
@@ -388,7 +390,11 @@ private fun InputCategory(
                 },
                 onClick = {
                     expanded.value = false
-                    navController.navigate(Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name)
+                    if (id == null) {
+                        navController.navigate(Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name)
+                    } else {
+                        navController.navigate("${Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name}/${id}")
+                    }
                 },
                 modifier = Modifier
                     .background(Color.White)

@@ -106,7 +106,20 @@ fun Navigation() {
                 EditExpenditureItem(navController = navController)
             }
 
-            // 支出登録時、カテゴリー追加する場合のルーティング
+            // 支出登録時、カテゴリー追加する場合のルーティング　編集
+            composable(
+                route = "${Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name}/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) {backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry("${Route.EDIT_EXPENDITURE.name}/${backStackEntry.arguments?.getInt("id")}")
+                }
+
+                val viewModel: EditExpenditureItemViewModel = viewModel(viewModelStoreOwner = parentEntry)
+                EditCategory(navController = navController, editExpenditureItemViewModel = viewModel)
+            }
+
+            // 支出登録時、カテゴリー追加する場合のルーティング　登録
             composable(route = Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name) {backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Route.EDIT_EXPENDITURE.name)
