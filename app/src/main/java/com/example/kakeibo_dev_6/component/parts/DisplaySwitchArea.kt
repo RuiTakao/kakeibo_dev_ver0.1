@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -206,6 +207,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                     DateRangePicker(
                         state = state,
                         showModeToggle = false,
+                        dateFormatter = DatePickerFormatter(selectedDateSkeleton = "M月d日", ),
                         dateValidator = {
                             if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                     .toLocalDate()
