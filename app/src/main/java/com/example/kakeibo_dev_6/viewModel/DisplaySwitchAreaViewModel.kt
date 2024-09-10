@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.kakeibo_dev_6.component.utility.weekLastDate
 import com.example.kakeibo_dev_6.component.utility.weekStartDate
 import com.example.kakeibo_dev_6.dao.CategoryDao
+import com.example.kakeibo_dev_6.enum.DateProperty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class DisplaySwitchAreaViewModel @Inject constructor(
 ) : ViewModel() {
     var startDate by mutableStateOf(weekStartDate())
     var lastDate by mutableStateOf(weekLastDate())
-    var dateProperty by mutableStateOf("week")
+    var dateProperty by mutableStateOf(DateProperty.WEEK.name)
     var selectCategory by mutableStateOf(0)
     var sort by mutableStateOf(false)
     var pageTransitionFlg by mutableStateOf(true)

@@ -35,6 +35,7 @@ import com.example.kakeibo_dev_6.component.parts.FAButton
 import com.example.kakeibo_dev_6.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
 import com.example.kakeibo_dev_6.viewModel.ExpenditureDetailViewModel
@@ -150,7 +151,7 @@ private fun Item(
     displaySwitchAreaViewModel: DisplaySwitchAreaViewModel = hiltViewModel()
 ) {
     if (titleFlag) {
-        if (displaySwitchAreaViewModel.dateProperty != "day") {
+        if (displaySwitchAreaViewModel.dateProperty != DateProperty.DAY.name) {
             val Md = SimpleDateFormat("M月d日")
             Text(
                 text = Md.format(expItem.payDate.toDate("yyyy-MM-dd")),
@@ -164,7 +165,7 @@ private fun Item(
             Spacer(modifier = Modifier.height(32.dp))
         }
     } else {
-        if (displaySwitchAreaViewModel.dateProperty != "day") {
+        if (displaySwitchAreaViewModel.dateProperty != DateProperty.DAY.name) {
             Spacer(
                 modifier = Modifier
                     .height(2.dp)
