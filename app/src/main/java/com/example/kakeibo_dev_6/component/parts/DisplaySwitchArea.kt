@@ -35,12 +35,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.component.utility.weekLastDate
@@ -154,39 +152,25 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
 
             /** 期間毎に支出一覧項目の表示を切り替えるボタン　日 */
             ChangeDurationDateText(
-                text = "日", dateProperty = DateProperty.DAY.name, onClick = {
-                    println(viewModel.startDate)
-//                    viewModel.startDate = Date()
-//                    viewModel.lastDate = Date()
-                    viewModel.startDate = viewModel.startDate
-                    viewModel.lastDate = viewModel.startDate
-                    viewModel.dateProperty = DateProperty.DAY.name
-                },
+                text = "日",
+                dateProperty = DateProperty.DAY.name,
+                onClick = { onClickChangeDurationDate(viewModel = viewModel) },
                 viewModel = viewModel
             )
 
             /** 期間毎に支出一覧項目の表示を切り替えるボタン　週 */
             ChangeDurationDateText(
-                text = "週", dateProperty = DateProperty.WEEK.name, onClick = {
-                    viewModel.startDate = weekStartDate()
-                    viewModel.lastDate = weekLastDate()
-                    viewModel.dateProperty = DateProperty.WEEK.name
-                },
+                text = "週",
+                dateProperty = DateProperty.WEEK.name,
+                onClick = { onClickChangeDurationWeek(viewModel = viewModel) },
                 viewModel = viewModel
             )
 
             /** 期間毎に支出一覧項目の表示を切り替えるボタン　月 */
             ChangeDurationDateText(
-                text = "月", dateProperty = DateProperty.MONTH.name, onClick = {
-                    val date = LocalDate.now()
-                    val firstDate = date.with(TemporalAdjusters.firstDayOfMonth())
-                    val lastDate = date.with(TemporalAdjusters.lastDayOfMonth())
-                    viewModel.startDate =
-                        Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                    viewModel.lastDate =
-                        Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                    viewModel.dateProperty = DateProperty.MONTH.name
-                },
+                text = "月",
+                dateProperty = DateProperty.MONTH.name,
+                onClick = { onClickChangeDurationMonth(viewModel = viewModel) },
                 viewModel = viewModel
             )
 
@@ -238,6 +222,93 @@ private fun ChangeDurationDateText(
         },
         enabled = if (selected) false else true
     )
+}
+
+/**
+ * 期間毎に支出一覧項目の表示を切り替えロジック　日
+ *
+ * @param viewModel DisplaySwitchAreaViewModel
+ *
+ * @return Unit
+ */
+private fun onClickChangeDurationDate(viewModel: DisplaySwitchAreaViewModel) {
+    val startDate =
+        viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    val lastDate =
+        viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+    if (startDate.isBefore(LocalDate.now()) && lastDate.isAfter(LocalDate.now())) {
+        viewModel.startDate = Date()
+        viewModel.lastDate = Date()
+    } else {
+        if (
+            viewModel.dateProperty == DateProperty.WEEK.name ||
+            viewModel.dateProperty == DateProperty.CUSTOM.name
+        ) {
+            viewModel.startDate = viewModel.startDate
+            viewModel.lastDate = viewModel.startDate
+        } else if (viewModel.dateProperty == DateProperty.MONTH.name) {
+            val getMonth = Calendar.getInstance()
+            val getDate = Calendar.getInstance()
+            getMonth.time = viewModel.startDate
+            getMonth.get(Calendar.MONTH)
+            getMonth.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_MONTH) - 1)
+            viewModel.startDate = getMonth.time
+            viewModel.lastDate = getMonth.time
+        } else {
+            viewModel.startDate = Date()
+            viewModel.lastDate = Date()
+        }
+    }
+    viewModel.dateProperty = DateProperty.DAY.name
+}
+
+/**
+ * 期間毎に支出一覧項目の表示を切り替えロジック　週
+ *
+ * @param viewModel DisplaySwitchAreaViewModel
+ *
+ * @return Unit
+ */
+private fun onClickChangeDurationWeek(viewModel: DisplaySwitchAreaViewModel) {
+    if (
+        viewModel.dateProperty == DateProperty.DAY.name ||
+        viewModel.dateProperty == DateProperty.CUSTOM.name
+    ) {
+        viewModel.startDate = weekStartDate(viewModel.startDate)
+        viewModel.lastDate = weekLastDate(viewModel.startDate)
+    } else if (viewModel.dateProperty == DateProperty.MONTH.name) {
+        val getMonth = Calendar.getInstance()
+        val getDate = Calendar.getInstance()
+        getMonth.time = viewModel.startDate
+        getMonth.get(Calendar.MONTH)
+        getMonth.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_MONTH) - 1)
+        viewModel.startDate = weekStartDate(getMonth.time)
+        viewModel.lastDate = weekLastDate(getMonth.time)
+    } else {
+        viewModel.startDate = weekStartDate()
+        viewModel.lastDate = weekLastDate()
+    }
+    viewModel.dateProperty = DateProperty.WEEK.name
+}
+
+/**
+ * 期間毎に支出一覧項目の表示を切り替えロジック　月
+ *
+ * @param viewModel DisplaySwitchAreaViewModel
+ *
+ * @return Unit
+ */
+private fun onClickChangeDurationMonth(viewModel: DisplaySwitchAreaViewModel) {
+    val date =
+        viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    val firstDate = date.with(TemporalAdjusters.firstDayOfMonth())
+    val lastDate = date.with(TemporalAdjusters.lastDayOfMonth())
+    viewModel.startDate =
+        Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+    viewModel.lastDate =
+        Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+    viewModel.dateProperty = DateProperty.MONTH.name
 }
 
 /**
