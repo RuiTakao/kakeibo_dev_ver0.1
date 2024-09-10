@@ -290,7 +290,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                         DateRangePicker(
                             state = state,
                             showModeToggle = false,
-                            dateFormatter = DatePickerFormatter(selectedDateSkeleton = "M月d日"),
+                            dateFormatter = DatePickerFormatter(selectedDateSkeleton = "Md"),
                             dateValidator = {
                                 if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                         .toLocalDate()

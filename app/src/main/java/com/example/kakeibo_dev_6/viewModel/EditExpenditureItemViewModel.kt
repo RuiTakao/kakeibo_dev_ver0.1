@@ -24,6 +24,8 @@ class EditExpenditureItemViewModel @Inject constructor(
     var content by mutableStateOf("")
     var price by mutableStateOf("")
 
+    var viewPayDate by mutableStateOf("")
+
     var createCategoryFlg by mutableStateOf(false)
     var firstCategory by mutableStateOf(0)
 

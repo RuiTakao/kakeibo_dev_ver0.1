@@ -80,14 +80,13 @@ fun EditExpenditureItem(
     val price = remember { mutableStateOf("") }
     val categoryId = remember { mutableStateOf("") }
     val content = remember { mutableStateOf("") }
-    val viewPayDate = remember { mutableStateOf("") }
 
     if (id == null) {
         payDate.value = df.format(Date()) + " 12:00:00"
         price.value = ""
         categoryId.value = ""
         content.value = ""
-        viewPayDate.value = yMd.format(Date())
+        viewModel.viewPayDate = if (viewModel.viewPayDate == "") yMd.format(Date()) else viewModel.viewPayDate
     } else {
         val editExpendItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
         LaunchedEffect(editExpendItem) {
@@ -96,7 +95,7 @@ fun EditExpenditureItem(
             price.value = if (isExpendItem) editExpendItem!!.price else ""
             categoryId.value = if (isExpendItem) editExpendItem!!.categoryId else ""
             content.value = if (isExpendItem) editExpendItem!!.content else ""
-            viewPayDate.value =
+            viewModel.viewPayDate =
                 if (isExpendItem) yMd.format(editExpendItem!!.payDate.toDate("yyyy-MM-dd")) else ""
 
             viewModel.editingExpendItem = editExpendItem
@@ -165,6 +164,7 @@ fun EditExpenditureItem(
                     }
 
                     if (validCount == 0) {
+                        navController.popBackStack()
                         viewModel.payDate = payDate.value
                         viewModel.price = price.value
                         viewModel.category_id = categoryId.value
@@ -174,7 +174,6 @@ fun EditExpenditureItem(
                         } else {
                             viewModel.updateExpendItem()
                         }
-                        navController.popBackStack()
                     }
                 }) {
                     Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
@@ -190,7 +189,7 @@ fun EditExpenditureItem(
         ) {
             Spacer(modifier = Modifier.height(32.dp))
             // 日付
-            InputPayDate(payDate = payDate, viewPayDate = viewPayDate, viewModel = viewModel)
+            InputPayDate(payDate = payDate, viewModel = viewModel)
             Spacer(modifier = Modifier.height(16.dp))
             // 金額
             InputPrice(price = price, viewModel = viewModel)
@@ -213,7 +212,6 @@ fun EditExpenditureItem(
 @Composable
 private fun InputPayDate(
     payDate: MutableState<String>,
-    viewPayDate: MutableState<String>,
     viewModel: EditExpenditureItemViewModel
 ) {
 
@@ -237,7 +235,7 @@ private fun InputPayDate(
             .clickable { visible = !visible },
         contentAlignment = Alignment.CenterStart,
     ) {
-        Text(text = viewPayDate.value, fontSize = 16.sp, modifier = Modifier.padding(10.dp))
+        Text(text = viewModel.viewPayDate, fontSize = 16.sp, modifier = Modifier.padding(10.dp))
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "選択アイコン",
@@ -249,19 +247,33 @@ private fun InputPayDate(
             val getDate = state.selectedDateMillis?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
             }
-            payDate.value =
-                getDate?.let { getDate.toString() + " 12:00:00" }
-                    ?: if (payDate.value == "") LocalDate.now()
-                        .toString() + " 12:00:00" else payDate.value + " 12:00:00"
-            viewPayDate.value = yMd.format(payDate.value.toDate("yyyy-MM-dd"))
             DatePickerDialog(
                 onDismissRequest = { visible = false },
                 confirmButton = {
-                    TextButton(onClick = { visible = false }, content = { Text(text = "OK") })
+                    Row(
+                        content = {
+                            TextButton(
+                                onClick = { visible = false },
+                                content = { Text(text = "キャンセル") })
+                            TextButton(
+                                onClick = {
+                                    visible = false
+                                    payDate.value =
+                                        getDate?.let { getDate.toString() + " 12:00:00" }
+                                            ?: if (payDate.value == "") LocalDate.now()
+                                                .toString() + " 12:00:00" else payDate.value + " 12:00:00"
+                                    viewModel.viewPayDate =
+                                        yMd.format(payDate.value.toDate("yyyy-MM-dd"))
+                                },
+                                content = { Text(text = "OK") }
+                            )
+                        }
+                    )
                 },
                 content = {
                     DatePicker(
                         state = state,
+                        showModeToggle = false,
                         dateValidator = {
                             if (
                                 Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
