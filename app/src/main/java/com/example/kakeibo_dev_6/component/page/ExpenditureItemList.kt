@@ -49,6 +49,7 @@ import com.example.kakeibo_dev_6.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.component.parts.FAButton
 import com.example.kakeibo_dev_6.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
+import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
 import com.example.kakeibo_dev_6.viewModel.ExpenditureItemListViewModel
@@ -56,6 +57,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun ExpenditureItemList(
@@ -69,11 +74,50 @@ fun ExpenditureItemList(
         systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
     }
 
-    // 支出項目取得
     val df = SimpleDateFormat("yyyy-MM-dd")
+    val firstDay = remember {
+        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
+    }
+    val lastDay = remember {
+        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
+    }
+
+    when (displaySwitchAreaViewModel.dateProperty) {
+        DateProperty.DAY.name -> {
+            firstDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+            lastDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+        }
+
+        DateProperty.WEEK.name -> {
+            val getDate = Calendar.getInstance()
+            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
+            getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
+            firstDay.value = df.format(getDate.time)
+            getDate.add(Calendar.DATE, 6)
+            lastDay.value = df.format(getDate.time)
+        }
+
+        DateProperty.MONTH.name -> {
+            val getDate = Calendar.getInstance()
+            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
+            val changeDateToLocalDate =
+                getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val firstDate = changeDateToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
+            firstDay.value =
+                df.format(Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            val lastDate = changeDateToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
+            lastDay.value =
+                df.format(Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+        }
+
+        DateProperty.CUSTOM.name -> {
+            firstDay.value = df.format(displaySwitchAreaViewModel.customOfStartDate)
+            lastDay.value = df.format(displaySwitchAreaViewModel.customOfLastDate)
+        }
+    }
     val categorizeExpenditureItem by expenditureItemListViewModel.categorizeExpenditureItem(
-        firstDay = df.format(displaySwitchAreaViewModel.startDate),
-        lastDay = df.format(displaySwitchAreaViewModel.lastDate)
+        firstDay = firstDay.value,
+        lastDay = lastDay.value
     ).collectAsState(initial = emptyList())
 
     // 金額合計
@@ -120,8 +164,8 @@ fun ExpenditureItemList(
                     actions = {
                         IconButton(onClick = {
                             val df = SimpleDateFormat("yyyy-MM-dd")
-                            val startDate = df.format(displaySwitchAreaViewModel.startDate)
-                            val lastDate = df.format(displaySwitchAreaViewModel.lastDate)
+                            val startDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                            val lastDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
                             navController.navigate(
                                 "${Route.PAY_DETAIL.name}/0/${displaySwitchAreaViewModel.dateProperty}/${startDate}/${lastDate}"
                             )
@@ -177,8 +221,12 @@ private fun Item(
         .padding(bottom = 16.dp)
         .clickable {
             val df = SimpleDateFormat("yyyy-MM-dd")
-            val startDate = df.format(viewModel.startDate)
-            val lastDate = df.format(viewModel.lastDate)
+            var startDate = df.format(viewModel.standardOfStartDate)
+            var lastDate = df.format(viewModel.standardOfStartDate)
+            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
+                startDate = df.format(viewModel.customOfStartDate)
+                lastDate = df.format(viewModel.customOfLastDate)
+            }
             navController.navigate(
                 "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
             )
@@ -238,7 +286,11 @@ fun Drawer(
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8F5E3))) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF8F5E3))
+        ) {
             TextButton(
                 onClick = {
                     scope.launch {

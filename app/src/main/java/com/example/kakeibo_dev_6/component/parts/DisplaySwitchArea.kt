@@ -41,15 +41,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kakeibo_dev_6.component.utility.weekLastDate
-import com.example.kakeibo_dev_6.component.utility.weekStartDate
 import com.example.kakeibo_dev_6.enum.DateProperty
+import com.example.kakeibo_dev_6.enum.SwitchDate
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
@@ -154,7 +152,9 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
             ChangeDurationDateText(
                 text = "日",
                 dateProperty = DateProperty.DAY.name,
-                onClick = { onClickChangeDurationDate(viewModel = viewModel) },
+                onClick = {
+                    viewModel.dateProperty = DateProperty.DAY.name
+                },
                 viewModel = viewModel
             )
 
@@ -162,7 +162,9 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
             ChangeDurationDateText(
                 text = "週",
                 dateProperty = DateProperty.WEEK.name,
-                onClick = { onClickChangeDurationWeek(viewModel = viewModel) },
+                onClick = {
+                    viewModel.dateProperty = DateProperty.WEEK.name
+                },
                 viewModel = viewModel
             )
 
@@ -170,7 +172,9 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
             ChangeDurationDateText(
                 text = "月",
                 dateProperty = DateProperty.MONTH.name,
-                onClick = { onClickChangeDurationMonth(viewModel = viewModel) },
+                onClick = {
+                    viewModel.dateProperty = DateProperty.MONTH.name
+                },
                 viewModel = viewModel
             )
 
@@ -225,93 +229,6 @@ private fun ChangeDurationDateText(
 }
 
 /**
- * 期間毎に支出一覧項目の表示を切り替えロジック　日
- *
- * @param viewModel DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-private fun onClickChangeDurationDate(viewModel: DisplaySwitchAreaViewModel) {
-    val startDate =
-        viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-    val lastDate =
-        viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-    if (startDate.isBefore(LocalDate.now()) && lastDate.isAfter(LocalDate.now())) {
-        viewModel.startDate = Date()
-        viewModel.lastDate = Date()
-    } else {
-        if (
-            viewModel.dateProperty == DateProperty.WEEK.name ||
-            viewModel.dateProperty == DateProperty.CUSTOM.name
-        ) {
-            viewModel.startDate = viewModel.startDate
-            viewModel.lastDate = viewModel.startDate
-        } else if (viewModel.dateProperty == DateProperty.MONTH.name) {
-            val getMonth = Calendar.getInstance()
-            val getDate = Calendar.getInstance()
-            getMonth.time = viewModel.startDate
-            getMonth.get(Calendar.MONTH)
-            getMonth.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_MONTH) - 1)
-            viewModel.startDate = getMonth.time
-            viewModel.lastDate = getMonth.time
-        } else {
-            viewModel.startDate = Date()
-            viewModel.lastDate = Date()
-        }
-    }
-    viewModel.dateProperty = DateProperty.DAY.name
-}
-
-/**
- * 期間毎に支出一覧項目の表示を切り替えロジック　週
- *
- * @param viewModel DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-private fun onClickChangeDurationWeek(viewModel: DisplaySwitchAreaViewModel) {
-    if (
-        viewModel.dateProperty == DateProperty.DAY.name ||
-        viewModel.dateProperty == DateProperty.CUSTOM.name
-    ) {
-        viewModel.startDate = weekStartDate(viewModel.startDate)
-        viewModel.lastDate = weekLastDate(viewModel.startDate)
-    } else if (viewModel.dateProperty == DateProperty.MONTH.name) {
-        val getMonth = Calendar.getInstance()
-        val getDate = Calendar.getInstance()
-        getMonth.time = viewModel.startDate
-        getMonth.get(Calendar.MONTH)
-        getMonth.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_MONTH) - 1)
-        viewModel.startDate = weekStartDate(getMonth.time)
-        viewModel.lastDate = weekLastDate(getMonth.time)
-    } else {
-        viewModel.startDate = weekStartDate()
-        viewModel.lastDate = weekLastDate()
-    }
-    viewModel.dateProperty = DateProperty.WEEK.name
-}
-
-/**
- * 期間毎に支出一覧項目の表示を切り替えロジック　月
- *
- * @param viewModel DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-private fun onClickChangeDurationMonth(viewModel: DisplaySwitchAreaViewModel) {
-    val date =
-        viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-    val firstDate = date.with(TemporalAdjusters.firstDayOfMonth())
-    val lastDate = date.with(TemporalAdjusters.lastDayOfMonth())
-    viewModel.startDate =
-        Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-    viewModel.lastDate =
-        Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-    viewModel.dateProperty = DateProperty.MONTH.name
-}
-
-/**
  * 期間毎に支出一覧項目の表示を切り替えるボタン　任意の期間
  *
  * @param viewModel DisplaySwitchAreaViewModel
@@ -351,7 +268,11 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
 
     if (visible.value) {
 
-        val state = rememberDateRangePickerState(viewModel.startDate.time, viewModel.lastDate.time)
+        /**  */
+        val state = rememberDateRangePickerState(
+            viewModel.customOfStartDate.time,
+            viewModel.customOfLastDate.time
+        )
         val getStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
         val getLastDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
 
@@ -377,8 +298,8 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                             onClick = {
                                 visible.value = false
                                 viewModel.dateProperty = DateProperty.CUSTOM.name
-                                viewModel.startDate = getStartDate
-                                viewModel.lastDate = getLastDate
+                                viewModel.customOfStartDate = getStartDate
+                                viewModel.customOfLastDate = getLastDate
                             },
                             modifier = Modifier.padding(16.dp),
                             content = { Text(text = "OK") }
@@ -407,13 +328,32 @@ private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
     // 表示日付のテキスト
     var text = ""
     when (viewModel.dateProperty) {
-        DateProperty.DAY.name -> text = Md.format(viewModel.startDate)
-        DateProperty.WEEK.name -> text =
-            "${Md.format(viewModel.startDate)} 〜 ${Md.format(viewModel.lastDate)}"
+        DateProperty.DAY.name -> text =
+            Md.format(viewModel.standardOfStartDate)
 
-        DateProperty.MONTH.name -> text = M.format(viewModel.startDate)
+        /** 表示期間、週 */
+        DateProperty.WEEK.name -> {
+            val getDate = Calendar.getInstance()
+            getDate.time = viewModel.standardOfStartDate
+            getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
+            val startDate = getDate.time
+            getDate.add(Calendar.DATE, 6)
+            val lastDate = getDate.time
+            text =
+                "${
+                    Md.format(startDate)
+                } 〜 ${
+                    Md.format(lastDate)
+                }"
+        }
+
+        DateProperty.MONTH.name -> text = M.format(viewModel.standardOfStartDate)
         DateProperty.CUSTOM.name -> text =
-            "${Md.format(viewModel.startDate)} 〜 ${Md.format(viewModel.lastDate)}"
+            "${
+                Md.format(viewModel.customOfStartDate)
+            } 〜 ${
+                Md.format(viewModel.customOfLastDate)
+            }"
     }
 
     Text(text = text, fontSize = 24.sp)
@@ -428,114 +368,25 @@ private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
+    var enabled = true
+    if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
+        enabled = false
+    }
     IconButton(
-        onClick = { onClickPrevButton(viewModel = viewModel) },
+        onClick = {
+            onClickSwitchDateButton(
+                viewModel = viewModel,
+                switchAction = SwitchDate.PREV
+            )
+        },
+        enabled = enabled,
         content = { Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null) }
     )
 }
 
 /**
- * 過去の支出項目一覧へ表示を切り替え
- *
- * @param viewModel: DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-private fun onClickPrevButton(viewModel: DisplaySwitchAreaViewModel) {
-
-    // 日付計算用のカレンダーインスタンス作成
-    val getDate = Calendar.getInstance()
-
-    when (viewModel.dateProperty) {
-
-        // 日
-        DateProperty.DAY.name -> {
-
-            // 日が選択されている場合は開始日を基準に計算
-            getDate.time = viewModel.startDate
-
-            // 対象の日付に一日減算
-            getDate.add(Calendar.DATE, -1)
-
-            // 計算結果をViewModelに保存
-            viewModel.lastDate = getDate.time
-            viewModel.startDate = getDate.time
-        }
-
-        // 週
-        DateProperty.WEEK.name -> {
-
-            // 週が選択されている場合は開始日を基準に計算
-            getDate.time = viewModel.startDate
-
-            // 最終日に一日減算
-            getDate.add(Calendar.DATE, -1)
-            viewModel.lastDate = getDate.time
-
-            // 開始日に六日減算
-            getDate.add(Calendar.DATE, -6)
-            viewModel.startDate = getDate.time
-        }
-
-        // 月
-        DateProperty.MONTH.name -> {
-
-            // 月が選択されている場合は開始日を基準に計算
-            getDate.time = viewModel.startDate
-
-            // 一月減算
-            getDate.add(Calendar.MONTH, -1)
-
-            // 対象月の開始日と最終日を求める為、Calendar型からLocalDate型に変換する
-            val changeDateToLocalDate =
-                getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-            // 対象月の開始日を取得
-            val firstDate = changeDateToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
-
-            // 対象月の終了日を取得
-            val lastDate = changeDateToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
-
-            // 対象月の開始日をDate型に変換してViewModelに保存
-            viewModel.startDate =
-                Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-
-            // 対象月の終了日をDate型に変換してViewModelに保存
-            viewModel.lastDate =
-                Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
-
-        // 任意の期間
-        DateProperty.CUSTOM.name -> {
-
-            // 比較用の開始日と終了日をLocalDate型に変換し取得
-            val diffStartDate =
-                viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val diffLastDate =
-                viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-            // 終了日と開始日の差分を調べる
-            val diff = ChronoUnit.DAYS.between(diffStartDate, diffLastDate)
-
-            // 対象の日付を取得
-            val getStartDate = Calendar.getInstance()
-            getStartDate.time = viewModel.startDate
-            val getLastDate = Calendar.getInstance()
-            getLastDate.time = viewModel.lastDate
-
-            // 対象の日付の差分を減算
-            getStartDate.add(Calendar.DATE, diff.toInt() * -1)
-            getLastDate.add(Calendar.DATE, diff.toInt() * -1)
-
-            // ViewModelに保存
-            viewModel.startDate = getStartDate.time
-            viewModel.lastDate = getLastDate.time
-        }
-    }
-}
-
-/**
- * 未来の支出項目一覧へ表示を切り替えるボタン
+ * Nextボタン
+ * 用途： 未来の支出項目を表示
  *
  * @param viewModel: DisplaySwitchAreaViewModel
  *
@@ -543,10 +394,46 @@ private fun onClickPrevButton(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
-    val lastDate = viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    val checkDate =
+        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    var enabled = true
+    if (
+        viewModel.dateProperty == DateProperty.CUSTOM.name ||
+        checkDate.isEqual(LocalDate.now())
+    ) {
+        enabled = false
+    } else {
+        when (viewModel.dateProperty) {
+
+            DateProperty.WEEK.name -> {
+                val getDate = Calendar.getInstance()
+                getDate.time = viewModel.standardOfStartDate
+                getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 7)
+                if (getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        .isAfter(LocalDate.now())
+                ) {
+                    enabled = false
+                }
+            }
+
+            DateProperty.MONTH.name -> {
+                if (
+                    LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
+                        .isEqual(checkDate.with(TemporalAdjusters.firstDayOfMonth()))
+                ) {
+                    enabled = false
+                }
+            }
+        }
+    }
     IconButton(
-        onClick = { onClickNextButton(viewModel = viewModel) },
-        enabled = if (lastDate.isEqual(LocalDate.now()) || lastDate.isAfter(LocalDate.now())) false else true,
+        onClick = {
+            onClickSwitchDateButton(
+                viewModel = viewModel,
+                switchAction = SwitchDate.NEXT
+            )
+        },
+        enabled = enabled,
         content = {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
@@ -557,101 +444,86 @@ private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
 }
 
 /**
- * 未来の支出項目一覧へ表示を切り替え
+ * 日付切り替え
  *
- * @param viewModel: DisplaySwitchAreaViewModel
+ * @param viewModel DisplaySwitchAreaViewModel
+ * @param switchAction SwitchDate prevかnextかの判定
  *
  * @return Unit
  */
-private fun onClickNextButton(viewModel: DisplaySwitchAreaViewModel) {
+private fun onClickSwitchDateButton(
+    viewModel: DisplaySwitchAreaViewModel,
+    switchAction: SwitchDate
+) {
 
-    // 日付計算用のカレンダーインスタンス作成
+    /** 日付計算用のカレンダーインスタンス作成 */
     val getDate = Calendar.getInstance()
 
     when (viewModel.dateProperty) {
 
-        // 日
+        /** dateProperty 日 */
         DateProperty.DAY.name -> {
 
-            // 日が選択されている場合は最終日を基準に計算
-            getDate.time = viewModel.lastDate
-
-            // 対象の日付に一日加算
-            getDate.add(Calendar.DATE, 1)
-
-            // 計算結果をViewModelに保存
-            viewModel.lastDate = getDate.time
-            viewModel.startDate = getDate.time
+            /**
+             *  datePropertyが日の場合は開始日を基準に計算
+             *  prevの場合は１日減算して開始日と終了日にセット
+             *  nextの場合は１日加算して開始日と終了日にセット
+             */
+            getDate.time = viewModel.standardOfStartDate
+            val amount =
+                when (switchAction) {
+                    SwitchDate.PREV -> -1
+                    SwitchDate.NEXT -> 1
+                }
+            getDate.add(Calendar.DATE, amount)
+            viewModel.standardOfStartDate = getDate.time
         }
 
-        // 週
+        /** dateProperty 週 */
         DateProperty.WEEK.name -> {
 
-            // 週が選択されている場合は最終日を基準に計算
-            getDate.time = viewModel.lastDate
+            /** prevとnextで開始日と終了日の更新手順が違うので手順自体を分岐 */
+            when (switchAction) {
+                SwitchDate.PREV -> {
+                    /**
+                     * prevの場合は開始日を基準に計算
+                     * 現在の開始日から１日減算した日付を終了日に設定
+                     * 設定した終了日から６日減算した日付を開始日に設定
+                     */
+                    getDate.time = viewModel.standardOfStartDate
+                    getDate.add(Calendar.DATE, -7)
+                    viewModel.standardOfStartDate = getDate.time
+                }
 
-            // 最終日に一日加算
-            getDate.add(Calendar.DATE, 1)
-            viewModel.startDate = getDate.time
-
-            // 開始日に六日加算
-            getDate.add(Calendar.DATE, 6)
-            viewModel.lastDate = getDate.time
+                SwitchDate.NEXT -> {
+                    /**
+                     * nextの場合は終了日を基準に計算
+                     * 現在の終了日から１日加算した日付を開始日に設定
+                     * 設定した開始日から６日加算した日付を終了日に設定
+                     */
+                    getDate.time = viewModel.standardOfStartDate
+                    getDate.add(Calendar.DATE, 7)
+                    viewModel.standardOfStartDate = getDate.time
+                }
+            }
         }
 
-        // 月
+        /** dateProperty 月 */
         DateProperty.MONTH.name -> {
 
-            // 月が選択されている場合は開始日を基準に計算
-            getDate.time = viewModel.startDate
-
-            // 一月加算
-            getDate.add(Calendar.MONTH, 1)
-
-            // 対象月の開始日と最終日を求める為、Calendar型からLocalDate型に変換する
-            val changeDateToLocalDate =
-                getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-            // 対象月の開始日を取得
-            val firstDate = changeDateToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
-
-            // 対象月の最終日を取得
-            val lastDate = changeDateToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
-
-            // 対象月の開始日をDate型に変換してViewModelに保存
-            viewModel.startDate =
-                Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-
-            // 対象月の最終日をDate型に変換してViewModelに保存
-            viewModel.lastDate =
-                Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
-
-        // 任意の期間
-        DateProperty.CUSTOM.name -> {
-
-            // 比較用の開始日と終了日をLocalDate型に変換し取得
-            val diffStartDate =
-                viewModel.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val diffLastDate =
-                viewModel.lastDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-            // 終了日と開始日の差分を調べる
-            val diff = ChronoUnit.DAYS.between(diffStartDate, diffLastDate)
-
-            // 対象の日付を取得
-            val getStartDate = Calendar.getInstance()
-            getStartDate.time = viewModel.startDate
-            val getLastDate = Calendar.getInstance()
-            getLastDate.time = viewModel.lastDate
-
-            // 対象の日付の差分を加算
-            getStartDate.add(Calendar.DATE, diff.toInt())
-            getLastDate.add(Calendar.DATE, diff.toInt())
-
-            // ViewModelに保存
-            viewModel.startDate = getStartDate.time
-            viewModel.lastDate = getLastDate.time
+            /**
+             * datePropertyが月の場合は開始日を基準に計算
+             * prevの場合はgetDateから１月減算
+             * nextの場合はgetDateから１月加算
+             */
+            getDate.time = viewModel.standardOfStartDate
+            val amount =
+                when (switchAction) {
+                    SwitchDate.PREV -> -1
+                    SwitchDate.NEXT -> 1
+                }
+            getDate.add(Calendar.MONTH, amount)
+            viewModel.standardOfStartDate = getDate.time
         }
     }
 }

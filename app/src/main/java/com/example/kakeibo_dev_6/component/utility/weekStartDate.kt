@@ -7,7 +7,6 @@ fun weekStartDate(date: Date = Date()): Date {
     val calendar: Calendar = Calendar.getInstance()
     val firstDay = Calendar.getInstance()
     calendar.time = date
-    println(calendar.time)
     firstDay.time = date
     firstDay.add(Calendar.DATE, (calendar.get(Calendar.DAY_OF_WEEK) - 1) * -1)
     return firstDay.time

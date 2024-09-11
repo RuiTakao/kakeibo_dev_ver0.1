@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,6 +43,10 @@ import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
 import com.example.kakeibo_dev_6.viewModel.ExpenditureDetailViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun ExpenditureDetail(
@@ -60,20 +66,69 @@ fun ExpenditureDetail(
 
     val df = SimpleDateFormat("yyyy-MM-dd")
     if (displaySwitchAreaViewModel.pageTransitionFlg) {
-        displaySwitchAreaViewModel.startDate = startDate?.let {
+
+        displaySwitchAreaViewModel.standardOfStartDate =  startDate?.let {
             startDate.toDate("yyyy-MM-dd")
-        } ?: displaySwitchAreaViewModel.startDate
-        displaySwitchAreaViewModel.lastDate = lastDate?.let {
-            lastDate.toDate("yyyy-MM-dd")
-        } ?: displaySwitchAreaViewModel.lastDate
+        } ?: displaySwitchAreaViewModel.standardOfStartDate
 
         dateProperty?.let { displaySwitchAreaViewModel.dateProperty = dateProperty }
         categoryId?.let { displaySwitchAreaViewModel.selectCategory = categoryId.toInt() }
+
+        if (dateProperty != null && dateProperty == DateProperty.CUSTOM.name) {
+            displaySwitchAreaViewModel.customOfStartDate =  startDate?.let {
+                startDate.toDate("yyyy-MM-dd")
+            } ?: displaySwitchAreaViewModel.customOfStartDate
+
+            displaySwitchAreaViewModel.customOfLastDate =  lastDate?.let {
+                lastDate.toDate("yyyy-MM-dd")
+            } ?: displaySwitchAreaViewModel.customOfLastDate
+        }
+
         displaySwitchAreaViewModel.pageTransitionFlg = false
     }
+    val firstDay = remember {
+        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
+    }
+    val lastDay = remember {
+        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
+    }
+
+    when (displaySwitchAreaViewModel.dateProperty) {
+        DateProperty.DAY.name -> {
+            firstDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+            lastDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+        }
+
+        DateProperty.WEEK.name -> {
+            val getDate = Calendar.getInstance()
+            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
+            getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
+            firstDay.value = df.format(getDate.time)
+            getDate.add(Calendar.DATE, 6)
+            lastDay.value = df.format(getDate.time)
+        }
+
+        DateProperty.MONTH.name -> {
+            val getDate = Calendar.getInstance()
+            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
+            val changeDateToLocalDate =
+                getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val firstDate = changeDateToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
+            firstDay.value =
+                df.format(Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            val lastDate = changeDateToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
+            lastDay.value =
+                df.format(Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+        }
+
+        DateProperty.CUSTOM.name -> {
+            firstDay.value = df.format(displaySwitchAreaViewModel.customOfStartDate)
+            lastDay.value = df.format(displaySwitchAreaViewModel.customOfLastDate)
+        }
+    }
     val expenditureItemList by expenditureDetailViewModel.expenditureItemList(
-        firstDay = df.format(displaySwitchAreaViewModel.startDate),
-        lastDay = df.format(displaySwitchAreaViewModel.lastDate),
+        firstDay = firstDay.value,
+        lastDay = lastDay.value,
         sort = displaySwitchAreaViewModel.sort,
         categoryId = displaySwitchAreaViewModel.selectCategory
     ).collectAsState(initial = emptyList())
