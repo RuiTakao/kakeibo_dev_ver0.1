@@ -164,8 +164,12 @@ fun ExpenditureItemList(
                     actions = {
                         IconButton(onClick = {
                             val df = SimpleDateFormat("yyyy-MM-dd")
-                            val startDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
-                            val lastDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                            var startDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                            var lastDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                            if (displaySwitchAreaViewModel.dateProperty == DateProperty.CUSTOM.name) {
+                                startDate = df.format(displaySwitchAreaViewModel.customOfStartDate)
+                                lastDate = df.format(displaySwitchAreaViewModel.customOfLastDate)
+                            }
                             navController.navigate(
                                 "${Route.PAY_DETAIL.name}/0/${displaySwitchAreaViewModel.dateProperty}/${startDate}/${lastDate}"
                             )
