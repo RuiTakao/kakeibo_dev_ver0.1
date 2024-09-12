@@ -1,6 +1,7 @@
 package com.example.kakeibo_dev_6.viewModel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -20,7 +21,7 @@ class DisplaySwitchAreaViewModel @Inject constructor(
 ) : ViewModel() {
 
     var dateProperty by mutableStateOf(DateProperty.WEEK.name)
-    var selectCategory by mutableStateOf(0)
+    var selectCategory by mutableIntStateOf(0)
     var sort by mutableStateOf(false)
     var pageTransitionFlg by mutableStateOf(true)
 
@@ -32,7 +33,7 @@ class DisplaySwitchAreaViewModel @Inject constructor(
     var customOfStartDate by mutableStateOf(defaultCustomOfStartDate())
 
     var customOfLastDate by mutableStateOf(Date())
-    fun defaultCustomOfStartDate(): Date {
+    private fun defaultCustomOfStartDate(): Date {
         val date = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
         val dateStr = "${date} 12:00:00"
         return dateStr.toDate()?.let { dateStr.toDate() } ?: Date()

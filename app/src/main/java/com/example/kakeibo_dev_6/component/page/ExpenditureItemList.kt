@@ -30,18 +30,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,6 +61,7 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ExpenditureItemList(
@@ -77,7 +75,7 @@ fun ExpenditureItemList(
         systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
     }
 
-    val df = SimpleDateFormat("yyyy-MM-dd")
+    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
     val firstDay = remember {
         mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
     }
@@ -168,7 +166,7 @@ fun ExpenditureItemList(
                     actions = {
                         IconButton(
                             onClick = {
-                                val df = SimpleDateFormat("yyyy-MM-dd")
+                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
                                 var startDate =
                                     df.format(displaySwitchAreaViewModel.standardOfStartDate)
                                 var lastDate =
@@ -237,7 +235,7 @@ private fun Item(
             .padding(bottom = 16.dp)
             .padding(horizontal = 8.dp)
             .clickable {
-                val df = SimpleDateFormat("yyyy-MM-dd")
+                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
                 var startDate = df.format(viewModel.standardOfStartDate)
                 var lastDate = df.format(viewModel.standardOfStartDate)
                 if (viewModel.dateProperty == DateProperty.CUSTOM.name) {

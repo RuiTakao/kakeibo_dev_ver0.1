@@ -60,7 +60,7 @@ fun ReplaceOrderCategory(
                 title = "カテゴリー入替え",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る", tint = Color(0xFF854A2A))
                     }
                 },
                 actions = {
@@ -80,7 +80,7 @@ fun ReplaceOrderCategory(
                             navController.popBackStack()
                         }
                     ) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+                        Icon(imageVector = Icons.Default.Check, contentDescription = "登録", tint = Color(0xFF854A2A))
                     }
                 }
             )

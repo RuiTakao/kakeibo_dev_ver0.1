@@ -1,7 +1,7 @@
 package com.example.kakeibo_dev_6.viewModel
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +17,7 @@ class ReplaceOrderCategoryViewModel @Inject constructor(
     private val categoryDao: CategoryDao
 ) : ViewModel() {
 
-    var categoryOrder by mutableStateOf(0)
+    var categoryOrder by mutableIntStateOf(0)
 
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 

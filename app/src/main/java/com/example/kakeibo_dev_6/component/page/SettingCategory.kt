@@ -1,6 +1,5 @@
 package com.example.kakeibo_dev_6.component.page
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -55,14 +54,15 @@ fun SettingCategory(
                 title = "カテゴリー設定",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る")
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る", tint = Color(0xFF854A2A))
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Route.EDIT_CATEGORY.name) }) {
                         Icon(
                             imageVector = Icons.Outlined.AddBox,
-                            contentDescription = "カテゴリ追加"
+                            contentDescription = "カテゴリ追加",
+                            tint = Color(0xFF854A2A)
                         )
                     }
                 }

@@ -1,6 +1,5 @@
 package com.example.kakeibo_dev_6.component.page
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,8 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,23 +56,21 @@ import com.example.kakeibo_dev_6.component.utility.checkInt
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
-import java.lang.IllegalArgumentException
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditExpenditureItem(
     navController: NavController,
     id: Int? = null,
     viewModel: EditExpenditureItemViewModel = hiltViewModel()
 ) {
-    val yMd = SimpleDateFormat("y年M月d日")
-    val df = SimpleDateFormat("yyyy-MM-dd")
+    val yMd = SimpleDateFormat("y年M月d日", Locale.JAPANESE)
+    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
     val payDate = remember { mutableStateOf("") }
     val price = remember { mutableStateOf("") }
     val categoryId = remember { mutableStateOf("") }
@@ -110,7 +104,7 @@ fun EditExpenditureItem(
                 title = if (id == null) "支出項目 追加" else "支出項目 編集",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる", tint = Color(0xFF854A2A))
                     }
                 },
                 actions = {
@@ -172,7 +166,7 @@ fun EditExpenditureItem(
                             }
                         },
                         content = {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録", tint = Color(0xFF854A2A))
                         }
                     )
                 }
@@ -214,7 +208,7 @@ private fun InputPayDate(
     viewModel: EditExpenditureItemViewModel
 ) {
 
-    val yMd = SimpleDateFormat("y年M月d日")
+    val yMd = SimpleDateFormat("y年M月d日", Locale.JAPANESE)
     var visible by remember { mutableStateOf(false) }
 
     Text(
@@ -274,11 +268,9 @@ private fun InputPayDate(
                         state = state,
                         showModeToggle = false,
                         dateValidator = {
-                            if (
-                                Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                !Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                     .toLocalDate()
                                     .isAfter(LocalDate.now())
-                            ) false else true
                         }
                     )
                 }

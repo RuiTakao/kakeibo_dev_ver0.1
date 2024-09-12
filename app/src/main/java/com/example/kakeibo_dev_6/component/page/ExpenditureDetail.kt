@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +48,7 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ExpenditureDetail(
@@ -66,7 +66,7 @@ fun ExpenditureDetail(
         systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
     }
 
-    val df = SimpleDateFormat("yyyy-MM-dd")
+    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
     if (displaySwitchAreaViewModel.pageTransitionFlg) {
 
         displaySwitchAreaViewModel.standardOfStartDate = startDate?.let {
@@ -220,7 +220,7 @@ private fun Item(
 ) {
     if (titleFlag) {
         if (displaySwitchAreaViewModel.dateProperty != DateProperty.DAY.name) {
-            val Md = SimpleDateFormat("M月d日")
+            val Md = SimpleDateFormat("M月d日", Locale.JAPANESE)
             Text(
                 text = Md.format(expItem.payDate.toDate("yyyy-MM-dd")),
                 fontSize = 20.sp,

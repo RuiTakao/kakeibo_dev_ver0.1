@@ -22,12 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +43,7 @@ import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +60,7 @@ fun ExpenditureItemDetail(
             .collectAsState(initial = null)
         val categories by viewModel.category.collectAsState(initial = emptyList())
 
-        val id = remember { mutableStateOf(0) }
+        val id = remember { mutableIntStateOf(0) }
         val payDate = remember { mutableStateOf("") }
         val price = remember { mutableStateOf("") }
         val category_id = remember { mutableStateOf("") }
@@ -69,9 +68,9 @@ fun ExpenditureItemDetail(
 
         LaunchedEffect(expenditureItem) {
             expenditureItem?.let {
-                val yMd = SimpleDateFormat("y年M月d日")
+                val yMd = SimpleDateFormat("y年M月d日", Locale.JAPANESE)
 
-                id.value = expenditureItem!!.id
+                id.intValue = expenditureItem!!.id
                 payDate.value = yMd.format(expenditureItem!!.payDate.toDate("yyyy-MM-dd"))
                 price.value = expenditureItem!!.price
                 category_id.value = expenditureItem!!.categoryId
@@ -88,17 +87,17 @@ fun ExpenditureItemDetail(
                         IconButton(
                             onClick = { navController.popBackStack() },
                             content = {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる", tint = Color(0xFF854A2A))
                             }
                         )
                     },
                     actions = {
                         IconButton(
                             onClick = {
-                                navController.navigate("${Route.EDIT_EXPENDITURE.name}/${id.value}")
+                                navController.navigate("${Route.EDIT_EXPENDITURE.name}/${id.intValue}")
                             },
                             content = {
-                                Icon(imageVector = Icons.Default.Edit, contentDescription = "編集")
+                                Icon(imageVector = Icons.Default.Edit, contentDescription = "編集", tint = Color(0xFF854A2A))
                             }
                         )
                     }

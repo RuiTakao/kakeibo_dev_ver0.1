@@ -1,6 +1,5 @@
 package com.example.kakeibo_dev_6.component.page
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,7 +74,7 @@ fun EditCategory(
                 title = if (id == null) "カテゴリー追加" else "カテゴリー編集",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる", tint = Color(0xFF854A2A))
                     }
                 },
                 actions = {
@@ -108,7 +107,7 @@ fun EditCategory(
                             }
                         },
                         content = {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録", tint = Color(0xFF854A2A))
                         }
                     )
                 }

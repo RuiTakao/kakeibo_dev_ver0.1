@@ -4,10 +4,11 @@ import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 fun String.toDate(pattern: String = "yyyy-MM-dd HH:mm:ss"): Date? {
     val format = try {
-        SimpleDateFormat(pattern)
+        SimpleDateFormat(pattern, Locale.JAPANESE)
     } catch (e: IllegalArgumentException) {
         null
     }

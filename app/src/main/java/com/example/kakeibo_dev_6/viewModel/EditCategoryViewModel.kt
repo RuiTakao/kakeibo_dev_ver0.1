@@ -1,6 +1,7 @@
 package com.example.kakeibo_dev_6.viewModel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -23,7 +24,7 @@ class EditCategoryViewModel @Inject constructor(
     var editingCategory: Category? = null
 
     var name by mutableStateOf("")
-    var order by mutableStateOf(0)
+    var order by mutableIntStateOf(0)
 
     var inputValidateCategoryStatus by mutableStateOf(false)
     var inputValidateCategoryText by mutableStateOf("")

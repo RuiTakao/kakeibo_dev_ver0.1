@@ -1,6 +1,7 @@
 package com.example.kakeibo_dev_6.viewModel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditExpenditureItemViewModel @Inject constructor(
     private val expendItemDao: ExpenditureItemDao,
-    private val categoryDao: CategoryDao
+    categoryDao: CategoryDao
 ) : ViewModel() {
     var payDate by mutableStateOf("")
     var category_id by mutableStateOf("")
@@ -27,7 +28,7 @@ class EditExpenditureItemViewModel @Inject constructor(
     var viewPayDate by mutableStateOf("")
 
     var createCategoryFlg by mutableStateOf(false)
-    var firstCategory by mutableStateOf(0)
+    var firstCategory by mutableIntStateOf(0)
 
     val maxOrderCategory = categoryDao.maxOrderCategory().distinctUntilChanged()
 

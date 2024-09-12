@@ -174,7 +174,15 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
             ChangeDurationDateText(
                 text = "日",
                 dateProperty = DateProperty.DAY.name,
-                onClick = { viewModel.dateProperty = DateProperty.DAY.name },
+                onClick = {
+                    viewModel.dateProperty = DateProperty.DAY.name
+                    val standardDate =
+                        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    if (standardDate.isAfter(LocalDate.now())) {
+                        viewModel.standardOfStartDate = Date()
+                    }
+                },
                 viewModel = viewModel
             )
 
@@ -182,7 +190,15 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
             ChangeDurationDateText(
                 text = "週",
                 dateProperty = DateProperty.WEEK.name,
-                onClick = { viewModel.dateProperty = DateProperty.WEEK.name },
+                onClick = {
+                    viewModel.dateProperty = DateProperty.WEEK.name
+                    val standardDate =
+                        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                    if (standardDate.isAfter(LocalDate.now())) {
+                        viewModel.standardOfStartDate = Date()
+                    }
+                },
                 viewModel = viewModel
             )
 

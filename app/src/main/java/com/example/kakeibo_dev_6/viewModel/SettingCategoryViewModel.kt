@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingCategoryViewModel @Inject constructor(
-    private val categoryDao: CategoryDao
+    categoryDao: CategoryDao
 ) : ViewModel() {
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 }
