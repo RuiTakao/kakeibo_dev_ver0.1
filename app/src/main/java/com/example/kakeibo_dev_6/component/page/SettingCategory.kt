@@ -73,7 +73,7 @@ fun SettingCategory(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .background(Color(0xFFF8F5E3))
+                .background(Color(0xFFEEDCB3))
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(24.dp))

@@ -89,7 +89,7 @@ fun ReplaceOrderCategory(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .background(Color(0xFFF8F5E3))
+                .background(Color(0xFFEEDCB3))
         ) {
             LazyColumn(
                 state = state.listState,

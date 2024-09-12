@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
@@ -76,21 +80,42 @@ fun ExpenditureItemDetail(
             }
         }
 
-        Scaffold(topBar = {
-            TopBar(navController = navController, onClick = {
-                navController.navigate("${Route.EDIT_EXPENDITURE.name}/${id.value}")
-            })
-        }) { padding ->
+        Scaffold(
+            topBar = {
+                SubTopBar(
+                    title = "支出項目 詳細",
+                    navigation = {
+                        IconButton(
+                            onClick = { navController.popBackStack() },
+                            content = {
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+                            }
+                        )
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                navController.navigate("${Route.EDIT_EXPENDITURE.name}/${id.value}")
+                            },
+                            content = {
+                                Icon(imageVector = Icons.Default.Edit, contentDescription = "編集")
+                            }
+                        )
+                    }
+                )
+            }
+        ) { padding ->
 
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .background(Color(0xFFF8F5E3))
-                    .fillMaxSize()
+                    .background(Color(0xFFEEDCB3))
+                    .padding(horizontal = 8.dp)
 
+                    .fillMaxSize()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color.White).fillMaxWidth().padding(16.dp)
                 ) {
                     Text(
                         text = "日付",
@@ -175,35 +200,4 @@ fun ExpenditureItemDetail(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopBar(navController: NavController, onClick: () -> Unit) {
-    TopAppBar(
-        title = {
-            Text(
-                text = "支出項目 詳細",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFF8F5E3)
-        ),
-        navigationIcon = {
-            IconButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = onClick
-            ) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = "編集")
-            }
-        }
-    )
 }

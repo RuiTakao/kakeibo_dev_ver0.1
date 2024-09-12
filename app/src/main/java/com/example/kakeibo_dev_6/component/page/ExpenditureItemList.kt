@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -39,8 +40,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -152,34 +155,42 @@ fun ExpenditureItemList(
                                         if (isClosed) open() else close()
                                     }
                                 }
+                            },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "メニュー",
+                                    tint = Color(0xFF854A2A)
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "メニュー",
-                                tint = Color.White
-                            )
-                        }
+                        )
                     },
                     actions = {
-                        IconButton(onClick = {
-                            val df = SimpleDateFormat("yyyy-MM-dd")
-                            var startDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
-                            var lastDate = df.format(displaySwitchAreaViewModel.standardOfStartDate)
-                            if (displaySwitchAreaViewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                startDate = df.format(displaySwitchAreaViewModel.customOfStartDate)
-                                lastDate = df.format(displaySwitchAreaViewModel.customOfLastDate)
+                        IconButton(
+                            onClick = {
+                                val df = SimpleDateFormat("yyyy-MM-dd")
+                                var startDate =
+                                    df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                                var lastDate =
+                                    df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                                if (displaySwitchAreaViewModel.dateProperty == DateProperty.CUSTOM.name) {
+                                    startDate =
+                                        df.format(displaySwitchAreaViewModel.customOfStartDate)
+                                    lastDate =
+                                        df.format(displaySwitchAreaViewModel.customOfLastDate)
+                                }
+                                navController.navigate(
+                                    "${Route.PAY_DETAIL.name}/0/${displaySwitchAreaViewModel.dateProperty}/${startDate}/${lastDate}"
+                                )
+                            },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.ReceiptLong,
+                                    contentDescription = "詳細",
+                                    tint = Color(0xFF854A2A)
+                                )
                             }
-                            navController.navigate(
-                                "${Route.PAY_DETAIL.name}/0/${displaySwitchAreaViewModel.dateProperty}/${startDate}/${lastDate}"
-                            )
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ReceiptLong,
-                                contentDescription = "詳細",
-                                tint = Color.White
-                            )
-                        }
+                        )
                     }
                 )
             },
@@ -188,7 +199,7 @@ fun ExpenditureItemList(
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .background(color = Color(0xFFF8F5E3))
+                    .background(color = Color(0xFFEEDCB3))
                     .fillMaxSize(),
                 content = {
                     DisplaySwitchArea(
@@ -221,42 +232,48 @@ private fun Item(
     navController: NavController,
     viewModel: DisplaySwitchAreaViewModel
 ) {
-    Column(modifier = Modifier
-        .padding(bottom = 16.dp)
-        .clickable {
-            val df = SimpleDateFormat("yyyy-MM-dd")
-            var startDate = df.format(viewModel.standardOfStartDate)
-            var lastDate = df.format(viewModel.standardOfStartDate)
-            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                startDate = df.format(viewModel.customOfStartDate)
-                lastDate = df.format(viewModel.customOfLastDate)
-            }
-            navController.navigate(
-                "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
-            )
-        }
-        .shadow(elevation = 5.dp)
-        .background(Color.White)
-        .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = categorizeExpenditureItem.categoryName, fontSize = 20.sp)
-            Column(horizontalAlignment = Alignment.End) {
-                Text(text = "￥${categorizeExpenditureItem.price}", fontSize = 20.sp)
-                Text(
-                    text = "支出回数：${categorizeExpenditureItem.categoryId}回",
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(vertical = 4.dp)
+    Column(
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .padding(horizontal = 8.dp)
+            .clickable {
+                val df = SimpleDateFormat("yyyy-MM-dd")
+                var startDate = df.format(viewModel.standardOfStartDate)
+                var lastDate = df.format(viewModel.standardOfStartDate)
+                if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
+                    startDate = df.format(viewModel.customOfStartDate)
+                    lastDate = df.format(viewModel.customOfLastDate)
+                }
+                navController.navigate(
+                    "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
                 )
             }
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color.White),
+        content = {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                content = {
+                    Text(text = categorizeExpenditureItem.categoryName, fontSize = 20.sp)
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        content = {
+                            Text(text = "￥${categorizeExpenditureItem.price}", fontSize = 20.sp)
+                            Text(
+                                text = "支出回数：${categorizeExpenditureItem.categoryId}回",
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    )
+                }
+            )
         }
-    }
+    )
 }
 
 @Composable
@@ -267,64 +284,57 @@ fun Drawer(
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(256.dp),
-        drawerShape = MaterialTheme.shapes.extraSmall
-    ) {
-        Column(
-            modifier = Modifier
-                .background(color = Color(0xFF854A2A))
-                .fillMaxWidth()
-                .height(64.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            IconButton(onClick = {
-                scope.launch {
-                    drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
+        drawerShape = MaterialTheme.shapes.extraSmall,
+        content = {
+            Column(
+                modifier = Modifier
+                    .background(color = Color(0xFF854A2A))
+                    .fillMaxWidth()
+                    .height(64.dp),
+                verticalArrangement = Arrangement.Center,
+                content = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "閉じる",
+                                tint = Color(0xFFEEDCB3)
+                            )
+                        }
+                    )
                 }
-            }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "閉じる",
-                    tint = Color.White
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF8F5E3))
-        ) {
-            TextButton(
-                onClick = {
-                    scope.launch {
-                        drawerState.apply { close() }
-                    }
-                    navController.navigate(Route.CATEGORY_SETTING.name)
-                },
-                modifier = Modifier.padding(top = 16.dp),
-                content = { Text(text = "カテゴリ設定", fontSize = 16.sp, color = Color(0xFF854A2A)) }
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF854A2A)),
+                content = {
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                drawerState.apply { close() }
+                            }
+                            navController.navigate(Route.CATEGORY_SETTING.name)
+                        },
+                        modifier = Modifier.padding(top = 16.dp),
+                        content = {
+                            Text(
+                                text = "カテゴリ設定",
+                                fontSize = 16.sp,
+                                color = Color(0xFFEEDCB3),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    )
+                }
             )
         }
-    }
-}
-
-@Composable
-private fun TotalTax(categorizeExpenditureItem: List<CategorizeExpenditureItem>) {
-    var totalTax by remember {
-        mutableStateOf(0)
-    }
-    LaunchedEffect(categorizeExpenditureItem) {
-        var i = 0
-        categorizeExpenditureItem.forEach {
-            i += it.price.toInt()
-        }
-        totalTax = i
-    }
-
-    Text(
-        text = "使用額 ￥${totalTax}",
-        fontSize = 16.sp,
-        modifier = Modifier.padding(top = 8.dp)
     )
 }

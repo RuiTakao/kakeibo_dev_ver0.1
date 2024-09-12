@@ -23,8 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,12 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.entity.Category
+import com.example.kakeibo_dev_6.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.viewModel.EditCategoryViewModel
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
 
@@ -74,13 +71,47 @@ fun EditCategory(
 
     Scaffold(
         topBar = {
-            TopBar(
-                value = value,
-                id = id,
-                navController = navController,
-                viewModel = viewModel,
-                maxOrderCategory = maxOrderCategory,
-                editExpenditureItemViewModel = editExpenditureItemViewModel
+            SubTopBar(
+                title = if (id == null) "カテゴリー追加" else "カテゴリー編集",
+                navigation = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            viewModel.name = value
+                            if (value == "") {
+                                viewModel.inputValidateCategoryText = "カテゴリーが未入力です。"
+                                viewModel.inputValidateCategoryStatus = true
+                            } else if (value.length > 10) {
+                                viewModel.inputValidateCategoryText = "カテゴリーは10文字以内で入力してください。"
+                                viewModel.inputValidateCategoryStatus = true
+                            } else {
+                                viewModel.inputValidateCategoryStatus = false
+                                if (id == null) {
+                                    maxOrderCategory?.let {
+                                        viewModel.order = maxOrderCategory!!.categoryOrder + 1
+                                    } ?: {
+                                        viewModel.order = 0
+                                    }
+                                    if (editExpenditureItemViewModel != null) {
+                                        editExpenditureItemViewModel.firstCategory = viewModel.order
+                                        editExpenditureItemViewModel.createCategoryFlg = true
+                                    }
+                                    viewModel.createCategory()
+                                } else {
+                                    viewModel.updateCategory()
+                                }
+                                navController.popBackStack()
+                            }
+                        },
+                        content = {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+                        }
+                    )
+                }
             )
         }
     ) { paddingValues ->
@@ -88,7 +119,7 @@ fun EditCategory(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(Color(0xFFF8F5E3))
+                .background(Color(0xFFEEDCB3))
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
@@ -171,66 +202,4 @@ fun EditCategory(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(
-    value: String,
-    id: Int?,
-    navController: NavController,
-    viewModel: EditCategoryViewModel,
-    maxOrderCategory: Category?,
-    editExpenditureItemViewModel: EditExpenditureItemViewModel?
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = if (id == null) "カテゴリー追加" else "カテゴリー編集",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFF8F5E3)
-        ),
-        navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = {
-                    viewModel.name = value
-                    if (value == "") {
-                        viewModel.inputValidateCategoryText = "カテゴリーが未入力です。"
-                        viewModel.inputValidateCategoryStatus = true
-                    } else if (value.length > 10) {
-                        viewModel.inputValidateCategoryText = "カテゴリーは10文字以内で入力してください。"
-                        viewModel.inputValidateCategoryStatus = true
-                    } else {
-                        viewModel.inputValidateCategoryStatus = false
-                        if (id == null) {
-                            maxOrderCategory?.let {
-                                viewModel.order = maxOrderCategory.categoryOrder + 1
-                            } ?: {
-                                viewModel.order = 0
-                            }
-                            if (editExpenditureItemViewModel != null) {
-                                editExpenditureItemViewModel.firstCategory = viewModel.order
-                                editExpenditureItemViewModel.createCategoryFlg = true
-                            }
-                            viewModel.createCategory()
-                        } else {
-                            viewModel.updateCategory()
-                        }
-                        navController.popBackStack()
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
-            }
-        }
-    )
 }

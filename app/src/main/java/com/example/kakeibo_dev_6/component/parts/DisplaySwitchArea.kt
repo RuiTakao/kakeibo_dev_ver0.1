@@ -1,6 +1,5 @@
 package com.example.kakeibo_dev_6.component.parts
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -26,18 +26,18 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +51,7 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 /**
  * 支出項目一覧の表示切り替えエリア
@@ -69,32 +70,43 @@ fun DisplaySwitchArea(
 ) {
     Column(
         modifier = Modifier
-            .shadow(elevation = 5.dp)
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.onPrimary),
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(color = Color.White),
         content = {
 
-            /** 日、週、月、任意の期間毎に支出一覧項目の表示を切り替えるボタンのエリア */
+            /*
+            日、週、月、カスタムボタンエリア
+            一行目のレイアウト
+             */
             ChangeDurationDateRow(viewModel = viewModel)
 
+            /* 二行目、三行目のレイアウト */
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
                     .padding(vertical = 16.dp),
                 content = {
 
-                    /** 過去の支出項目一覧へ表示を切り替えるボタン */
+                    /* 前へボタン（過去に移動） */
                     PrevButton(viewModel = viewModel)
 
+                    /* 真ん中のレイアウト */
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         content = {
 
-                            /** 表示期間 */
+                            /*
+                            日付の表示（表示期間）
+                            二行目のレイアウト
+                             */
                             ShowDurationDate(viewModel = viewModel)
 
-                            /** 一覧に表示されている支出項目の合計金額 */
+                            /*
+                            合計金額（表示額合計）
+                            三行目のレイアウト
+                             */
                             Text(
                                 text = "使用額 ￥${totalTax}",
                                 fontSize = 16.sp,
@@ -103,29 +115,39 @@ fun DisplaySwitchArea(
                         }
                     )
 
-                    /** 未来の支出項目一覧へ表示を切り替えるボタン */
+                    /* 次へボタン（未来へ移動） */
                     NextButton(viewModel = viewModel)
                 }
             )
 
-            /** 明細のみ表示 */
+            /*
+            明細画面のみ表示
+            四行目のレイアウト
+             */
             if (searchArea) {
+
+                /* 三行目との余白 */
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth(), // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
                     content = {
 
-                        /** カテゴリー毎に絞り込み */
+                        /* 絞り込みドロップダウン（カテゴリー毎） */
                         SelectCategoryBox(viewModel = viewModel)
+
+                        /* 左右の余白 */
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        /** 入力日付の並び替え */
+                        /* 並び替えドロップダウン（登録日付順） */
                         SelectDateSortBox(viewModel = viewModel)
                     }
                 )
+
+                /* 下の余白 */
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -133,7 +155,7 @@ fun DisplaySwitchArea(
 }
 
 /**
- * 日、週、月、任意の期間毎に支出一覧項目の表示を切り替えるボタンのエリア
+ * 日、週、月、カスタムボタンのエリア
  *
  * @param viewModel DisplaySwitchAreaViewModel
  *
@@ -144,48 +166,42 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
             .padding(top = 8.dp),
         content = {
 
-            /** 期間毎に支出一覧項目の表示を切り替えるボタン　日 */
+            /* 日ボタン */
             ChangeDurationDateText(
                 text = "日",
                 dateProperty = DateProperty.DAY.name,
-                onClick = {
-                    viewModel.dateProperty = DateProperty.DAY.name
-                },
+                onClick = { viewModel.dateProperty = DateProperty.DAY.name },
                 viewModel = viewModel
             )
 
-            /** 期間毎に支出一覧項目の表示を切り替えるボタン　週 */
+            /* 週ボタン */
             ChangeDurationDateText(
                 text = "週",
                 dateProperty = DateProperty.WEEK.name,
-                onClick = {
-                    viewModel.dateProperty = DateProperty.WEEK.name
-                },
+                onClick = { viewModel.dateProperty = DateProperty.WEEK.name },
                 viewModel = viewModel
             )
 
-            /** 期間毎に支出一覧項目の表示を切り替えるボタン　月 */
+            /* 月ボタン */
             ChangeDurationDateText(
                 text = "月",
                 dateProperty = DateProperty.MONTH.name,
-                onClick = {
-                    viewModel.dateProperty = DateProperty.MONTH.name
-                },
+                onClick = { viewModel.dateProperty = DateProperty.MONTH.name },
                 viewModel = viewModel
             )
 
-            /** 期間毎に支出一覧項目の表示を切り替えるボタン　任意の期間 */
+            /* カスタムボタン */
             ChangeDurationDateCustom(viewModel = viewModel)
         }
     )
 }
 
 /**
- * 期間毎に支出一覧項目の表示を切り替えるボタン
+ * 日、週、月のボタンフォーマット
  *
  * @param text String 表示するボタンテキスト
  * @param dateProperty DateProperty ボタンの種類
@@ -201,6 +217,7 @@ private fun ChangeDurationDateText(
     onClick: () -> Unit,
     viewModel: DisplaySwitchAreaViewModel
 ) {
+    // 選択、未選択の判定
     val selected = viewModel.dateProperty == dateProperty
 
     TextButton(
@@ -209,27 +226,34 @@ private fun ChangeDurationDateText(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
+
+                    /* ボタンのテキスト */
                     Text(
                         text = text,
                         fontSize = 16.sp,
+                        // テキストの色、未選択時はグレー
                         color = if (selected) Color(0xFF854A2A) else Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+
+                    /* 選択時のアンダーバー */
                     Spacer(
                         modifier = Modifier
+                            .padding(top = 2.dp)
                             .height(2.dp)
                             .width(20.dp)
+                            // アンダーバーの色、未選択時は透過
                             .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
                     )
                 }
             )
         },
-        enabled = if (selected) false else true
+        // 選択時はクリック不可、誤動作防止の為
+        enabled = !selected
     )
 }
 
 /**
- * 期間毎に支出一覧項目の表示を切り替えるボタン　任意の期間
+ * カスタムボタン
  *
  * @param viewModel DisplaySwitchAreaViewModel
  *
@@ -239,8 +263,10 @@ private fun ChangeDurationDateText(
 @Composable
 private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
 
+    // 選択、未選択の判定
     val selected = viewModel.dateProperty == DateProperty.CUSTOM.name
 
+    // DatePickerの表示非表示の判定
     val visible = remember { mutableStateOf(false) }
 
     IconButton(
@@ -249,14 +275,19 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
+
+                    /* ボタンのアイコン */
                     Icon(
                         imageVector = Icons.Default.CalendarMonth,
                         contentDescription = null,
+                        // テキストの色、未選択時はグレー
                         tint = if (selected) Color(0xFF854A2A) else Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+
+                    /* 選択時のアンダーバー */
                     Spacer(
                         modifier = Modifier
+                            .padding(top = 2.dp)
                             .height(2.dp)
                             .width(20.dp)
                             .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
@@ -266,16 +297,22 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
         }
     )
 
+    /* DatePickerの制御 */
     if (visible.value) {
 
-        /**  */
+        // DatePickerでデフォルトで設定しておく日付
         val state = rememberDateRangePickerState(
             viewModel.customOfStartDate.time,
             viewModel.customOfLastDate.time
         )
+
+        // 選択した開始日を取得
         val getStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
+
+        // 選択した終了日を取得
         val getLastDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
 
+        /* DatePickerのダイアログ */
         DatePickerDialog(
             onDismissRequest = { visible.value = false },
             confirmButton = {},
@@ -283,22 +320,31 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
                 Box(
                     contentAlignment = Alignment.BottomEnd,
                     content = {
+
+                        /* DatePicker */
                         DateRangePicker(
                             state = state,
+                            // カレンダービューのみ許可、テキストフィールドは表示不可にする
                             showModeToggle = false,
+                            // DatePickerに表示される日付のフォーマット、M月d日
                             dateFormatter = DatePickerFormatter(selectedDateSkeleton = "Md"),
                             dateValidator = {
-                                if (Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                                        .toLocalDate()
-                                        .isAfter(LocalDate.now())
-                                ) false else true
+                                // 未来日の選択を不可にするためのバリデーション
+                                !Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                    .toLocalDate().isAfter(LocalDate.now())
                             }
                         )
+
+                        /* 日付確定ボタン */
                         Button(
                             onClick = {
+                                // DatePickerを閉じる
                                 visible.value = false
+                                // カスタムを選択状態にする
                                 viewModel.dateProperty = DateProperty.CUSTOM.name
+                                // 選択した開始日をカスタム日付用の変数に保存
                                 viewModel.customOfStartDate = getStartDate
+                                // 選択した終了日をカスタム日付用の変数に保存
                                 viewModel.customOfLastDate = getLastDate
                             },
                             modifier = Modifier.padding(16.dp),
@@ -312,7 +358,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
 }
 
 /**
- * 表示期間
+ * 日付の表示（表示期間）
  *
  * @param viewModel: DisplaySwitchAreaViewModel
  *
@@ -320,47 +366,61 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
-
-    // 日付フォーマット
-    val Md = SimpleDateFormat("M月d日")
-    val M = SimpleDateFormat("M月")
-
-    // 表示日付のテキスト
-    var text = ""
-    when (viewModel.dateProperty) {
-        DateProperty.DAY.name -> text =
-            Md.format(viewModel.standardOfStartDate)
-
-        /** 表示期間、週 */
-        DateProperty.WEEK.name -> {
-            val getDate = Calendar.getInstance()
-            getDate.time = viewModel.standardOfStartDate
-            getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
-            val startDate = getDate.time
-            getDate.add(Calendar.DATE, 6)
-            val lastDate = getDate.time
-            text =
-                "${
-                    Md.format(startDate)
-                } 〜 ${
-                    Md.format(lastDate)
-                }"
-        }
-
-        DateProperty.MONTH.name -> text = M.format(viewModel.standardOfStartDate)
-        DateProperty.CUSTOM.name -> text =
-            "${
-                Md.format(viewModel.customOfStartDate)
-            } 〜 ${
-                Md.format(viewModel.customOfLastDate)
-            }"
-    }
-
-    Text(text = text, fontSize = 24.sp)
+    Text(text = durationDateText(viewModel = viewModel), fontSize = 24.sp)
 }
 
 /**
- * 過去の支出項目一覧へ表示を切り替えるボタン
+ * 表示期間のテキスト
+ *
+ * @param viewModel: DisplaySwitchAreaViewModel
+ *
+ * @return String
+ */
+private fun durationDateText(viewModel: DisplaySwitchAreaViewModel): String {
+    // 日付フォーマット
+    val formatDate = SimpleDateFormat("M月d日", Locale.JAPANESE)
+    val formatMonth = SimpleDateFormat("M月", Locale.JAPANESE)
+
+    when (viewModel.dateProperty) {
+
+        /* 日 */
+        DateProperty.DAY.name -> return formatDate.format(viewModel.standardOfStartDate)
+
+        /* 週 */
+        DateProperty.WEEK.name -> {
+            // 基準日の週の開始日と終了日を求める為、基準日をカレンダークラスのインスタンスに格納する
+            val getDate = Calendar.getInstance()
+            getDate.time = viewModel.standardOfStartDate
+            // 基準日が何曜日か数字で取得
+            val dayOfWeek = getDate.get(Calendar.DAY_OF_WEEK)
+            // 基準日から曜日番号を減算し、１加算して基準日の週初めの日付を求める
+            getDate.add(Calendar.DATE, dayOfWeek * -1 + 1)
+            // 開始日を保存、終了日の計算でgetDateの値が変動するので、ここで保存する
+            val startDate = getDate.time
+            // getDateはここでは、基準日の週初めの日付になっているため、６加算したら週終わりの日付になる
+            getDate.add(Calendar.DATE, 6)
+            // 終了日を保存
+            val lastDate = getDate.time
+            return "${formatDate.format(startDate)} 〜 ${formatDate.format(lastDate)}"
+        }
+
+        /* 月 */
+        // 日付フォーマットで月のみ取得
+        DateProperty.MONTH.name -> return formatMonth.format(viewModel.standardOfStartDate)
+
+        /* カスタム */
+        // カスタム日付用に保存している開始日と終了日をセット
+        DateProperty.CUSTOM.name -> return "${
+            formatDate.format(viewModel.customOfStartDate)
+        } 〜 ${
+            formatDate.format(viewModel.customOfLastDate)
+        }"
+    }
+    return ""
+}
+
+/**
+ * 前へボタン（過去に移動）
  *
  * @param viewModel: DisplaySwitchAreaViewModel
  *
@@ -368,10 +428,13 @@ private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
+
+    // ボタンのクリック可不可を判定する変数
     var enabled = true
     if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
         enabled = false
     }
+
     IconButton(
         onClick = {
             onClickSwitchDateButton(
@@ -380,7 +443,14 @@ private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
             )
         },
         enabled = enabled,
-        content = { Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = null) }
+        content = {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                contentDescription = null,
+                // クリック不可の場合は透過
+                tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
+            )
+        }
     )
 }
 
@@ -394,38 +464,7 @@ private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
-    val checkDate =
-        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-    var enabled = true
-    if (
-        viewModel.dateProperty == DateProperty.CUSTOM.name ||
-        checkDate.isEqual(LocalDate.now())
-    ) {
-        enabled = false
-    } else {
-        when (viewModel.dateProperty) {
 
-            DateProperty.WEEK.name -> {
-                val getDate = Calendar.getInstance()
-                getDate.time = viewModel.standardOfStartDate
-                getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 7)
-                if (getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                        .isAfter(LocalDate.now())
-                ) {
-                    enabled = false
-                }
-            }
-
-            DateProperty.MONTH.name -> {
-                if (
-                    LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
-                        .isEqual(checkDate.with(TemporalAdjusters.firstDayOfMonth()))
-                ) {
-                    enabled = false
-                }
-            }
-        }
-    }
     IconButton(
         onClick = {
             onClickSwitchDateButton(
@@ -433,14 +472,71 @@ private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
                 switchAction = SwitchDate.NEXT
             )
         },
-        enabled = enabled,
+        enabled = isNextButtonEnabled(viewModel = viewModel),
         content = {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = null
+                contentDescription = null,
+                tint = if (isNextButtonEnabled(viewModel = viewModel)) Color(0xFF854A2A) else Color.Transparent
             )
         }
     )
+}
+
+/**
+ * Nextボタンのクリック不可判定
+ *
+ * @param viewModel: DisplaySwitchAreaViewModel
+ *
+ * @return Unit
+ */
+private fun isNextButtonEnabled(viewModel: DisplaySwitchAreaViewModel): Boolean {
+
+    // 比較用に基準日をLocalDate型にしておく
+    val standardDate =
+        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+    if (
+        viewModel.dateProperty == DateProperty.CUSTOM.name || // カスタムが選択されている場合はクリック不可
+        standardDate.isEqual(LocalDate.now()) // 日付が本日の場合はクリック不可
+    ) {
+        return false
+    } else {
+        when (viewModel.dateProperty) {
+
+            // 週が選択されている場合の判定
+            DateProperty.WEEK.name -> {
+
+                // 基準日をカレンダーインスタンスに格納する
+                val getDate = Calendar.getInstance()
+                getDate.time = viewModel.standardOfStartDate
+                // 基準日の曜日を数字で取得
+                val dayOfWeek = getDate.get(Calendar.DAY_OF_WEEK)
+                // 基準日の週の最終日を求める
+                getDate.add(Calendar.DATE, dayOfWeek * -1 + 7)
+                val weekOfLastDate =
+                    getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                // 本日の週の最終日が本日以降であればクリック不可
+                if (weekOfLastDate.isAfter(LocalDate.now())) {
+                    return false
+                }
+            }
+
+            // 月が選択されている場合の判定
+            DateProperty.MONTH.name -> {
+                // 本日の月の開始日
+                val nowIsFirstDayOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
+                // 基準日の月の開始日
+                val standardDayOfFirstDayOfMonth =
+                    standardDate.with(TemporalAdjusters.firstDayOfMonth())
+                // 本日の月と基準日の月が同じ場合はクリック不可
+                if (nowIsFirstDayOfMonth.isEqual(standardDayOfFirstDayOfMonth)) {
+                    return false
+                }
+            }
+        }
+    }
+    return true
 }
 
 /**
@@ -523,12 +619,12 @@ private fun onClickSwitchDateButton(
 @Composable
 private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
 
-    val selectCategory = remember { mutableStateOf(viewModel.selectCategory) }
+    val selectCategory = remember { mutableIntStateOf(viewModel.selectCategory) }
     val selectCategoryName = remember { mutableStateOf("すべて") }
     val expanded = remember { mutableStateOf(false) }
     val categories by viewModel.category.collectAsState(initial = emptyList())
     categories.forEach {
-        if (it.id == selectCategory.value) {
+        if (it.id == selectCategory.intValue) {
             selectCategoryName.value = it.categoryName
         }
     }
@@ -538,10 +634,15 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.clickable { expanded.value = !expanded.value },
         content = {
-            Text(text = selectCategoryName.value, modifier = Modifier.padding(start = 10.dp))
+            Text(
+                text = selectCategoryName.value,
+                modifier = Modifier.padding(start = 10.dp),
+                color = Color(0xFF854A2A)
+            )
             Icon(
                 imageVector = Icons.Filled.ArrowDropDown,
                 contentDescription = "選択アイコン",
+                tint = Color(0xFF854A2A)
             )
             DropdownMenu(
                 expanded = expanded.value,
@@ -551,7 +652,7 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
                         text = { Text(text = "すべて") },
                         onClick = {
                             expanded.value = false
-                            selectCategory.value = 0
+                            selectCategory.intValue = 0
                             selectCategoryName.value = "すべて"
                             viewModel.selectCategory = 0
                         }
@@ -561,7 +662,7 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
                             text = { Text(text = selectOption.categoryName) },
                             onClick = {
                                 expanded.value = false
-                                selectCategory.value = selectOption.id
+                                selectCategory.intValue = selectOption.id
                                 selectCategoryName.value = selectOption.categoryName
                                 viewModel.selectCategory = selectOption.id
                             }
@@ -593,10 +694,13 @@ private fun SelectDateSortBox(viewModel: DisplaySwitchAreaViewModel) {
         content = {
             Text(
                 text = "日付${if (sort.value) "昇順" else "降順"}",
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier.padding(start = 10.dp),
+                color = Color(0xFF854A2A)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown, contentDescription = "選択アイコン"
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = "選択アイコン",
+                tint = Color(0xFF854A2A)
             )
             DropdownMenu(
                 expanded = expanded.value,

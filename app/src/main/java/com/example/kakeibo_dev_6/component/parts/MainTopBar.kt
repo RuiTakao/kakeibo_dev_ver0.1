@@ -22,11 +22,11 @@ fun MainTopBar(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = Color.White
+                color = Color(0xFF854A2A)
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF854A2A)
+            containerColor = Color(0xFFEEDCB3)
         ),
         navigationIcon = navigation,
         actions = actions

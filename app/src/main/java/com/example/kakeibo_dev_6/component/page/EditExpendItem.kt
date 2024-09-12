@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.component.utility.checkInt
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.enum.Route
@@ -86,7 +87,8 @@ fun EditExpenditureItem(
         price.value = ""
         categoryId.value = ""
         content.value = ""
-        viewModel.viewPayDate = if (viewModel.viewPayDate == "") yMd.format(Date()) else viewModel.viewPayDate
+        viewModel.viewPayDate =
+            if (viewModel.viewPayDate == "") yMd.format(Date()) else viewModel.viewPayDate
     } else {
         val editExpendItem by viewModel.setEditingExpendItem(id = id).collectAsState(initial = null)
         LaunchedEffect(editExpendItem) {
@@ -102,88 +104,85 @@ fun EditExpenditureItem(
         }
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Text(
-                    text = if (id == null) "支出項目 追加" else "支出項目 編集",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFFF8F5E3)
-            ),
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
-                }
-            },
-            actions = {
-                IconButton(onClick = {
-                    var validCount = 0
-
-                    if (payDate.value.toDate("yyyy-MM-dd") == null) {
-                        validCount++
-                        viewModel.inputValidatePayDateStatus = true
-                        viewModel.inputValidatePayDateText = "日付を入力してください。"
-                    } else {
-                        viewModel.inputValidatePayDateStatus = false
+    Scaffold(
+        topBar = {
+            SubTopBar(
+                title = if (id == null) "支出項目 追加" else "支出項目 編集",
+                navigation = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる")
                     }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            var validCount = 0
 
-                    if (price.value == "") {
-                        validCount++
-                        viewModel.inputValidatePriceStatus = true
-                        viewModel.inputValidatePriceText = "金額を入力してください。"
-                    } else if (!checkInt(price.value)) {
-                        validCount++
-                        viewModel.inputValidatePriceStatus = true
-                        viewModel.inputValidatePriceText = "金額が不正です。"
-                    } else {
-                        viewModel.inputValidatePriceStatus = false
-                    }
+                            if (payDate.value.toDate("yyyy-MM-dd") == null) {
+                                validCount++
+                                viewModel.inputValidatePayDateStatus = true
+                                viewModel.inputValidatePayDateText = "日付を入力してください。"
+                            } else {
+                                viewModel.inputValidatePayDateStatus = false
+                            }
 
-                    if (categoryId.value == "") {
-                        validCount++
-                        viewModel.inputValidateSelectCategoryText = "カテゴリーが未選択です。"
-                        viewModel.inputValidateSelectCategoryStatus = true
-                    } else {
-                        viewModel.inputValidateSelectCategoryStatus = false
-                    }
+                            if (price.value == "") {
+                                validCount++
+                                viewModel.inputValidatePriceStatus = true
+                                viewModel.inputValidatePriceText = "金額を入力してください。"
+                            } else if (!checkInt(price.value)) {
+                                validCount++
+                                viewModel.inputValidatePriceStatus = true
+                                viewModel.inputValidatePriceText = "金額が不正です。"
+                            } else {
+                                viewModel.inputValidatePriceStatus = false
+                            }
 
-                    if (content.value == "") {
-                        validCount++
-                        viewModel.inputValidateContentText = "内容が未入力です。"
-                        viewModel.inputValidateContentStatus = true
-                    } else if (content.value.length > 50) {
-                        validCount++
-                        viewModel.inputValidateContentText = "内容は50文字以内で入力してください。"
-                        viewModel.inputValidateContentStatus = true
-                    } else {
-                        viewModel.inputValidateContentStatus = false
-                    }
+                            if (categoryId.value == "") {
+                                validCount++
+                                viewModel.inputValidateSelectCategoryText = "カテゴリーが未選択です。"
+                                viewModel.inputValidateSelectCategoryStatus = true
+                            } else {
+                                viewModel.inputValidateSelectCategoryStatus = false
+                            }
 
-                    if (validCount == 0) {
-                        navController.popBackStack()
-                        viewModel.payDate = payDate.value
-                        viewModel.price = price.value
-                        viewModel.category_id = categoryId.value
-                        viewModel.content = content.value
-                        if (id == null) {
-                            viewModel.createExpendItem()
-                        } else {
-                            viewModel.updateExpendItem()
+                            if (content.value == "") {
+                                validCount++
+                                viewModel.inputValidateContentText = "内容が未入力です。"
+                                viewModel.inputValidateContentStatus = true
+                            } else if (content.value.length > 50) {
+                                validCount++
+                                viewModel.inputValidateContentText = "内容は50文字以内で入力してください。"
+                                viewModel.inputValidateContentStatus = true
+                            } else {
+                                viewModel.inputValidateContentStatus = false
+                            }
+
+                            if (validCount == 0) {
+                                navController.popBackStack()
+                                viewModel.payDate = payDate.value
+                                viewModel.price = price.value
+                                viewModel.category_id = categoryId.value
+                                viewModel.content = content.value
+                                if (id == null) {
+                                    viewModel.createExpendItem()
+                                } else {
+                                    viewModel.updateExpendItem()
+                                }
+                            }
+                        },
+                        content = {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
                         }
-                    }
-                }) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = "登録")
+                    )
                 }
-            })
-    }) { paddingValues ->
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .background(Color(0xFFF8F5E3))
+                .background(Color(0xFFEEDCB3))
                 .padding(horizontal = 16.dp)
                 .fillMaxSize()
         ) {

@@ -21,11 +21,12 @@ fun SubTopBar(
             Text(
                 text = title,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color(0xFF854A2A)
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFF8F5E3)
+            containerColor = Color(0xFFEEDCB3)
         ),
         navigationIcon = navigation,
         actions = actions

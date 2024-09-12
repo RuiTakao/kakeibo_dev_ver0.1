@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -67,7 +69,7 @@ fun ExpenditureDetail(
     val df = SimpleDateFormat("yyyy-MM-dd")
     if (displaySwitchAreaViewModel.pageTransitionFlg) {
 
-        displaySwitchAreaViewModel.standardOfStartDate =  startDate?.let {
+        displaySwitchAreaViewModel.standardOfStartDate = startDate?.let {
             startDate.toDate("yyyy-MM-dd")
         } ?: displaySwitchAreaViewModel.standardOfStartDate
 
@@ -75,11 +77,11 @@ fun ExpenditureDetail(
         categoryId?.let { displaySwitchAreaViewModel.selectCategory = categoryId.toInt() }
 
         if (dateProperty != null && dateProperty == DateProperty.CUSTOM.name) {
-            displaySwitchAreaViewModel.customOfStartDate =  startDate?.let {
+            displaySwitchAreaViewModel.customOfStartDate = startDate?.let {
                 startDate.toDate("yyyy-MM-dd")
             } ?: displaySwitchAreaViewModel.customOfStartDate
 
-            displaySwitchAreaViewModel.customOfLastDate =  lastDate?.let {
+            displaySwitchAreaViewModel.customOfLastDate = lastDate?.let {
                 lastDate.toDate("yyyy-MM-dd")
             } ?: displaySwitchAreaViewModel.customOfLastDate
         }
@@ -140,61 +142,72 @@ fun ExpenditureDetail(
 
     Scaffold(
         topBar = {
-            MainTopBar(title = "支出項目 明細", navigation = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "戻る",
-                        tint = Color.White
-                    )
-                }
-            }, actions = {})
-        },
-        floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .background(color = Color(0xFFF8F5E3))
-                .fillMaxSize()
-        ) {
-            DisplaySwitchArea(
-                totalTax = totalTax,
-                viewModel = displaySwitchAreaViewModel,
-                searchArea = true
-            )
-            LazyColumn {
-                items(expenditureItemList) {
-                    if (expenditureItemList.indexOf(it) == 0) {
-                        Item(
-                            expItem = it,
-                            navController = navController,
-                            titleFlag = true,
-                            displaySwitchAreaViewModel = displaySwitchAreaViewModel
-                        )
-                    } else {
-                        if (
-                            expenditureItemList.get(expenditureItemList.indexOf(it)).payDate !=
-                            expenditureItemList.get(expenditureItemList.indexOf(it) - 1).payDate
-                        ) {
-                            Item(
-                                expItem = it,
-                                navController = navController,
-                                titleFlag = true,
-                                displaySwitchAreaViewModel = displaySwitchAreaViewModel
-                            )
-                        } else {
-                            Item(
-                                expItem = it,
-                                navController = navController,
-                                displaySwitchAreaViewModel = displaySwitchAreaViewModel
+            MainTopBar(
+                title = "支出項目 明細",
+                navigation = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "戻る",
+                                tint = Color(0xFF854A2A)
                             )
                         }
-                    }
+                    )
+                },
+                actions = {}
+            )
+        },
+        floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) },
+        content = {padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .background(color = Color(0xFFEEDCB3))
+                    .fillMaxSize(),
+                content = {
+                    DisplaySwitchArea(
+                        totalTax = totalTax,
+                        viewModel = displaySwitchAreaViewModel,
+                        searchArea = true
+                    )
+                    LazyColumn(
+                        content = {
+                            items(expenditureItemList) {
+                                if (expenditureItemList.indexOf(it) == 0) {
+                                    Item(
+                                        expItem = it,
+                                        navController = navController,
+                                        titleFlag = true,
+                                        displaySwitchAreaViewModel = displaySwitchAreaViewModel
+                                    )
+                                } else {
+                                    if (
+                                        expenditureItemList.get(expenditureItemList.indexOf(it)).payDate !=
+                                        expenditureItemList.get(expenditureItemList.indexOf(it) - 1).payDate
+                                    ) {
+                                        Item(
+                                            expItem = it,
+                                            navController = navController,
+                                            titleFlag = true,
+                                            displaySwitchAreaViewModel = displaySwitchAreaViewModel
+                                        )
+                                    } else {
+                                        Item(
+                                            expItem = it,
+                                            navController = navController,
+                                            displaySwitchAreaViewModel = displaySwitchAreaViewModel
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
-            }
+            )
         }
-    }
+    )
 }
 
 
@@ -224,6 +237,7 @@ private fun Item(
             Spacer(
                 modifier = Modifier
                     .height(2.dp)
+                    .padding(horizontal = 8.dp)
                     .background(Color.LightGray)
                     .fillMaxWidth()
             )
@@ -238,28 +252,31 @@ private fun Item(
                     route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
                 )
             }
-            .shadow(elevation = 5.dp)
-            .background(Color.White)
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            Column {
-                Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
-                Text(
-                    text = expItem.categoryName,
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    fontSize = 14.sp,
-                    lineHeight = 0.sp
-                )
-            }
-            Text(text = "￥${expItem.price}", fontSize = 20.sp)
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color.White),
+        content = {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top,
+                content = {
+                    Column(
+                        content = {
+                            Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
+                            Text(
+                                text = expItem.categoryName,
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                fontSize = 14.sp,
+                                lineHeight = 0.sp
+                            )
+                        }
+                    )
+                    Text(text = "￥${expItem.price}", fontSize = 20.sp)
+                }
+            )
         }
-    }
+    )
 }
