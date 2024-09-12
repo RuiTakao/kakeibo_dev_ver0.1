@@ -483,29 +483,14 @@ private fun onClickSwitchDateButton(
         DateProperty.WEEK.name -> {
 
             /** prevとnextで開始日と終了日の更新手順が違うので手順自体を分岐 */
-            when (switchAction) {
-                SwitchDate.PREV -> {
-                    /**
-                     * prevの場合は開始日を基準に計算
-                     * 現在の開始日から１日減算した日付を終了日に設定
-                     * 設定した終了日から６日減算した日付を開始日に設定
-                     */
-                    getDate.time = viewModel.standardOfStartDate
-                    getDate.add(Calendar.DATE, -7)
-                    viewModel.standardOfStartDate = getDate.time
+            getDate.time = viewModel.standardOfStartDate
+            val amount =
+                when (switchAction) {
+                    SwitchDate.PREV -> -7
+                    SwitchDate.NEXT -> 7
                 }
-
-                SwitchDate.NEXT -> {
-                    /**
-                     * nextの場合は終了日を基準に計算
-                     * 現在の終了日から１日加算した日付を開始日に設定
-                     * 設定した開始日から６日加算した日付を終了日に設定
-                     */
-                    getDate.time = viewModel.standardOfStartDate
-                    getDate.add(Calendar.DATE, 7)
-                    viewModel.standardOfStartDate = getDate.time
-                }
-            }
+            getDate.add(Calendar.DATE, amount)
+            viewModel.standardOfStartDate = getDate.time
         }
 
         /** dateProperty 月 */
