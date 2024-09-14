@@ -14,6 +14,7 @@ import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.enum.DateProperty
+import com.example.kakeibo_dev_6.enum.SelectDate
 import com.example.kakeibo_dev_6.enum.SwitchDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class DisplaySwitchAreaViewModel @Inject constructor(
+class ExpenditureListViewModel @Inject constructor(
     private val categorizeExpenditureItemDao: CategorizeExpenditureItemDao,
     private val expenditureItemJoinCategoryDao: ExpenditureItemJoinCategoryDao,
     categoryDao: CategoryDao,
@@ -53,6 +54,37 @@ class DisplaySwitchAreaViewModel @Inject constructor(
         val dateStr =
             firstDayOfMonth.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 12:00:00"
         return dateStr.toDate()?.let { dateStr.toDate() } ?: Date()
+    }
+
+    fun selectDate(selectDate: SelectDate): Date {
+        val getDate = Calendar.getInstance()
+        getDate.time = standardOfStartDate
+
+        when (dateProperty) {
+            DateProperty.DAY.name -> return getDate.time
+
+            DateProperty.WEEK.name -> {
+                val amount  = when (selectDate) {
+                    SelectDate.START -> 1
+                    SelectDate.LAST -> 7
+                }
+                getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + amount)
+                return getDate.time
+            }
+
+            DateProperty.MONTH.name -> {
+                val standardOfToLocalDate =
+                    getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                val monthOfDate = when (selectDate) {
+                    SelectDate.START -> standardOfToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
+                    SelectDate.LAST -> standardOfToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
+                }
+                return Date.from(monthOfDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+
+            DateProperty.CUSTOM.name -> return customOfStartDate
+        }
+        return Date()
     }
 
     fun startDate(): Date {

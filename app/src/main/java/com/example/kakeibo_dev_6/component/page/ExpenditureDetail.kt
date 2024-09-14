@@ -40,7 +40,8 @@ import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
-import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
+import com.example.kakeibo_dev_6.enum.SelectDate
+import com.example.kakeibo_dev_6.viewModel.ExpenditureListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -52,24 +53,35 @@ fun ExpenditureDetail(
     lastDate: String? = null,
     categoryId: String? = null,
     dateProperty: String? = null,
-    viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
+    viewModel: ExpenditureListViewModel = hiltViewModel()
 ) {
 
+    // ステータスバーの色
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
     }
 
+    // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+
+    /*
+    明細遷移時にのみ実行する処理
+    支出一覧からのパラメーターを処理するため
+     */
     if (viewModel.pageTransitionFlg) {
 
+        // パラメーターから受け取った基準日をViewModelに保存
         viewModel.standardOfStartDate = startDate?.let {
             startDate.toDate("yyyy-MM-dd")
         } ?: viewModel.standardOfStartDate
 
+        // パラメーターから受け取った選択期間をViewModelに保存
         dateProperty?.let { viewModel.dateProperty = dateProperty }
+        // パラメーターから受け取ったカテゴリーIDをViewModelに保存
         categoryId?.let { viewModel.selectCategory = categoryId.toInt() }
 
+        // 選択期間がカスタムの場合はパラメーターから受け取った開始日、最終日をViewModelに保存
         if (dateProperty != null && dateProperty == DateProperty.CUSTOM.name) {
             viewModel.customOfStartDate = startDate?.let {
                 startDate.toDate("yyyy-MM-dd")
@@ -80,6 +92,7 @@ fun ExpenditureDetail(
             } ?: viewModel.customOfLastDate
         }
 
+        // 遷移時の処理終了
         viewModel.pageTransitionFlg = false
     }
 
@@ -89,17 +102,23 @@ fun ExpenditureDetail(
         sort = viewModel.sort
     ).collectAsState(initial = emptyList())
 
+    // ログ確認用に変数に格納
+    val selectStartDate = df.format(viewModel.selectDate(SelectDate.START))
+    val selectLastDate = df.format(viewModel.selectDate(SelectDate.LAST))
+    // 日付が期待通りに絞り込まれているかログで確認
     Log.d(
         "明細 支出一覧、日付出力範囲",
-        "${viewModel.startDate()} - ${viewModel.lastDate()}"
+        "$selectStartDate - $selectLastDate"
     )
+    // 検索
     val expenditureItemList by viewModel.expenditureItemList(
-        firstDay = df.format(viewModel.startDate()),
-        lastDay = df.format(viewModel.lastDate()),
+        firstDay = selectStartDate,
+        lastDay = selectLastDate,
         sort = viewModel.sort,
         categoryId = viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 
+    // 金額合計
     var totalTax = 0
     expenditureItemList.forEach {
         totalTax += it.price.toInt()

@@ -132,7 +132,7 @@ fun ReplaceOrderCategory(
                                 .padding(vertical = 16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(text = item.categoryName, fontSize = 24.sp)
+                            Text(text = item.categoryName, fontSize = 20.sp)
                         }
                     }
                 }

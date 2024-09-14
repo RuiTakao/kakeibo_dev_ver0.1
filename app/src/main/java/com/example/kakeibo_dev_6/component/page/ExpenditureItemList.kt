@@ -50,17 +50,26 @@ import com.example.kakeibo_dev_6.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
-import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
+import com.example.kakeibo_dev_6.enum.SelectDate
+import com.example.kakeibo_dev_6.viewModel.ExpenditureListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/**
+ * ドロワー用、テンプレート
+ *
+ * @param navController NavController
+ * @param viewModel ExpenditureListViewModel
+ *
+ * @return Unit
+ */
 @Composable
 fun ExpenditureItemList(
     navController: NavController,
-    viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
+    viewModel: ExpenditureListViewModel = hiltViewModel()
 ) {
 
     // ステータスバーの色
@@ -72,15 +81,18 @@ fun ExpenditureItemList(
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
+    // ログ確認用に変数に格納
+    val selectStartDate = df.format(viewModel.selectDate(SelectDate.START))
+    val selectLastDate = df.format(viewModel.selectDate(SelectDate.LAST))
     // 日付が期待通りに絞り込まれているかログで確認
     Log.d(
         "支出項目 支出一覧、日付出力範囲",
-        "${viewModel.startDate()} - ${viewModel.lastDate()}"
+        "$selectStartDate - $selectLastDate"
     )
     // 検索
     val listItem by viewModel.categorizeExpenditureItem(
-        startDate = df.format(viewModel.startDate()),
-        lastDate = df.format(viewModel.lastDate())
+        startDate = selectStartDate,
+        lastDate = selectLastDate
     ).collectAsState(initial = emptyList())
 
     // 金額合計
@@ -93,9 +105,11 @@ fun ExpenditureItemList(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    /* ドロワー用、テンプレート */
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
+            /* ドロワー */
             Drawer(
                 navController = navController,
                 drawerState = drawerState,
@@ -110,6 +124,7 @@ fun ExpenditureItemList(
                     navigation = {
                         IconButton(
                             onClick = {
+                                // ドロワーの表示非表示の切り替え
                                 scope.launch {
                                     drawerState.apply {
                                         if (isClosed) open() else close()
@@ -128,16 +143,21 @@ fun ExpenditureItemList(
                     actions = {
                         IconButton(
                             onClick = {
-                                var startDate =
-                                    df.format(viewModel.standardOfStartDate)
-                                var lastDate =
-                                    df.format(viewModel.standardOfStartDate)
-                                if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                    startDate =
+                                // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
+                                val startDate =
+                                    if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
                                         df.format(viewModel.customOfStartDate)
-                                    lastDate =
+                                    } else {
+                                        df.format(viewModel.standardOfStartDate)
+                                    }
+                                // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
+                                val lastDate =
+                                    if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
                                         df.format(viewModel.customOfLastDate)
-                                }
+                                    } else {
+                                        df.format(viewModel.standardOfStartDate)
+                                    }
+                                // 明細ページへ遷移
                                 navController.navigate(
                                     "${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}"
                                 )
@@ -153,7 +173,14 @@ fun ExpenditureItemList(
                     }
                 )
             },
-            floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) }
+            floatingActionButton = {
+                FAButton(
+                    onClick = {
+                        // 支出追加ページへ遷移
+                        navController.navigate(Route.EDIT_EXPENDITURE.name)
+                    }
+                )
+            }
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -161,23 +188,18 @@ fun ExpenditureItemList(
                     .background(color = Color(0xFFEEDCB3))
                     .fillMaxSize(),
                 content = {
+
+                    /* 表示切替えエリア */
                     DisplaySwitchArea(
                         totalTax = totalTax,
                         viewModel = viewModel
                     )
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(top = 32.dp)
-                            .padding(bottom = 80.dp),
-                        content = {
-                            items(listItem) {
-                                Item(
-                                    item = it,
-                                    navController = navController,
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
+
+                    /* 支出リスト */
+                    ListItem(
+                        listItem = listItem,
+                        navController = navController,
+                        viewModel = viewModel
                     )
                 }
             )
@@ -185,56 +207,90 @@ fun ExpenditureItemList(
     }
 }
 
+/**
+ * 支出リスト
+ *
+ * @param listItem List<CategorizeExpenditureItem>
+ * @param navController NavController
+ * @param viewModel ExpenditureListViewModel
+ *
+ * @return Unit
+ */
 @Composable
-private fun Item(
-    item: CategorizeExpenditureItem,
+private fun ListItem(
+    listItem: List<CategorizeExpenditureItem>,
     navController: NavController,
-    viewModel: DisplaySwitchAreaViewModel
+    viewModel: ExpenditureListViewModel
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .padding(bottom = 16.dp)
-            .padding(horizontal = 8.dp)
-            .clickable {
-                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
-                var startDate = df.format(viewModel.standardOfStartDate)
-                var lastDate = df.format(viewModel.standardOfStartDate)
-                if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                    startDate = df.format(viewModel.customOfStartDate)
-                    lastDate = df.format(viewModel.customOfLastDate)
-                }
-                navController.navigate(
-                    "${Route.PAY_DETAIL.name}/${item.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
-                )
-            }
-            .clip(RoundedCornerShape(5.dp))
-            .background(Color.White),
-        content = {
-            Row(
+            .padding(top = 32.dp)
+            .padding(bottom = 80.dp)
+    ) {
+        items(listItem) {
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                content = {
-                    Text(text = item.categoryName, fontSize = 20.sp)
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        content = {
-                            Text(text = "￥${item.price}", fontSize = 20.sp)
-                            Text(
-                                text = "支出回数：${item.categoryId}回",
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(vertical = 4.dp)
-                            )
-                        }
-                    )
+                    .padding(bottom = 16.dp)
+                    .padding(horizontal = 8.dp)
+                    .clickable {
+                        val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+                        // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
+                        val startDate =
+                            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
+                                df.format(viewModel.customOfStartDate)
+                            } else {
+                                df.format(viewModel.standardOfStartDate)
+                            }
+                        // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
+                        val lastDate =
+                            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
+                                df.format(viewModel.customOfLastDate)
+                            } else {
+                                df.format(viewModel.standardOfStartDate)
+                            }
+                        // 明細ページへ遷移
+                        navController.navigate(
+                            "${Route.PAY_DETAIL.name}/${it.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
+                        )
+                    }
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(Color.White)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    /* カテゴリー */
+                    Text(text = it.categoryName, fontSize = 20.sp)
+                    Column(horizontalAlignment = Alignment.End) {
+                        /* 金額 */
+                        Text(text = "￥${it.price}", fontSize = 20.sp)
+                        /* 支出回数 */
+                        Text(
+                            text = "支出回数：${it.categoryId}回",
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
                 }
-            )
+            }
         }
-    )
+    }
+
 }
 
+/**
+ * ドロワー
+ *
+ * @param navController NavController
+ * @param drawerState DrawerState
+ * @param scope CoroutineScope
+ *
+ * @return Unit
+ */
 @Composable
 fun Drawer(
     navController: NavController,
@@ -254,6 +310,7 @@ fun Drawer(
                 content = {
                     IconButton(
                         onClick = {
+                            // ドロワーの表示非表示の切り替え
                             scope.launch {
                                 drawerState.apply {
                                     if (isClosed) open() else close()
@@ -277,9 +334,12 @@ fun Drawer(
                 content = {
                     TextButton(
                         onClick = {
+                            // ドロワー非表示
+                            // 遷移後も表示状態になる為、非表示にする処理を入れる
                             scope.launch {
                                 drawerState.apply { close() }
                             }
+                            // カテゴリー設定へ遷移
                             navController.navigate(Route.CATEGORY_SETTING.name)
                         },
                         modifier = Modifier.padding(top = 16.dp),

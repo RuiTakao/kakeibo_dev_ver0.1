@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.SwitchDate
-import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
+import com.example.kakeibo_dev_6.viewModel.ExpenditureListViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -61,7 +61,7 @@ import java.util.Date
 @Composable
 fun DisplaySwitchArea(
     totalTax: Int,
-    viewModel: DisplaySwitchAreaViewModel,
+    viewModel: ExpenditureListViewModel,
     searchArea: Boolean = false
 ) {
     Column(
@@ -158,7 +158,7 @@ fun DisplaySwitchArea(
  * @return Unit
  */
 @Composable
-private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
+private fun ChangeDurationDateRow(viewModel: ExpenditureListViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -227,7 +227,7 @@ private fun ChangeDurationDateText(
     text: String,
     dateProperty: String,
     onClick: () -> Unit,
-    viewModel: DisplaySwitchAreaViewModel
+    viewModel: ExpenditureListViewModel
 ) {
     // 選択、未選択の判定
     val selected = viewModel.dateProperty == dateProperty
@@ -273,7 +273,7 @@ private fun ChangeDurationDateText(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
+private fun ChangeDurationDateCustom(viewModel: ExpenditureListViewModel) {
 
     // 選択、未選択の判定
     val selected = viewModel.dateProperty == DateProperty.CUSTOM.name
@@ -377,7 +377,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
  * @return Unit
  */
 @Composable
-private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
+private fun ShowDurationDate(viewModel: ExpenditureListViewModel) {
     Text(text = viewModel.durationDateText(), fontSize = 24.sp)
 }
 
@@ -389,7 +389,7 @@ private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
  * @return Unit
  */
 @Composable
-private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
+private fun PrevButton(viewModel: ExpenditureListViewModel) {
 
     // ボタンのクリック可不可を判定する変数
     var enabled = true
@@ -422,7 +422,7 @@ private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
  * @return Unit
  */
 @Composable
-private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
+private fun NextButton(viewModel: ExpenditureListViewModel) {
 
     IconButton(
         onClick = {
@@ -448,7 +448,7 @@ private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
  * @return Unit
  */
 @Composable
-private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
+private fun SelectCategoryBox(viewModel: ExpenditureListViewModel) {
 
     // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }
@@ -530,7 +530,7 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
  * @return Unit
  */
 @Composable
-private fun SelectDateSortBox(viewModel: DisplaySwitchAreaViewModel) {
+private fun SelectDateSortBox(viewModel: ExpenditureListViewModel) {
 
     // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }

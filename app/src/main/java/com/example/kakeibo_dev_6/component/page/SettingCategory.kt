@@ -82,15 +82,18 @@ fun SettingCategory(
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(24.dp))
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
                 items(items = categories) {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal = 12.dp)
                             .clip(RoundedCornerShape(4.dp))
+                            .padding(bottom = 12.dp)
                             .background(Color.White)
-                            .fillMaxWidth()
-                            .padding(start = 12.dp),
+                            .padding(start = 16.dp)
+                            .padding(vertical = 4.dp)
+                            .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -103,7 +106,6 @@ fun SettingCategory(
                             onClickReplaceOrderCategory = { navController.navigate(Route.REPLACE_ORDER_CATEGORY.name) }
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
