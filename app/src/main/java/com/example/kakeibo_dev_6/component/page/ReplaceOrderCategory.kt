@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -41,20 +43,26 @@ fun ReplaceOrderCategory(
 
     val data = remember { mutableStateOf(viewModel.standardOrderCategory) }
 
-    val state = rememberReorderableLazyListState(onMove = { from, to ->
-        data.value = data.value!!.toMutableList().apply {
-            add(to.index, removeAt(from.index))
+    val state = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            data.value = data.value!!.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+            viewModel.replaceOrderCategory = data.value
         }
-        viewModel.replaceOrderCategory = data.value
-    })
+    )
 
     Scaffold(
         topBar = {
             SubTopBar(
-                title = "カテゴリー入替え",
+                title = "カテゴリー並替え",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る", tint = Color(0xFF854A2A))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "戻る",
+                            tint = Color(0xFF854A2A)
+                        )
                     }
                 },
                 actions = {
@@ -74,7 +82,11 @@ fun ReplaceOrderCategory(
                             navController.popBackStack()
                         }
                     ) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "登録", tint = Color(0xFF854A2A))
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "登録",
+                            tint = Color(0xFF854A2A)
+                        )
                     }
                 }
             )
@@ -85,12 +97,19 @@ fun ReplaceOrderCategory(
                 .padding(padding)
                 .background(Color(0xFFEEDCB3))
         ) {
+            Text(
+                text = "長押しでカテゴリーの並替えができます",
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 8.dp)
+            )
             LazyColumn(
                 state = state.listState,
                 modifier = Modifier
                     .reorderable(state)
                     .detectReorderAfterLongPress(state)
-                    .padding(top = 24.dp)
+                    .padding(top = 8.dp)
                     .fillMaxSize()
             ) {
                 items(data.value!!, { it.id }) { item ->
@@ -103,16 +122,17 @@ fun ReplaceOrderCategory(
                             .fillMaxWidth()
                     ) { isDragging ->
                         val elevation =
-                            animateDpAsState(if (isDragging) 16.dp else 5.dp)
+                            animateDpAsState(if (isDragging) 16.dp else 4.dp)
                         Row(
                             modifier = Modifier
                                 .shadow(elevation.value)
+                                .clip(RoundedCornerShape(4.dp))
                                 .background(Color.White)
-                                .padding(start = 12.dp)
-                                .padding(vertical = 12.dp)
+                                .padding(start = 16.dp)
+                                .padding(vertical = 16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(text = item.categoryName, fontSize = 20.sp)
+                            Text(text = item.categoryName, fontSize = 24.sp)
                         }
                     }
                 }
