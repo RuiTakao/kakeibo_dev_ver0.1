@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.component.page
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,8 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,22 +51,16 @@ import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
-import com.example.kakeibo_dev_6.viewModel.ExpenditureItemListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.ZoneId
-import java.time.temporal.TemporalAdjusters
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @Composable
 fun ExpenditureItemList(
     navController: NavController,
-    expenditureItemListViewModel: ExpenditureItemListViewModel = hiltViewModel(),
-    displaySwitchAreaViewModel: DisplaySwitchAreaViewModel = hiltViewModel()
+    viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -76,54 +69,19 @@ fun ExpenditureItemList(
     }
 
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
-    val firstDay = remember {
-        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
-    }
-    val lastDay = remember {
-        mutableStateOf(df.format(displaySwitchAreaViewModel.standardOfStartDate))
-    }
 
-    when (displaySwitchAreaViewModel.dateProperty) {
-        DateProperty.DAY.name -> {
-            firstDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
-            lastDay.value = df.format(displaySwitchAreaViewModel.standardOfStartDate)
-        }
-
-        DateProperty.WEEK.name -> {
-            val getDate = Calendar.getInstance()
-            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
-            getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
-            firstDay.value = df.format(getDate.time)
-            getDate.add(Calendar.DATE, 6)
-            lastDay.value = df.format(getDate.time)
-        }
-
-        DateProperty.MONTH.name -> {
-            val getDate = Calendar.getInstance()
-            getDate.time = displaySwitchAreaViewModel.standardOfStartDate
-            val changeDateToLocalDate =
-                getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val firstDate = changeDateToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
-            firstDay.value =
-                df.format(Date.from(firstDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-            val lastDate = changeDateToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
-            lastDay.value =
-                df.format(Date.from(lastDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        }
-
-        DateProperty.CUSTOM.name -> {
-            firstDay.value = df.format(displaySwitchAreaViewModel.customOfStartDate)
-            lastDay.value = df.format(displaySwitchAreaViewModel.customOfLastDate)
-        }
-    }
-    val categorizeExpenditureItem by expenditureItemListViewModel.categorizeExpenditureItem(
-        firstDay = firstDay.value,
-        lastDay = lastDay.value
+    Log.d(
+        "支出項目 支出一覧、日付出力範囲",
+        "${viewModel.startDate()} - ${viewModel.lastDate()}"
+    )
+    val listItem by viewModel.categorizeExpenditureItem(
+        startDate = df.format(viewModel.startDate()),
+        lastDate = df.format(viewModel.lastDate())
     ).collectAsState(initial = emptyList())
 
     // 金額合計
     var totalTax = 0
-    categorizeExpenditureItem.forEach {
+    listItem.forEach {
         totalTax += it.price.toInt()
     }
 
@@ -166,19 +124,18 @@ fun ExpenditureItemList(
                     actions = {
                         IconButton(
                             onClick = {
-                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
                                 var startDate =
-                                    df.format(displaySwitchAreaViewModel.standardOfStartDate)
+                                    df.format(viewModel.standardOfStartDate)
                                 var lastDate =
-                                    df.format(displaySwitchAreaViewModel.standardOfStartDate)
-                                if (displaySwitchAreaViewModel.dateProperty == DateProperty.CUSTOM.name) {
+                                    df.format(viewModel.standardOfStartDate)
+                                if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
                                     startDate =
-                                        df.format(displaySwitchAreaViewModel.customOfStartDate)
+                                        df.format(viewModel.customOfStartDate)
                                     lastDate =
-                                        df.format(displaySwitchAreaViewModel.customOfLastDate)
+                                        df.format(viewModel.customOfLastDate)
                                 }
                                 navController.navigate(
-                                    "${Route.PAY_DETAIL.name}/0/${displaySwitchAreaViewModel.dateProperty}/${startDate}/${lastDate}"
+                                    "${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}"
                                 )
                             },
                             content = {
@@ -202,18 +159,18 @@ fun ExpenditureItemList(
                 content = {
                     DisplaySwitchArea(
                         totalTax = totalTax,
-                        viewModel = displaySwitchAreaViewModel
+                        viewModel = viewModel
                     )
                     LazyColumn(
                         modifier = Modifier
                             .padding(top = 32.dp)
                             .padding(bottom = 80.dp),
                         content = {
-                            items(categorizeExpenditureItem) {
+                            items(listItem) {
                                 Item(
-                                    categorizeExpenditureItem = it,
+                                    item = it,
                                     navController = navController,
-                                    viewModel = displaySwitchAreaViewModel
+                                    viewModel = viewModel
                                 )
                             }
                         }
@@ -226,7 +183,7 @@ fun ExpenditureItemList(
 
 @Composable
 private fun Item(
-    categorizeExpenditureItem: CategorizeExpenditureItem,
+    item: CategorizeExpenditureItem,
     navController: NavController,
     viewModel: DisplaySwitchAreaViewModel
 ) {
@@ -243,7 +200,7 @@ private fun Item(
                     lastDate = df.format(viewModel.customOfLastDate)
                 }
                 navController.navigate(
-                    "${Route.PAY_DETAIL.name}/${categorizeExpenditureItem.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
+                    "${Route.PAY_DETAIL.name}/${item.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
                 )
             }
             .clip(RoundedCornerShape(5.dp))
@@ -256,13 +213,13 @@ private fun Item(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 content = {
-                    Text(text = categorizeExpenditureItem.categoryName, fontSize = 20.sp)
+                    Text(text = item.categoryName, fontSize = 20.sp)
                     Column(
                         horizontalAlignment = Alignment.End,
                         content = {
-                            Text(text = "￥${categorizeExpenditureItem.price}", fontSize = 20.sp)
+                            Text(text = "￥${item.price}", fontSize = 20.sp)
                             Text(
-                                text = "支出回数：${categorizeExpenditureItem.categoryId}回",
+                                text = "支出回数：${item.categoryId}回",
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )

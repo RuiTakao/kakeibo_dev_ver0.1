@@ -44,14 +44,10 @@ import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.SwitchDate
 import com.example.kakeibo_dev_6.viewModel.DisplaySwitchAreaViewModel
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.TemporalAdjusters
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 /**
  * 支出項目一覧の表示切り替えエリア
@@ -176,12 +172,12 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
                 dateProperty = DateProperty.DAY.name,
                 onClick = {
                     viewModel.dateProperty = DateProperty.DAY.name
-                    val standardDate =
-                        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-                    if (standardDate.isAfter(LocalDate.now())) {
-                        viewModel.standardOfStartDate = Date()
-                    }
+
+                    /*
+                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
+                     */
+                    viewModel.initStandardDate()
                 },
                 viewModel = viewModel
             )
@@ -192,12 +188,12 @@ private fun ChangeDurationDateRow(viewModel: DisplaySwitchAreaViewModel) {
                 dateProperty = DateProperty.WEEK.name,
                 onClick = {
                     viewModel.dateProperty = DateProperty.WEEK.name
-                    val standardDate =
-                        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-                    if (standardDate.isAfter(LocalDate.now())) {
-                        viewModel.standardOfStartDate = Date()
-                    }
+
+                    /*
+                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
+                     */
+                    viewModel.initStandardDate()
                 },
                 viewModel = viewModel
             )
@@ -382,57 +378,7 @@ private fun ChangeDurationDateCustom(viewModel: DisplaySwitchAreaViewModel) {
  */
 @Composable
 private fun ShowDurationDate(viewModel: DisplaySwitchAreaViewModel) {
-    Text(text = durationDateText(viewModel = viewModel), fontSize = 24.sp)
-}
-
-/**
- * 表示期間のテキスト
- *
- * @param viewModel: DisplaySwitchAreaViewModel
- *
- * @return String
- */
-private fun durationDateText(viewModel: DisplaySwitchAreaViewModel): String {
-    // 日付フォーマット
-    val formatDate = SimpleDateFormat("M月d日", Locale.JAPANESE)
-    val formatMonth = SimpleDateFormat("M月", Locale.JAPANESE)
-
-    when (viewModel.dateProperty) {
-
-        /* 日 */
-        DateProperty.DAY.name -> return formatDate.format(viewModel.standardOfStartDate)
-
-        /* 週 */
-        DateProperty.WEEK.name -> {
-            // 基準日の週の開始日と終了日を求める為、基準日をカレンダークラスのインスタンスに格納する
-            val getDate = Calendar.getInstance()
-            getDate.time = viewModel.standardOfStartDate
-            // 基準日が何曜日か数字で取得
-            val dayOfWeek = getDate.get(Calendar.DAY_OF_WEEK)
-            // 基準日から曜日番号を減算し、１加算して基準日の週初めの日付を求める
-            getDate.add(Calendar.DATE, dayOfWeek * -1 + 1)
-            // 開始日を保存、終了日の計算でgetDateの値が変動するので、ここで保存する
-            val startDate = getDate.time
-            // getDateはここでは、基準日の週初めの日付になっているため、６加算したら週終わりの日付になる
-            getDate.add(Calendar.DATE, 6)
-            // 終了日を保存
-            val lastDate = getDate.time
-            return "${formatDate.format(startDate)} 〜 ${formatDate.format(lastDate)}"
-        }
-
-        /* 月 */
-        // 日付フォーマットで月のみ取得
-        DateProperty.MONTH.name -> return formatMonth.format(viewModel.standardOfStartDate)
-
-        /* カスタム */
-        // カスタム日付用に保存している開始日と終了日をセット
-        DateProperty.CUSTOM.name -> return "${
-            formatDate.format(viewModel.customOfStartDate)
-        } 〜 ${
-            formatDate.format(viewModel.customOfLastDate)
-        }"
-    }
-    return ""
+    Text(text = viewModel.durationDateText(), fontSize = 24.sp)
 }
 
 /**
@@ -453,10 +399,7 @@ private fun PrevButton(viewModel: DisplaySwitchAreaViewModel) {
 
     IconButton(
         onClick = {
-            onClickSwitchDateButton(
-                viewModel = viewModel,
-                switchAction = SwitchDate.PREV
-            )
+            viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV)
         },
         enabled = enabled,
         content = {
@@ -483,146 +426,18 @@ private fun NextButton(viewModel: DisplaySwitchAreaViewModel) {
 
     IconButton(
         onClick = {
-            onClickSwitchDateButton(
-                viewModel = viewModel,
-                switchAction = SwitchDate.NEXT
-            )
+            viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT)
         },
-        enabled = isNextButtonEnabled(viewModel = viewModel),
+        enabled = viewModel.isNextButtonEnabled(),
         content = {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
-                tint = if (isNextButtonEnabled(viewModel = viewModel)) Color(0xFF854A2A) else Color.Transparent
+                // クリック不可の場合は透過
+                tint = if (viewModel.isNextButtonEnabled()) Color(0xFF854A2A) else Color.Transparent
             )
         }
     )
-}
-
-/**
- * Nextボタンのクリック不可判定
- *
- * @param viewModel: DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-private fun isNextButtonEnabled(viewModel: DisplaySwitchAreaViewModel): Boolean {
-
-    // 比較用に基準日をLocalDate型にしておく
-    val standardDate =
-        viewModel.standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-    if (
-        viewModel.dateProperty == DateProperty.CUSTOM.name || // カスタムが選択されている場合はクリック不可
-        standardDate.isEqual(LocalDate.now()) // 日付が本日の場合はクリック不可
-    ) {
-        return false
-    } else {
-        when (viewModel.dateProperty) {
-
-            // 週が選択されている場合の判定
-            DateProperty.WEEK.name -> {
-
-                // 基準日をカレンダーインスタンスに格納する
-                val getDate = Calendar.getInstance()
-                getDate.time = viewModel.standardOfStartDate
-                // 基準日の曜日を数字で取得
-                val dayOfWeek = getDate.get(Calendar.DAY_OF_WEEK)
-                // 基準日の週の最終日を求める
-                getDate.add(Calendar.DATE, dayOfWeek * -1 + 7)
-                val weekOfLastDate =
-                    getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                // 本日の週の最終日が本日以降であればクリック不可
-                if (weekOfLastDate.isAfter(LocalDate.now())) {
-                    return false
-                }
-            }
-
-            // 月が選択されている場合の判定
-            DateProperty.MONTH.name -> {
-                // 本日の月の開始日
-                val nowIsFirstDayOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
-                // 基準日の月の開始日
-                val standardDayOfFirstDayOfMonth =
-                    standardDate.with(TemporalAdjusters.firstDayOfMonth())
-                // 本日の月と基準日の月が同じ場合はクリック不可
-                if (nowIsFirstDayOfMonth.isEqual(standardDayOfFirstDayOfMonth)) {
-                    return false
-                }
-            }
-        }
-    }
-    return true
-}
-
-/**
- * 日付切り替え
- *
- * @param viewModel DisplaySwitchAreaViewModel
- * @param switchAction SwitchDate prevかnextかの判定
- *
- * @return Unit
- */
-private fun onClickSwitchDateButton(
-    viewModel: DisplaySwitchAreaViewModel,
-    switchAction: SwitchDate
-) {
-
-    /** 日付計算用のカレンダーインスタンス作成 */
-    val getDate = Calendar.getInstance()
-
-    when (viewModel.dateProperty) {
-
-        /** dateProperty 日 */
-        DateProperty.DAY.name -> {
-
-            /**
-             *  datePropertyが日の場合は開始日を基準に計算
-             *  prevの場合は１日減算して開始日と終了日にセット
-             *  nextの場合は１日加算して開始日と終了日にセット
-             */
-            getDate.time = viewModel.standardOfStartDate
-            val amount =
-                when (switchAction) {
-                    SwitchDate.PREV -> -1
-                    SwitchDate.NEXT -> 1
-                }
-            getDate.add(Calendar.DATE, amount)
-            viewModel.standardOfStartDate = getDate.time
-        }
-
-        /** dateProperty 週 */
-        DateProperty.WEEK.name -> {
-
-            /** prevとnextで開始日と終了日の更新手順が違うので手順自体を分岐 */
-            getDate.time = viewModel.standardOfStartDate
-            val amount =
-                when (switchAction) {
-                    SwitchDate.PREV -> -7
-                    SwitchDate.NEXT -> 7
-                }
-            getDate.add(Calendar.DATE, amount)
-            viewModel.standardOfStartDate = getDate.time
-        }
-
-        /** dateProperty 月 */
-        DateProperty.MONTH.name -> {
-
-            /**
-             * datePropertyが月の場合は開始日を基準に計算
-             * prevの場合はgetDateから１月減算
-             * nextの場合はgetDateから１月加算
-             */
-            getDate.time = viewModel.standardOfStartDate
-            val amount =
-                when (switchAction) {
-                    SwitchDate.PREV -> -1
-                    SwitchDate.NEXT -> 1
-                }
-            getDate.add(Calendar.MONTH, amount)
-            viewModel.standardOfStartDate = getDate.time
-        }
-    }
 }
 
 /**
@@ -635,12 +450,17 @@ private fun onClickSwitchDateButton(
 @Composable
 private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
 
-    val selectCategory = remember { mutableIntStateOf(viewModel.selectCategory) }
-    val selectCategoryName = remember { mutableStateOf("すべて") }
+    // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }
+    // 選択されているカテゴリーのID
+    val selectCategoryId = remember { mutableIntStateOf(viewModel.selectCategory) }
+    // 選択されているカテゴリー名の表示
+    val selectCategoryName = remember { mutableStateOf("すべて") }
+    // 全カテゴリー取得
     val categories by viewModel.category.collectAsState(initial = emptyList())
+    // 初期表示時の表示用のカテゴリー名を取得
     categories.forEach {
-        if (it.id == selectCategory.intValue) {
+        if (it.id == selectCategoryId.intValue) {
             selectCategoryName.value = it.categoryName
         }
     }
@@ -664,22 +484,34 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
                 expanded = expanded.value,
                 onDismissRequest = { expanded.value = false },
                 content = {
+                    // 全カテゴリーを検索する
                     DropdownMenuItem(
                         text = { Text(text = "すべて") },
                         onClick = {
+                            // コンテキストメニューを非表示
                             expanded.value = false
-                            selectCategory.intValue = 0
+                            // 選択したカテゴリーIDを格納 表示用
+                            // 0の場合はすべて
+                            selectCategoryId.intValue = 0
+                            // 選択したカテゴリー名を格納 表示用
                             selectCategoryName.value = "すべて"
+                            // 選択したカテゴリーIDを格納 絞込用
+                            // 0の場合はすべて
                             viewModel.selectCategory = 0
                         }
                     )
+                    // 全カテゴリーをコンテキストメニューに表示
                     categories.forEach { selectOption ->
                         DropdownMenuItem(
                             text = { Text(text = selectOption.categoryName) },
                             onClick = {
+                                // コンテキストメニューを非表示
                                 expanded.value = false
-                                selectCategory.intValue = selectOption.id
+                                // 選択したカテゴリーIDを格納 表示用
+                                selectCategoryId.intValue = selectOption.id
+                                // 選択したカテゴリー名を格納 表示用
                                 selectCategoryName.value = selectOption.categoryName
+                                // 選択したカテゴリーIDを格納 絞込用
                                 viewModel.selectCategory = selectOption.id
                             }
                         )
@@ -700,8 +532,10 @@ private fun SelectCategoryBox(viewModel: DisplaySwitchAreaViewModel) {
 @Composable
 private fun SelectDateSortBox(viewModel: DisplaySwitchAreaViewModel) {
 
-    val sort = remember { mutableStateOf(viewModel.sort) }
+    // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }
+    // 表示順の判定Booleanで判定
+    val sort = remember { mutableStateOf(viewModel.sort) }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -725,16 +559,22 @@ private fun SelectDateSortBox(viewModel: DisplaySwitchAreaViewModel) {
                     DropdownMenuItem(
                         text = { Text(text = "日付降順") },
                         onClick = {
+                            // コンテキストメニューを非表示
                             expanded.value = false
+                            // 選択した表示順を格納 表示用
                             sort.value = false
+                            // 選択した表示順を格納 並替え用
                             viewModel.sort = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = "日付昇順") },
                         onClick = {
+                            // コンテキストメニューを非表示
                             expanded.value = false
+                            // 選択した表示順を格納 表示用
                             sort.value = true
+                            // 選択した表示順を格納 並替え用
                             viewModel.sort = true
                         }
                     )
