@@ -23,6 +23,20 @@ interface ExpenditureItemDao {
     @Query("SELECT * FROM ExpenditureItem WHERE categoryId = :categoryId")
     fun isUsedCategory(categoryId: Int): Flow<List<ExpenditureItem>>
 
+    @Query("" +
+            "SELECT * FROM ExpenditureItem " +
+            "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+            "GROUP BY payDate " +
+            "ORDER BY payDate DESC")
+    fun gropePayDateDesc(firstDay: String, lastDay: String): Flow<List<ExpenditureItem>>
+
+    @Query("" +
+            "SELECT * FROM ExpenditureItem " +
+            "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+            "GROUP BY payDate " +
+            "ORDER BY payDate ASC")
+    fun gropePayDateAsc(firstDay: String, lastDay: String): Flow<List<ExpenditureItem>>
+
     @Update
     suspend fun updateExpenditureItem(expenditureItem: ExpenditureItem)
 

@@ -63,17 +63,21 @@ fun ExpenditureItemList(
     viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
 ) {
 
+    // ステータスバーの色
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
     }
 
+    // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
+    // 日付が期待通りに絞り込まれているかログで確認
     Log.d(
         "支出項目 支出一覧、日付出力範囲",
         "${viewModel.startDate()} - ${viewModel.lastDate()}"
     )
+    // 検索
     val listItem by viewModel.categorizeExpenditureItem(
         startDate = df.format(viewModel.startDate()),
         lastDate = df.format(viewModel.lastDate())

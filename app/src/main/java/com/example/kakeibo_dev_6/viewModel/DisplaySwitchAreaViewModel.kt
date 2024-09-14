@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import com.example.kakeibo_dev_6.component.utility.toDate
 import com.example.kakeibo_dev_6.dao.CategorizeExpenditureItemDao
 import com.example.kakeibo_dev_6.dao.CategoryDao
+import com.example.kakeibo_dev_6.dao.ExpenditureItemDao
 import com.example.kakeibo_dev_6.dao.ExpenditureItemJoinCategoryDao
 import com.example.kakeibo_dev_6.entity.CategorizeExpenditureItem
+import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.SwitchDate
@@ -30,7 +32,8 @@ import javax.inject.Inject
 class DisplaySwitchAreaViewModel @Inject constructor(
     private val categorizeExpenditureItemDao: CategorizeExpenditureItemDao,
     private val expenditureItemJoinCategoryDao: ExpenditureItemJoinCategoryDao,
-    categoryDao: CategoryDao
+    categoryDao: CategoryDao,
+    private val expenditureItemDao: ExpenditureItemDao
 ) : ViewModel() {
 
     var dateProperty by mutableStateOf(DateProperty.WEEK.name)
@@ -108,6 +111,18 @@ class DisplaySwitchAreaViewModel @Inject constructor(
             firstDay = startDate,
             lastDay = lastDate
         ).distinctUntilChanged()
+    }
+
+    fun gropePayDate(
+        startDate: String,
+        lastDate: String,
+        sort: Boolean
+    ): Flow<List<ExpenditureItem>> {
+        return if (sort) {
+            expenditureItemDao.gropePayDateAsc(startDate, lastDate).distinctUntilChanged()
+        } else {
+            expenditureItemDao.gropePayDateDesc(startDate, lastDate).distinctUntilChanged()
+        }
     }
 
     fun expenditureItemList(

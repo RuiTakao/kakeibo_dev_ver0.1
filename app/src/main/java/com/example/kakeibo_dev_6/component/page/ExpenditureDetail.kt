@@ -36,6 +36,7 @@ import com.example.kakeibo_dev_6.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.component.parts.FAButton
 import com.example.kakeibo_dev_6.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.component.utility.toDate
+import com.example.kakeibo_dev_6.entity.ExpenditureItem
 import com.example.kakeibo_dev_6.entity.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.enum.DateProperty
 import com.example.kakeibo_dev_6.enum.Route
@@ -82,6 +83,12 @@ fun ExpenditureDetail(
         viewModel.pageTransitionFlg = false
     }
 
+    val gropePayDate by viewModel.gropePayDate(
+        startDate = df.format(viewModel.startDate()),
+        lastDate = df.format(viewModel.lastDate()),
+        sort = viewModel.sort
+    ).collectAsState(initial = emptyList())
+
     Log.d(
         "明細 支出一覧、日付出力範囲",
         "${viewModel.startDate()} - ${viewModel.lastDate()}"
@@ -118,7 +125,7 @@ fun ExpenditureDetail(
             )
         },
         floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) },
-        content = {padding ->
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .padding(padding)
@@ -130,37 +137,10 @@ fun ExpenditureDetail(
                         viewModel = viewModel,
                         searchArea = true
                     )
-                    LazyColumn(
-                        content = {
-                            items(expenditureItemList) {
-                                if (expenditureItemList.indexOf(it) == 0) {
-                                    Item(
-                                        expItem = it,
-                                        navController = navController,
-                                        titleFlag = true,
-                                        viewModel = viewModel
-                                    )
-                                } else {
-                                    if (
-                                        expenditureItemList.get(expenditureItemList.indexOf(it)).payDate !=
-                                        expenditureItemList.get(expenditureItemList.indexOf(it) - 1).payDate
-                                    ) {
-                                        Item(
-                                            expItem = it,
-                                            navController = navController,
-                                            titleFlag = true,
-                                            viewModel = viewModel
-                                        )
-                                    } else {
-                                        Item(
-                                            expItem = it,
-                                            navController = navController,
-                                            viewModel = viewModel
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                    ItemList(
+                        parentItem = gropePayDate,
+                        childItemList = expenditureItemList,
+                        navController = navController
                     )
                 }
             )
@@ -168,73 +148,83 @@ fun ExpenditureDetail(
     )
 }
 
-
 @Composable
-private fun Item(
-    expItem: ExpenditureItemJoinCategory,
-    navController: NavController,
-    titleFlag: Boolean = false,
-    viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
+private fun ItemList(
+    parentItem: List<ExpenditureItem>,
+    childItemList: List<ExpenditureItemJoinCategory>,
+    navController: NavController
 ) {
-    if (titleFlag) {
-        if (viewModel.dateProperty != DateProperty.DAY.name) {
-            val Md = SimpleDateFormat("M月d日", Locale.JAPANESE)
+    LazyColumn(
+        modifier = Modifier
+            .padding(top = 16.dp)
+    ) {
+        items(parentItem) {
+            val parentPayDate = it.payDate
+            val mf = SimpleDateFormat("M月d日", Locale.JAPANESE)
             Text(
-                text = Md.format(expItem.payDate.toDate("yyyy-MM-dd")),
+                text = mf.format(it.payDate.toDate("yyyy-MM-dd")!!),
                 fontSize = 20.sp,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 4.dp)
-                    .padding(top = 32.dp)
+                    .padding(top = 16.dp)
             )
-        } else {
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-    } else {
-        if (viewModel.dateProperty != DateProperty.DAY.name) {
-            Spacer(
+            Column(
                 modifier = Modifier
-                    .height(2.dp)
                     .padding(horizontal = 8.dp)
-                    .background(Color.LightGray)
-                    .fillMaxWidth()
-            )
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-    Column(
-        modifier = Modifier
-            .clickable {
-                navController.navigate(
-                    route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${expItem.id}"
-                )
-            }
-            .padding(horizontal = 8.dp)
-            .clip(RoundedCornerShape(5.dp))
-            .background(Color.White),
-        content = {
-            Row(
-                modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(Color.White),
                 content = {
-                    Column(
-                        content = {
-                            Text(text = expItem.content, fontSize = 20.sp, lineHeight = 0.sp)
-                            Text(
-                                text = expItem.categoryName,
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                fontSize = 14.sp,
-                                lineHeight = 0.sp
+                    var rowCount = 0
+                    childItemList.forEach {
+                        if (parentPayDate != it.payDate) {
+                            return@forEach
+                        }
+
+                        if (rowCount > 0) {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(1.dp)
+                                    .padding(horizontal = 8.dp)
+                                    .background(Color.LightGray)
+                                    .fillMaxWidth()
                             )
                         }
-                    )
-                    Text(text = "￥${expItem.price}", fontSize = 20.sp)
+                        rowCount++
+
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate(
+                                        route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${it.id}"
+                                    )
+                                }
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Top,
+                            content = {
+                                Column(
+                                    content = {
+                                        Text(
+                                            text = it.content,
+                                            fontSize = 20.sp,
+                                            lineHeight = 0.sp
+                                        )
+                                        Text(
+                                            text = it.categoryName,
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            fontSize = 14.sp,
+                                            lineHeight = 0.sp
+                                        )
+                                    }
+                                )
+                                Text(text = "￥${it.price}", fontSize = 20.sp)
+                            }
+                        )
+                    }
                 }
             )
         }
-    )
+    }
 }
