@@ -30,6 +30,7 @@ interface ExpenditureItemDao {
                 "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
                 "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND categoryId = :categoryId " +
                 "END " +
+                "GROUP BY payDate " +
                 "ORDER BY payDate DESC " +
                 ""
     )
@@ -46,6 +47,7 @@ interface ExpenditureItemDao {
                 "THEN strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
                 "ELSE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay AND categoryId = :categoryId " +
                 "END " +
+                "GROUP BY payDate " +
                 "ORDER BY payDate ASC " +
                 ""
     )

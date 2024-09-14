@@ -179,7 +179,6 @@ private fun ItemList(
 
             // 支出日を格納
             val parentPayDate = it.payDate
-            val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
             val mf = SimpleDateFormat("M月d日", Locale.JAPANESE)
 
             // 支出日をタイトルとして表示
