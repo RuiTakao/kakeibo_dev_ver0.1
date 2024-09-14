@@ -18,6 +18,7 @@ import com.example.kakeibo_dev_6.component.page.SettingCategory
 import com.example.kakeibo_dev_6.enum.Route
 import com.example.kakeibo_dev_6.ui.theme.Kakeibo_dev_6Theme
 import com.example.kakeibo_dev_6.viewModel.EditExpenditureItemViewModel
+import com.example.kakeibo_dev_6.viewModel.SettingCategoryViewModel
 
 @Composable
 fun Navigation() {
@@ -86,8 +87,13 @@ fun Navigation() {
             }
 
             // カテゴリー並び替え
-            composable(route = Route.REPLACE_ORDER_CATEGORY.name) {
-                ReplaceOrderCategory(navController = navController)
+            composable(route = Route.REPLACE_ORDER_CATEGORY.name) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Route.CATEGORY_SETTING.name)
+                }
+                val viewModel: SettingCategoryViewModel =
+                    viewModel(viewModelStoreOwner = parentEntry)
+                ReplaceOrderCategory(navController = navController, viewModel = viewModel)
             }
 
             // 支出項目編集
@@ -110,23 +116,37 @@ fun Navigation() {
             composable(
                 route = "${Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {backStackEntry ->
+            ) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("${Route.EDIT_EXPENDITURE.name}/${backStackEntry.arguments?.getInt("id")}")
+                    navController.getBackStackEntry(
+                        "${Route.EDIT_EXPENDITURE.name}/${
+                            backStackEntry.arguments?.getInt(
+                                "id"
+                            )
+                        }"
+                    )
                 }
 
-                val viewModel: EditExpenditureItemViewModel = viewModel(viewModelStoreOwner = parentEntry)
-                EditCategory(navController = navController, editExpenditureItemViewModel = viewModel)
+                val viewModel: EditExpenditureItemViewModel =
+                    viewModel(viewModelStoreOwner = parentEntry)
+                EditCategory(
+                    navController = navController,
+                    editExpenditureItemViewModel = viewModel
+                )
             }
 
             // 支出登録時、カテゴリー追加する場合のルーティング　登録
-            composable(route = Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name) {backStackEntry ->
+            composable(route = Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Route.EDIT_EXPENDITURE.name)
                 }
 
-                val viewModel: EditExpenditureItemViewModel = viewModel(viewModelStoreOwner = parentEntry)
-                EditCategory(navController = navController, editExpenditureItemViewModel = viewModel)
+                val viewModel: EditExpenditureItemViewModel =
+                    viewModel(viewModelStoreOwner = parentEntry)
+                EditCategory(
+                    navController = navController,
+                    editExpenditureItemViewModel = viewModel
+                )
             }
         }
     }

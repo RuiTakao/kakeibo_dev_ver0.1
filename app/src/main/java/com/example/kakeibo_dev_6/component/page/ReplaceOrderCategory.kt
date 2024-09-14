@@ -17,9 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.component.parts.SubTopBar
-import com.example.kakeibo_dev_6.viewModel.ReplaceOrderCategoryViewModel
+import com.example.kakeibo_dev_6.viewModel.SettingCategoryViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -39,16 +36,13 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun ReplaceOrderCategory(
     navController: NavController,
-    viewModel: ReplaceOrderCategoryViewModel = hiltViewModel()
+    viewModel: SettingCategoryViewModel = hiltViewModel()
 ) {
 
-    val categories by viewModel.category.collectAsState(initial = emptyList())
-    val data = remember { mutableStateOf(categories) }
-    LaunchedEffect(categories) {
-        data.value = categories
-    }
+    val data = remember { mutableStateOf(viewModel.standardOrderCategory) }
+
     val state = rememberReorderableLazyListState(onMove = { from, to ->
-        data.value = data.value.toMutableList().apply {
+        data.value = data.value!!.toMutableList().apply {
             add(to.index, removeAt(from.index))
         }
         viewModel.replaceOrderCategory = data.value
@@ -99,7 +93,7 @@ fun ReplaceOrderCategory(
                     .padding(top = 24.dp)
                     .fillMaxSize()
             ) {
-                items(data.value, { it.id }) { item ->
+                items(data.value!!, { it.id }) { item ->
                     ReorderableItem(
                         reorderableState = state,
                         key = item.id,

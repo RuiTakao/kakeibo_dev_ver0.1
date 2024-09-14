@@ -30,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +46,10 @@ fun SettingCategory(
     navController: NavController,
     viewModel: SettingCategoryViewModel = hiltViewModel()
 ) {
+
+    val categories by viewModel.categoryList.collectAsState(initial = emptyList())
+
+    viewModel.standardOrderCategory = categories
 
     Scaffold(
         topBar = {
@@ -77,13 +80,12 @@ fun SettingCategory(
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(24.dp))
-            val categories by viewModel.category.collectAsState(initial = emptyList())
             LazyColumn {
                 items(items = categories) {
                     Row(
                         modifier = Modifier
                             .padding(horizontal = 12.dp)
-                            .shadow(elevation = 5.dp)
+//                            .shadow(elevation = 5.dp)
                             .background(Color.White)
                             .fillMaxWidth()
                             .padding(start = 12.dp),
