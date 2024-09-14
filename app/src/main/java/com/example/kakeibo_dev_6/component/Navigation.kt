@@ -27,15 +27,61 @@ fun Navigation() {
     Kakeibo_dev_6Theme {
         NavHost(
             navController = navController,
+            // 支出項目一覧ページ（カテゴリー毎）を最初に表示するページにする
             startDestination = Route.EXPENDITURE_ITEM_LIST.name
         ) {
 
-            // 支出項目ページ
+            /** カテゴリー */
+            /**
+             * カテゴリー設定ページ
+             */
+            composable(route = Route.CATEGORY_SETTING.name) {
+                SettingCategory(navController = navController)
+            }
+
+            /**
+             * カテゴリー編集
+             */
+            composable(
+                route = "${Route.EDIT_CATEGORY.name}/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { backStackEntry ->
+                EditCategory(
+                    navController = navController,
+                    id = backStackEntry.arguments?.getInt("id")
+                )
+            }
+
+            /**
+             * カテゴリー追加
+             */
+            composable(route = Route.EDIT_CATEGORY.name) {
+                EditCategory(navController = navController)
+            }
+
+            /**
+             * カテゴリー並替え
+             */
+            composable(route = Route.REPLACE_ORDER_CATEGORY.name) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Route.CATEGORY_SETTING.name)
+                }
+                val viewModel: SettingCategoryViewModel =
+                    viewModel(viewModelStoreOwner = parentEntry)
+                ReplaceOrderCategory(navController = navController, viewModel = viewModel)
+            }
+
+            /** 支出項目 */
+            /**
+             * 支出項目一覧ページ（カテゴリー毎）
+             */
             composable(route = Route.EXPENDITURE_ITEM_LIST.name) {
                 ExpenditureItemList(navController = navController)
             }
 
-            // 支出項目　明細ページ
+            /**
+             * 支出項目一覧ページ（明細）
+             */
             composable(
                 route = "${Route.PAY_DETAIL.name}/{categoryId}/{dateProperty}/{startDate}/{lastDate}",
                 arguments = listOf(
@@ -54,7 +100,9 @@ fun Navigation() {
                 )
             }
 
-            // 支出項目　詳細
+            /**
+             * 支出項目　詳細
+             */
             composable(
                 route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -65,38 +113,9 @@ fun Navigation() {
                 )
             }
 
-            // カテゴリー設定
-            composable(route = Route.CATEGORY_SETTING.name) {
-                SettingCategory(navController = navController)
-            }
-
-            // カテゴリー編集
-            composable(
-                route = "${Route.EDIT_CATEGORY.name}/{id}",
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) { backStackEntry ->
-                EditCategory(
-                    navController = navController,
-                    id = backStackEntry.arguments?.getInt("id")
-                )
-            }
-
-            // カテゴリー登録
-            composable(route = Route.EDIT_CATEGORY.name) {
-                EditCategory(navController = navController)
-            }
-
-            // カテゴリー並び替え
-            composable(route = Route.REPLACE_ORDER_CATEGORY.name) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry(Route.CATEGORY_SETTING.name)
-                }
-                val viewModel: SettingCategoryViewModel =
-                    viewModel(viewModelStoreOwner = parentEntry)
-                ReplaceOrderCategory(navController = navController, viewModel = viewModel)
-            }
-
-            // 支出項目編集
+            /**
+             * 支出項目　編集
+             */
             composable(
                 route = "${Route.EDIT_EXPENDITURE.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -107,12 +126,17 @@ fun Navigation() {
                 )
             }
 
-            // 支出項目登録
+            /**
+             * 支出項目　追加
+             */
             composable(route = Route.EDIT_EXPENDITURE.name) {
                 EditExpenditureItem(navController = navController)
             }
 
-            // 支出登録時、カテゴリー追加する場合のルーティング　編集
+            /**
+             * 支出項目　編集
+             * 編集と一緒にカテゴリーの追加するときのルーティング
+             */
             composable(
                 route = "${Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name}/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -135,7 +159,10 @@ fun Navigation() {
                 )
             }
 
-            // 支出登録時、カテゴリー追加する場合のルーティング　登録
+            /**
+             * 支出項目　追加
+             * 追加と一緒にカテゴリーの追加するときのルーティング
+             */
             composable(route = Route.EDIT_EXPENDITURE_WITH_EDIT_CATEGORY.name) { backStackEntry ->
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry(Route.EDIT_EXPENDITURE.name)
