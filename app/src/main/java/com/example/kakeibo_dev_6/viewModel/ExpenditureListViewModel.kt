@@ -64,7 +64,7 @@ class ExpenditureListViewModel @Inject constructor(
             DateProperty.DAY.name -> return getDate.time
 
             DateProperty.WEEK.name -> {
-                val amount  = when (selectDate) {
+                val amount = when (selectDate) {
                     SelectDate.START -> 1
                     SelectDate.LAST -> 7
                 }
@@ -87,54 +87,6 @@ class ExpenditureListViewModel @Inject constructor(
         return Date()
     }
 
-    fun startDate(): Date {
-        val getDate = Calendar.getInstance()
-        getDate.time = standardOfStartDate
-
-        when (dateProperty) {
-            DateProperty.DAY.name -> return getDate.time
-
-            DateProperty.WEEK.name -> {
-                getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 1)
-                return getDate.time
-            }
-
-            DateProperty.MONTH.name -> {
-                val standardOfToLocalDate =
-                    getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                val monthOfDate = standardOfToLocalDate.with(TemporalAdjusters.firstDayOfMonth())
-                return Date.from(monthOfDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-
-            DateProperty.CUSTOM.name -> return customOfStartDate
-        }
-        return Date()
-    }
-
-    fun lastDate(): Date {
-        val getDate = Calendar.getInstance()
-        getDate.time = standardOfStartDate
-
-        when (dateProperty) {
-            DateProperty.DAY.name -> return getDate.time
-
-            DateProperty.WEEK.name -> {
-                getDate.add(Calendar.DATE, getDate.get(Calendar.DAY_OF_WEEK) * -1 + 7)
-                return getDate.time
-            }
-
-            DateProperty.MONTH.name -> {
-                val standardOfToLocalDate =
-                    getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                val monthOfDate = standardOfToLocalDate.with(TemporalAdjusters.lastDayOfMonth())
-                return Date.from(monthOfDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-
-            DateProperty.CUSTOM.name -> return customOfLastDate
-        }
-        return Date()
-    }
-
     fun categorizeExpenditureItem(
         startDate: String,
         lastDate: String
@@ -148,12 +100,13 @@ class ExpenditureListViewModel @Inject constructor(
     fun gropePayDate(
         startDate: String,
         lastDate: String,
+        categoryId: Int,
         sort: Boolean
     ): Flow<List<ExpenditureItem>> {
         return if (sort) {
-            expenditureItemDao.gropePayDateAsc(startDate, lastDate).distinctUntilChanged()
+            expenditureItemDao.gropePayDateAsc(startDate, lastDate, categoryId).distinctUntilChanged()
         } else {
-            expenditureItemDao.gropePayDateDesc(startDate, lastDate).distinctUntilChanged()
+            expenditureItemDao.gropePayDateDesc(startDate, lastDate, categoryId).distinctUntilChanged()
         }
     }
 
@@ -367,6 +320,26 @@ class ExpenditureListViewModel @Inject constructor(
                 getDate.add(Calendar.MONTH, amount)
                 standardOfStartDate = getDate.time
             }
+        }
+    }
+
+    /**
+     * 明細ページ遷移用のパラメーターセット
+     *
+     * @param selectDate SelectDate
+     *
+     * @return String
+     */
+    fun setDateParameter(selectDate: SelectDate): String {
+        val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+
+        return if (dateProperty == DateProperty.CUSTOM.name) {
+            when (selectDate) {
+                SelectDate.START -> df.format(customOfStartDate)
+                SelectDate.LAST -> df.format(customOfLastDate)
+            }
+        } else {
+            df.format(standardOfStartDate)
         }
     }
 }

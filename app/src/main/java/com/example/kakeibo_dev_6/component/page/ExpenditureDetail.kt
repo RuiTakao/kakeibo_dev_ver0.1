@@ -96,21 +96,25 @@ fun ExpenditureDetail(
         viewModel.pageTransitionFlg = false
     }
 
-    val gropePayDate by viewModel.gropePayDate(
-        startDate = df.format(viewModel.startDate()),
-        lastDate = df.format(viewModel.lastDate()),
-        sort = viewModel.sort
-    ).collectAsState(initial = emptyList())
-
     // ログ確認用に変数に格納
     val selectStartDate = df.format(viewModel.selectDate(SelectDate.START))
     val selectLastDate = df.format(viewModel.selectDate(SelectDate.LAST))
     // 日付が期待通りに絞り込まれているかログで確認
     Log.d(
-        "明細 支出一覧、日付出力範囲",
-        "$selectStartDate - $selectLastDate"
+        "明細 支出一覧、日付出力範囲", "$selectStartDate - $selectLastDate"
     )
-    // 検索
+
+    /** DB */
+    // 支出の登録されている日付を取得
+    val gropePayDate by viewModel.gropePayDate(
+        startDate = selectStartDate,
+        lastDate = selectLastDate,
+        sort = viewModel.sort,
+        categoryId = viewModel.selectCategory
+    ).collectAsState(initial = emptyList())
+
+    /** DB */
+    // 支出一覧をカテゴリーと結合し抽出
     val expenditureItemList by viewModel.expenditureItemList(
         firstDay = selectStartDate,
         lastDay = selectLastDate,
@@ -124,47 +128,40 @@ fun ExpenditureDetail(
         totalTax += it.price.toInt()
     }
 
-    Scaffold(
-        topBar = {
-            MainTopBar(
-                title = "支出項目 明細",
-                navigation = {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "戻る",
-                                tint = Color(0xFF854A2A)
-                            )
-                        }
-                    )
-                },
-                actions = {}
+    Scaffold(topBar = {
+        MainTopBar(title = "支出項目 明細", navigation = {
+            IconButton(onClick = { navController.popBackStack() }, content = {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "戻る",
+                    tint = Color(0xFF854A2A)
+                )
+            })
+        }, actions = {})
+    }, floatingActionButton = {
+        FAButton(onClick = {
+            // 支出追加ページに遷移
+            navController.navigate(Route.EDIT_EXPENDITURE.name)
+        })
+    }, content = { padding ->
+        Column(modifier = Modifier
+            .padding(padding)
+            .background(color = Color(0xFFEEDCB3))
+            .fillMaxSize(), content = {
+
+            /* 表示切替えエリア */
+            DisplaySwitchArea(
+                totalTax = totalTax, viewModel = viewModel, searchArea = true
             )
-        },
-        floatingActionButton = { FAButton(onClick = { navController.navigate(Route.EDIT_EXPENDITURE.name) }) },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .background(color = Color(0xFFEEDCB3))
-                    .fillMaxSize(),
-                content = {
-                    DisplaySwitchArea(
-                        totalTax = totalTax,
-                        viewModel = viewModel,
-                        searchArea = true
-                    )
-                    ItemList(
-                        parentItem = gropePayDate,
-                        childItemList = expenditureItemList,
-                        navController = navController
-                    )
-                }
+
+            /* 支出リスト */
+            ItemList(
+                parentItem = gropePayDate,
+                childItemList = expenditureItemList,
+                navController = navController
             )
-        }
-    )
+        })
+    })
 }
 
 @Composable
@@ -174,12 +171,18 @@ private fun ItemList(
     navController: NavController
 ) {
     LazyColumn(
-        modifier = Modifier
-            .padding(top = 16.dp)
+        modifier = Modifier.padding(top = 16.dp)
     ) {
+
+        // 支出が登録されている支出日をグルーピングして一覧表示
         items(parentItem) {
+
+            // 支出日を格納
             val parentPayDate = it.payDate
+            val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
             val mf = SimpleDateFormat("M月d日", Locale.JAPANESE)
+
+            // 支出日をタイトルとして表示
             Text(
                 text = mf.format(it.payDate.toDate("yyyy-MM-dd")!!),
                 fontSize = 20.sp,
@@ -194,12 +197,19 @@ private fun ItemList(
                     .clip(RoundedCornerShape(5.dp))
                     .background(Color.White),
                 content = {
+
+                    // 区切り線の可否判定（グルーピングしたカラムの２行目に区切り線入れる）
                     var rowCount = 0
+
+                    // 支出リスト出力
                     childItemList.forEach {
+
+                        // グルーピングした日付以外の支出リストはスキップ
                         if (parentPayDate != it.payDate) {
                             return@forEach
                         }
 
+                        // ２行目以降は区切り線入れる
                         if (rowCount > 0) {
                             Spacer(
                                 modifier = Modifier
@@ -209,11 +219,13 @@ private fun ItemList(
                                     .fillMaxWidth()
                             )
                         }
+                        // 区切り線可否の判定後加算
                         rowCount++
 
                         Row(
                             modifier = Modifier
                                 .clickable {
+                                    // 支出詳細ページに遷移
                                     navController.navigate(
                                         route = "${Route.EXPENDITURE_ITEM_DETAIL.name}/${it.id}"
                                     )
@@ -225,11 +237,13 @@ private fun ItemList(
                             content = {
                                 Column(
                                     content = {
+                                        // 支出内容
                                         Text(
                                             text = it.content,
                                             fontSize = 20.sp,
                                             lineHeight = 0.sp
                                         )
+                                        // カテゴリー
                                         Text(
                                             text = it.categoryName,
                                             modifier = Modifier.padding(vertical = 4.dp),
@@ -238,6 +252,7 @@ private fun ItemList(
                                         )
                                     }
                                 )
+                                // 金額
                                 Text(text = "￥${it.price}", fontSize = 20.sp)
                             }
                         )

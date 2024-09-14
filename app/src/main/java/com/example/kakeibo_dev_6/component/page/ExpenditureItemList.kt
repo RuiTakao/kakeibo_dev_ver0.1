@@ -89,7 +89,9 @@ fun ExpenditureItemList(
         "支出項目 支出一覧、日付出力範囲",
         "$selectStartDate - $selectLastDate"
     )
-    // 検索
+
+    /** DB */
+    // カテゴリー毎にグルーピングした支出リストを抽出
     val listItem by viewModel.categorizeExpenditureItem(
         startDate = selectStartDate,
         lastDate = selectLastDate
@@ -144,22 +146,16 @@ fun ExpenditureItemList(
                         IconButton(
                             onClick = {
                                 // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
-                                val startDate =
-                                    if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                        df.format(viewModel.customOfStartDate)
-                                    } else {
-                                        df.format(viewModel.standardOfStartDate)
-                                    }
+                                val startDate = viewModel.setDateParameter(SelectDate.START)
                                 // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
-                                val lastDate =
-                                    if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                        df.format(viewModel.customOfLastDate)
-                                    } else {
-                                        df.format(viewModel.standardOfStartDate)
-                                    }
+                                val lastDate = viewModel.setDateParameter(SelectDate.LAST)
+                                // パラメーターに選択機関をセット
+                                val dateProperty = viewModel.dateProperty
+                                // パラメーターにカテゴリーIDセット
+                                val categoryId = 0
                                 // 明細ページへ遷移
                                 navController.navigate(
-                                    "${Route.PAY_DETAIL.name}/0/${viewModel.dateProperty}/${startDate}/${lastDate}"
+                                    "${Route.PAY_DETAIL.name}/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
                                 )
                             },
                             content = {
@@ -227,30 +223,25 @@ private fun ListItem(
             .padding(top = 32.dp)
             .padding(bottom = 80.dp)
     ) {
+
+        // カテゴリー毎にグルーピングし、カテゴリー毎の金額、支出回数の合計のリストを一覧出力
         items(listItem) {
             Column(
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 8.dp)
                     .clickable {
-                        val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
                         // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
-                        val startDate =
-                            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                df.format(viewModel.customOfStartDate)
-                            } else {
-                                df.format(viewModel.standardOfStartDate)
-                            }
+                        val startDate = viewModel.setDateParameter(SelectDate.START)
                         // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
-                        val lastDate =
-                            if (viewModel.dateProperty == DateProperty.CUSTOM.name) {
-                                df.format(viewModel.customOfLastDate)
-                            } else {
-                                df.format(viewModel.standardOfStartDate)
-                            }
+                        val lastDate = viewModel.setDateParameter(SelectDate.LAST)
+                        // パラメーターに選択機関をセット
+                        val dateProperty = viewModel.dateProperty
+                        // パラメーターにカテゴリーIDセット
+                        val categoryId = it.id
                         // 明細ページへ遷移
                         navController.navigate(
-                            "${Route.PAY_DETAIL.name}/${it.id}/${viewModel.dateProperty}/${startDate}/${lastDate}"
+                            "${Route.PAY_DETAIL.name}/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
                         )
                     }
                     .clip(RoundedCornerShape(5.dp))
