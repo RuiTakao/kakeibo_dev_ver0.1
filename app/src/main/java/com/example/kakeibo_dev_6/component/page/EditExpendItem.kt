@@ -219,12 +219,12 @@ private fun InputPayDate(
     Box(
         modifier = Modifier
             .size(280.dp, 50.dp)
-            .background(Color.White)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
                 RoundedCornerShape(4.dp)
             )
+            .background(Color.White) // 背景色が枠線からはみ出るので背景色のパラメーターはclipとborderの後に設定
             .clickable { visible = !visible },
         contentAlignment = Alignment.CenterStart,
     ) {
@@ -300,7 +300,6 @@ private fun InputPrice(price: MutableState<String>, viewModel: EditExpenditureIt
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier
-            .background(Color.White)
             .width(280.dp)
     )
     if (viewModel.inputValidatePriceStatus) {
@@ -345,12 +344,12 @@ private fun InputCategory(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .size(280.dp, 50.dp)
-            .background(Color.White)
             .clip(RoundedCornerShape(4.dp))
             .border(
                 BorderStroke(1.dp, Color.LightGray),
                 RoundedCornerShape(4.dp)
             )
+            .background(Color.White) // 背景色が枠線からはみ出るので背景色のパラメーターはclipとborderの後に設定
             .clickable { expanded.value = !expanded.value }
     ) {
         Text(text = selectOptionText.value, modifier = Modifier.padding(start = 10.dp))
@@ -433,7 +432,6 @@ private fun InputContent(content: MutableState<String>, viewModel: EditExpenditu
             content.value = it
         },
         modifier = Modifier
-            .background(Color.White)
             .width(280.dp)
     )
     if (viewModel.inputValidateContentStatus) {
