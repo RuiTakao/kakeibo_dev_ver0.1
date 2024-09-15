@@ -130,7 +130,6 @@ fun EditCategory(
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
-                    .background(Color.White)
             )
             if (viewModel.inputValidateCategoryStatus) {
                 Text(
