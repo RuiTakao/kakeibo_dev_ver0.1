@@ -74,7 +74,11 @@ fun EditCategory(
                 title = if (id == null) "カテゴリー追加" else "カテゴリー編集",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "閉じる", tint = Color(0xFF854A2A))
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "閉じる",
+                            tint = Color(0xFF854A2A)
+                        )
                     }
                 },
                 actions = {
@@ -96,13 +100,15 @@ fun EditCategory(
                                             if (id != null && id == it.id) {
                                                 return@forEach
                                             }
-                                            viewModel.inputValidateCategoryText = "カテゴリー名が重複しています。"
+                                            viewModel.inputValidateCategoryText =
+                                                "カテゴリー名が重複しています。"
                                             viewModel.inputValidateCategoryStatus = true
                                             duplicationCategoryFlg = true
                                         }
                                     }
                                 } catch (e: NullPointerException) {
-                                    viewModel.inputValidateCategoryText = "重大なエラーが発生しました、開発者に問い合わせしてください。"
+                                    viewModel.inputValidateCategoryText =
+                                        "重大なエラーが発生しました、開発者に問い合わせしてください。"
                                     viewModel.inputValidateCategoryStatus = true
                                     duplicationCategoryFlg = true
                                 }
@@ -116,7 +122,8 @@ fun EditCategory(
                                             viewModel.order = 0
                                         }
                                         if (editExpenditureItemViewModel != null) {
-                                            editExpenditureItemViewModel.firstCategory = viewModel.order
+                                            editExpenditureItemViewModel.firstCategory =
+                                                viewModel.order
                                             editExpenditureItemViewModel.createCategoryFlg = true
                                         }
                                         viewModel.createCategory()
@@ -128,7 +135,11 @@ fun EditCategory(
                             }
                         },
                         content = {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = "登録", tint = Color(0xFF854A2A))
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "登録",
+                                tint = Color(0xFF854A2A)
+                            )
                         }
                     )
                 }
@@ -208,11 +219,13 @@ fun EditCategory(
                                 TextButton(onClick = { isShowDialog.value = false }) {
                                     Text(text = "キャンセル")
                                 }
-                                TextButton(onClick = {
-                                    navController.popBackStack()
-                                    viewModel.deleteCategory(viewModel.editingCategory!!)
-                                }) {
-                                    Text(text = "OK")
+                                TextButton(
+                                    onClick = {
+                                        navController.popBackStack()
+                                        viewModel.deleteCategory(viewModel.editingCategory!!)
+                                    }
+                                ) {
+                                    Text(text = "削除", color = Color.Red)
                                 }
                             }
                         }
