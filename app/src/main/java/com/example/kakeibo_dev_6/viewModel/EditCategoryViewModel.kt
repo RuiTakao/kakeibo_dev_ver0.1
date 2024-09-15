@@ -29,6 +29,8 @@ class EditCategoryViewModel @Inject constructor(
     var inputValidateCategoryStatus by mutableStateOf(false)
     var inputValidateCategoryText by mutableStateOf("")
 
+    val categoryList = categoryDao.loadAllCategories().distinctUntilChanged()
+
     // 登録
     fun createCategory() {
         viewModelScope.launch {

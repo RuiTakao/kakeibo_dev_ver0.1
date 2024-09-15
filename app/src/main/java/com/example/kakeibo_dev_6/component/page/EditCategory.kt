@@ -49,6 +49,8 @@ fun EditCategory(
     editExpenditureItemViewModel: EditExpenditureItemViewModel? = null
 ) {
 
+    val categoryList by viewModel.categoryList.collectAsState(initial = null)
+
     // カテゴリーの最後尾取得
     val maxOrderCategory by viewModel.maxOrderCategory.collectAsState(initial = null)
 
@@ -88,22 +90,43 @@ fun EditCategory(
                                 viewModel.inputValidateCategoryText = "カテゴリーは10文字以内で入力してください。"
                                 viewModel.inputValidateCategoryStatus = true
                             } else {
-                                viewModel.inputValidateCategoryStatus = false
-                                if (id == null) {
-                                    maxOrderCategory?.let {
-                                        viewModel.order = maxOrderCategory!!.categoryOrder + 1
-                                    } ?: {
-                                        viewModel.order = 0
+
+                                var duplicationCategoryFlg = false
+                                try {
+                                    categoryList!!.forEach {
+                                        if (it.categoryName == value) {
+                                            if (id != null && id == it.id) {
+                                                return@forEach
+                                            }
+                                            viewModel.inputValidateCategoryText = "カテゴリー名が重複しています。"
+                                            viewModel.inputValidateCategoryStatus = true
+                                            duplicationCategoryFlg = true
+                                        }
                                     }
-                                    if (editExpenditureItemViewModel != null) {
-                                        editExpenditureItemViewModel.firstCategory = viewModel.order
-                                        editExpenditureItemViewModel.createCategoryFlg = true
-                                    }
-                                    viewModel.createCategory()
-                                } else {
-                                    viewModel.updateCategory()
+                                } catch (e: NullPointerException) {
+                                    viewModel.inputValidateCategoryText = "重大なエラーが発生しました、開発者に問い合わせしてください。"
+                                    viewModel.inputValidateCategoryStatus = true
+                                    duplicationCategoryFlg = true
                                 }
-                                navController.popBackStack()
+
+                                if (!duplicationCategoryFlg) {
+                                    viewModel.inputValidateCategoryStatus = false
+                                    if (id == null) {
+                                        maxOrderCategory?.let {
+                                            viewModel.order = maxOrderCategory!!.categoryOrder + 1
+                                        } ?: {
+                                            viewModel.order = 0
+                                        }
+                                        if (editExpenditureItemViewModel != null) {
+                                            editExpenditureItemViewModel.firstCategory = viewModel.order
+                                            editExpenditureItemViewModel.createCategoryFlg = true
+                                        }
+                                        viewModel.createCategory()
+                                    } else {
+                                        viewModel.updateCategory()
+                                    }
+                                    navController.popBackStack()
+                                }
                             }
                         },
                         content = {
