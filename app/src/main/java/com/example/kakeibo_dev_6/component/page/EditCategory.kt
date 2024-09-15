@@ -58,9 +58,7 @@ fun EditCategory(
         .collectAsState(initial = null)
 
     var value by remember { mutableStateOf("") }
-    if (id == null) {
-        value = ""
-    } else {
+    if (id != null) {
         val category by viewModel.setEditingCategory(id = id).collectAsState(initial = null)
         LaunchedEffect(category) {
             value = if (category != null) category!!.categoryName else ""

@@ -40,8 +40,7 @@ class EditCategoryViewModel @Inject constructor(
     }
 
     fun setEditingCategory(id: Int): Flow<Category> {
-        val oneOfCategory = categoryDao.getOneOfCategory(id = id).distinctUntilChanged()
-        return oneOfCategory
+        return categoryDao.getOneOfCategory(id = id).distinctUntilChanged()
     }
 
     // 更新
