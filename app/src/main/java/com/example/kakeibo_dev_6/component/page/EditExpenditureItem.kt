@@ -92,7 +92,7 @@ fun EditExpenditureItem(
             categoryId.value = if (isExpendItem) editExpendItem!!.categoryId else ""
             content.value = if (isExpendItem) editExpendItem!!.content else ""
             viewModel.viewPayDate =
-                if (isExpendItem) yMd.format(editExpendItem!!.payDate.toDate("yyyy-MM-dd")) else ""
+                if (isExpendItem) yMd.format(editExpendItem!!.payDate.toDate("yyyy-MM-dd")!!) else ""
 
             viewModel.editingExpendItem = editExpendItem
         }
