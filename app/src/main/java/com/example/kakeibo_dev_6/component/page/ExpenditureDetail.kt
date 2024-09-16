@@ -171,7 +171,9 @@ private fun ItemList(
     navController: NavController
 ) {
     LazyColumn(
-        modifier = Modifier.padding(top = 16.dp)
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .padding(bottom = 80.dp)
     ) {
 
         // 支出が登録されている支出日をグルーピングして一覧表示
