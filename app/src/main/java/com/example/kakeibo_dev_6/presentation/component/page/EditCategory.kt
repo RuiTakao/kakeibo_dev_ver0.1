@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.common.Colors.BASE_COLOR
 import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.presentation.viewModel.EditCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.viewModel.EditExpenditureItemViewModel
@@ -158,14 +159,11 @@ fun EditCategory(
                     )
                 }
             )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(Color(0xFFEEDCB3))
-        ) {
+        },
+        containerColor = Color(BASE_COLOR),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(modifier = Modifier.padding(it)) {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = value,

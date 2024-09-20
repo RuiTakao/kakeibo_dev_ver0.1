@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.common.Colors.BASE_COLOR
 import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
 import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
@@ -119,28 +120,27 @@ fun ExpenditureDetail(
         totalTax += it.price.toInt()
     }
 
-    Scaffold(topBar = {
-        MainTopBar(title = "支出項目 明細", navigation = {
-            IconButton(onClick = { navController.popBackStack() }, content = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "戻る",
-                    tint = Color(0xFF854A2A)
-                )
+    Scaffold(
+        topBar = {
+            MainTopBar(title = "支出項目 明細", navigation = {
+                IconButton(onClick = { navController.popBackStack() }, content = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "戻る",
+                        tint = Color(0xFF854A2A)
+                    )
+                })
+            }, actions = {})
+        }, floatingActionButton = {
+            FAButton(onClick = {
+                // 支出追加ページに遷移
+                navController.navigate(ScreenRoute.AddExpenditureItem.route)
             })
-        }, actions = {})
-    }, floatingActionButton = {
-        FAButton(onClick = {
-            // 支出追加ページに遷移
-            navController.navigate(ScreenRoute.AddExpenditureItem.route)
-        })
-    }, content = { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .background(color = Color(0xFFEEDCB3))
-            .fillMaxSize(), content = {
-
-            /* 表示切替えエリア */
+        },
+        containerColor = Color(BASE_COLOR),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(modifier = Modifier.padding(it)) {
             DisplaySwitchArea(
                 totalTax = totalTax, viewModel = viewModel, searchArea = true
             )
@@ -151,8 +151,8 @@ fun ExpenditureDetail(
                 childItemList = expenditureItemList,
                 navController = navController
             )
-        })
-    })
+        }
+    }
 }
 
 @Composable

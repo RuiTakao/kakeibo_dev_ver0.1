@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
 import com.example.kakeibo_dev_6.presentation.component.utility.toDate
@@ -102,17 +103,11 @@ fun ExpenditureItemDetail(
                         )
                     }
                 )
-            }
-        ) { padding ->
-
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .background(Color(0xFFEEDCB3))
-                    .padding(horizontal = 8.dp)
-
-                    .fillMaxSize()
-            ) {
+            },
+            containerColor = Color(Colors.BASE_COLOR),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(modifier = Modifier.padding(it).padding(horizontal = 8.dp)) {
                 Column(
                     modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color.White).fillMaxWidth().padding(16.dp)
                 ) {

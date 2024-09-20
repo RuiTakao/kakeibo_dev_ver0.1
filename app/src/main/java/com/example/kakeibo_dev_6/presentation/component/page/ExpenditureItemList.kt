@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
 import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
@@ -169,30 +170,23 @@ fun ExpenditureItemList(
                     }
                 )
             },
-//            modifier = Modifier.fillMaxSize(),
-//            containerColor = Color(0xFFEEDCB3)
-        ) { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding),
-//                    .background(color = Color(0xFFEEDCB3))
-//                    .fillMaxSize(),
-                content = {
+            containerColor = Color(Colors.BASE_COLOR),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(modifier = Modifier.padding(it)) {
+                /* 表示切替えエリア */
+                DisplaySwitchArea(
+                    totalTax = totalTax,
+                    viewModel = viewModel
+                )
 
-                    /* 表示切替えエリア */
-                    DisplaySwitchArea(
-                        totalTax = totalTax,
-                        viewModel = viewModel
-                    )
-
-                    /* 支出リスト */
-                    ListItem(
-                        listItem = listItem,
-                        navController = navController,
-                        viewModel = viewModel
-                    )
-                }
-            )
+                /* 支出リスト */
+                ListItem(
+                    listItem = listItem,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
         }
     }
 }
