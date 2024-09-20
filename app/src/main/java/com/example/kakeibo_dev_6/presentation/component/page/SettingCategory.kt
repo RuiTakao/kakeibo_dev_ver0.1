@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
-import com.example.kakeibo_dev_6.data.entity.Category
+import com.example.kakeibo_dev_6.domain.model.Category
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
 import com.example.kakeibo_dev_6.presentation.viewModel.SettingCategoryViewModel
 import kotlinx.coroutines.launch

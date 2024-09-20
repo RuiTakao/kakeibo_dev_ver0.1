@@ -1,9 +1,9 @@
-package com.example.kakeibo_dev_6.data.dao
+package com.example.kakeibo_dev_6.domain.repository
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import com.example.kakeibo_dev_6.data.entity.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 import kotlinx.coroutines.flow.Flow
 
 @Dao

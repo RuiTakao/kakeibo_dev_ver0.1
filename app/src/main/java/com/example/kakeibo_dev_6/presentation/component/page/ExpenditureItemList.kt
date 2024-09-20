@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,11 +46,10 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
 import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
-import com.example.kakeibo_dev_6.data.entity.CategorizeExpenditureItem
+import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.common.enum.SelectDate
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
 import com.example.kakeibo_dev_6.presentation.viewModel.ExpenditureListViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

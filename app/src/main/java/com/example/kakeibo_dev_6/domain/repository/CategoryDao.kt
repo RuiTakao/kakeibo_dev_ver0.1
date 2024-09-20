@@ -1,11 +1,11 @@
-package com.example.kakeibo_dev_6.data.dao
+package com.example.kakeibo_dev_6.domain.repository
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.kakeibo_dev_6.data.entity.Category
+import com.example.kakeibo_dev_6.domain.model.Category
 import kotlinx.coroutines.flow.Flow
 
 @Dao

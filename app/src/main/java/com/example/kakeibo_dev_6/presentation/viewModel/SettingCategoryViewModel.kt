@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kakeibo_dev_6.data.dao.CategoryDao
-import com.example.kakeibo_dev_6.data.entity.Category
+import com.example.kakeibo_dev_6.domain.repository.CategoryDao
+import com.example.kakeibo_dev_6.domain.model.Category
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch

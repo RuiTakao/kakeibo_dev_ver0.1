@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.data.entity
+package com.example.kakeibo_dev_6.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

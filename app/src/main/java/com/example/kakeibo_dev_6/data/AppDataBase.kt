@@ -2,14 +2,14 @@ package com.example.kakeibo_dev_6.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.kakeibo_dev_6.data.dao.CategorizeExpenditureItemDao
-import com.example.kakeibo_dev_6.data.dao.CategoryDao
-import com.example.kakeibo_dev_6.data.dao.ExpenditureItemDao
-import com.example.kakeibo_dev_6.data.dao.ExpenditureItemJoinCategoryDao
-import com.example.kakeibo_dev_6.data.entity.CategorizeExpenditureItem
-import com.example.kakeibo_dev_6.data.entity.ExpenditureItem
-import com.example.kakeibo_dev_6.data.entity.Category
-import com.example.kakeibo_dev_6.data.entity.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.domain.repository.CategorizeExpenditureItemDao
+import com.example.kakeibo_dev_6.domain.repository.CategoryDao
+import com.example.kakeibo_dev_6.domain.repository.ExpenditureItemDao
+import com.example.kakeibo_dev_6.domain.repository.ExpenditureItemJoinCategoryDao
+import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
+import com.example.kakeibo_dev_6.domain.model.Category
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 
 @Database(
     entities = [

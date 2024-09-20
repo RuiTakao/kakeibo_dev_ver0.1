@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,13 +35,12 @@ import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
 import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
 import com.example.kakeibo_dev_6.presentation.component.utility.toDate
-import com.example.kakeibo_dev_6.data.entity.ExpenditureItem
-import com.example.kakeibo_dev_6.data.entity.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.common.enum.DateProperty
 import com.example.kakeibo_dev_6.common.enum.SelectDate
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
 import com.example.kakeibo_dev_6.presentation.viewModel.ExpenditureListViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
 import java.util.Locale
 
