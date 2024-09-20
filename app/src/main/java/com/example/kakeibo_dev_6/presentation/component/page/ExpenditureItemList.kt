@@ -71,12 +71,6 @@ fun ExpenditureItemList(
     viewModel: ExpenditureListViewModel = hiltViewModel()
 ) {
 
-    // ステータスバーの色
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
-    }
-
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
@@ -176,13 +170,15 @@ fun ExpenditureItemList(
                         navController.navigate(ScreenRoute.AddExpenditureItem.route)
                     }
                 )
-            }
+            },
+//            modifier = Modifier.fillMaxSize(),
+//            containerColor = Color(0xFFEEDCB3)
         ) { padding ->
             Column(
                 modifier = Modifier
-                    .padding(padding)
-                    .background(color = Color(0xFFEEDCB3))
-                    .fillMaxSize(),
+                    .padding(padding),
+//                    .background(color = Color(0xFFEEDCB3))
+//                    .fillMaxSize(),
                 content = {
 
                     /* 表示切替えエリア */

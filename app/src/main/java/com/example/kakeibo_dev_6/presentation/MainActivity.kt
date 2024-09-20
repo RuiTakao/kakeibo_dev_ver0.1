@@ -3,10 +3,17 @@ package com.example.kakeibo_dev_6.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.AppLaunchChecker
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kakeibo_dev_6.presentation.component.Navigation
+import com.example.kakeibo_dev_6.presentation.ui.theme.Kakeibo_dev_6Theme
 import com.example.kakeibo_dev_6.presentation.viewModel.EditCategoryViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,8 +29,19 @@ class MainActivity : ComponentActivity() {
 
             // アプリの起動ステータス監視
             AppLaunchChecker.onActivityCreate(this)
-
-            Navigation()
+            Kakeibo_dev_6Theme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFFEEDCB3)
+                ) {
+                    // ステータスバーの色
+                    val systemUiController = rememberSystemUiController()
+                    SideEffect {
+                        systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
+                    }
+                    Navigation()
+                }
+            }
         }
     }
 }

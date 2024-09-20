@@ -55,13 +55,6 @@ fun ExpenditureDetail(
     dateProperty: String? = null,
     viewModel: ExpenditureListViewModel = hiltViewModel()
 ) {
-
-    // ステータスバーの色
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.setStatusBarColor(color = Color(0xFF854A2A))
-    }
-
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 

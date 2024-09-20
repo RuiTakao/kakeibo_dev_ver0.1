@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.theme
+package com.example.kakeibo_dev_6.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
