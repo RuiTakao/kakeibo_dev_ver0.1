@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.component.page
+package com.example.kakeibo_dev_6.presentation.category.replace_order_category
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -30,26 +30,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
-import com.example.kakeibo_dev_6.presentation.viewModel.SettingCategoryViewModel
+import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
 @Composable
-fun ReplaceOrderCategory(
+fun ReplaceOrderCategoryScreen(
     navController: NavController,
-    viewModel: SettingCategoryViewModel = hiltViewModel()
+    viewModel: ReplaceOrderCategoryViewModel = hiltViewModel(),
+    settingCategoryViewModel: SettingCategoryViewModel
 ) {
-
-    val data = remember { mutableStateOf(viewModel.standardOrderCategory) }
+    val data = remember { mutableStateOf(settingCategoryViewModel.stateCategoryList) }
 
     val state = rememberReorderableLazyListState(
         onMove = { from, to ->
             data.value = data.value!!.toMutableList().apply {
                 add(to.index, removeAt(from.index))
             }
-            viewModel.replaceOrderCategory = data.value
+            viewModel.stateCategoryList = data.value
         }
     )
 
@@ -69,11 +69,11 @@ fun ReplaceOrderCategory(
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.replaceOrderCategory?.let {
-                                var i = viewModel.replaceOrderCategory?.size ?: 0
+                            viewModel.stateCategoryList?.let {
+                                var i = viewModel.stateCategoryList?.size ?: 0
                                 if (i != 0) {
                                     i++
-                                    viewModel.replaceOrderCategory?.forEach {
+                                    viewModel.stateCategoryList?.forEach {
                                         viewModel.categoryOrder = i
                                         viewModel.updateCategory(it)
                                         i--

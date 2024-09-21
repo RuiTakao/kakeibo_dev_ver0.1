@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.component.page
+package com.example.kakeibo_dev_6.presentation.category.setting_category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,21 +38,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
 import com.example.kakeibo_dev_6.domain.model.Category
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.viewModel.SettingCategoryViewModel
+import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingCategory(
+fun SettingCategoryScreen(
     navController: NavController,
     viewModel: SettingCategoryViewModel = hiltViewModel()
 ) {
-
     val categories by viewModel.categoryList.collectAsState(initial = emptyList())
 
-    viewModel.standardOrderCategory = categories
+    viewModel.stateCategoryList = categories
 
     Scaffold(
         topBar = {
@@ -64,7 +62,7 @@ fun SettingCategory(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate(ScreenRoute.AddCategoryFromSettingCategory.route) }) {
+                    IconButton(onClick = { navController.navigate(ScreenRoute.AddCategory.route) }) {
                         Icon(
                             imageVector = Icons.Outlined.AddBox,
                             contentDescription = "カテゴリ追加",
