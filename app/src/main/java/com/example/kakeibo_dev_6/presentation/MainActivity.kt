@@ -18,18 +18,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kakeibo_dev_6.presentation.category.add_category.AddCategoryScreen
+import com.example.kakeibo_dev_6.presentation.category.add_category.AddCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.replace_order_category.ReplaceOrderCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
-import com.example.kakeibo_dev_6.presentation.component.page.EditCategory
-import com.example.kakeibo_dev_6.presentation.component.page.EditExpenditureItem
-import com.example.kakeibo_dev_6.presentation.component.page.ExpenditureDetail
-import com.example.kakeibo_dev_6.presentation.component.page.ExpenditureItemList
 import com.example.kakeibo_dev_6.presentation.expenditure_item.add_expenditure_item.AddExpenditureItemScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.add_expenditure_item.add_category_from_add_expenditure_item.AddCategoryFromAddExpenditureItemScreen
+import com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list.CategorizeExpenditureItemListScreen
+import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemScreen
+import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.add_category_from_edit_expenditure_item.AddCategoryFromEditExpenditureItemScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail.ExpenditureItemDetailScreen
+import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen
 import com.example.kakeibo_dev_6.presentation.ui.theme.Kakeibo_dev_6Theme
-import com.example.kakeibo_dev_6.presentation.viewModel.EditCategoryViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             if (!AppLaunchChecker.hasStartedFromLauncher(applicationContext)) {
                 // 初回起動の場合実行
-                val viewModel: EditCategoryViewModel = hiltViewModel()
+                val viewModel: AddCategoryViewModel = hiltViewModel()
                 defaultCategory(viewModel)
             }
 
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                          * 支出項目一覧ページ（カテゴリー毎）
                          */
                         composable(route = ScreenRoute.CategorizeExpenditureItemList.route) {
-                            ExpenditureItemList(navController = navController)
+                            CategorizeExpenditureItemListScreen(navController = navController)
                         }
 
                         /**
@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lastDate") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
-                            ExpenditureDetail(
+                            ExpenditureItemListScreen(
                                 navController = navController,
                                 categoryId = backStackEntry.arguments?.getString("categoryId"),
                                 dateProperty = backStackEntry.arguments?.getString("dateProperty"),
@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
                             route = ScreenRoute.EditExpenditureItem.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            EditExpenditureItem(
+                            EditExpenditureItemScreen(
                                 navController = navController,
                                 id = backStackEntry.arguments?.getInt("id")
                             )
@@ -178,9 +178,9 @@ class MainActivity : ComponentActivity() {
                             route = ScreenRoute.AddCategoryFromEditExpenditureItem.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
                         ) {
-                            EditCategory(
+                            AddCategoryFromEditExpenditureItemScreen(
                                 navController = navController,
-                                editExpenditureItemViewModel = viewModel(
+                                addExpenditureItemViewModel = viewModel(
                                     viewModelStoreOwner = remember(it) {
                                         navController.getBackStackEntry(
                                             ScreenRoute.EditExpenditureItem.route +
@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun defaultCategory(viewModel: EditCategoryViewModel) {
+private fun defaultCategory(viewModel: AddCategoryViewModel) {
 
     viewModel.name = "❓ その他"
     viewModel.order = 7

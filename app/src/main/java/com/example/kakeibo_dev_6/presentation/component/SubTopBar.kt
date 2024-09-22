@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.component.parts
+package com.example.kakeibo_dev_6.presentation.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api

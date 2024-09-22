@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.domain.model.Category
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
 import kotlinx.coroutines.launch
 
 @Composable

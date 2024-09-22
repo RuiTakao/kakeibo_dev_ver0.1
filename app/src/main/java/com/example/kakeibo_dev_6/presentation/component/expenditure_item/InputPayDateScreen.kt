@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
+import com.example.kakeibo_dev_6.common.utility.toDate
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -68,7 +68,12 @@ fun InputPayDateScreen(
         contentAlignment = Alignment.CenterStart,
     ) {
         Text(
-            text = yMd.format(payDate.value.toDate("yyyy-MM-dd")!!),
+            text =
+                   when  {
+                       payDate.value.toDate("yyyy-MM-dd") == null -> yMd.format(Date())
+                       else -> yMd.format(payDate.value.toDate("yyyy-MM-dd")!!)
+                   },
+
             fontSize = 16.sp,
             modifier = Modifier.padding(10.dp)
         )
@@ -97,6 +102,8 @@ fun InputPayDateScreen(
                                     getDate?.let { getDate.toString() + " 12:00:00" }
                                         ?: if (payDate.value == "") LocalDate.now()
                                             .toString() + " 12:00:00" else payDate.value + " 12:00:00"
+//                                viewPayDate =
+//                                    yMd.format(payDate.value.toDate("yyyy-MM-dd"))
                             },
                             content = { Text(text = "OK") }
                         )

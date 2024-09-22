@@ -27,7 +27,7 @@ import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputCa
 import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputContentScreen
 import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputPayDateScreen
 import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputPriceScreen
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,9 +45,9 @@ fun AddExpenditureItemScreen(
     val categoryId = remember { mutableStateOf("") }
     val content = remember { mutableStateOf("") }
 
-    payDate.value = df.format(Date()) + " 12:00:00"
-//    viewModel.viewPayDate =
-//        if (viewModel.viewPayDate == "") yMd.format(Date()) else viewModel.viewPayDate
+    payDate.value = df.format(Date())
+    viewModel.viewPayDate =
+        if (viewModel.viewPayDate == "") yMd.format(Date()) else viewModel.viewPayDate
 
     Scaffold(
         topBar = {
@@ -104,7 +104,10 @@ fun AddExpenditureItemScreen(
         ) {
 
             // 日付
-            InputPayDateScreen(payDate = payDate, validationMsg = viewModel.inputValidatePayDateText)
+            InputPayDateScreen(
+                payDate = payDate,
+                validationMsg = viewModel.inputValidatePayDateText
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -128,7 +131,10 @@ fun AddExpenditureItemScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 内容
-            InputContentScreen(content = content, validationMsg = viewModel.inputValidateContentText)
+            InputContentScreen(
+                content = content,
+                validationMsg = viewModel.inputValidateContentText
+            )
         }
     }
 }

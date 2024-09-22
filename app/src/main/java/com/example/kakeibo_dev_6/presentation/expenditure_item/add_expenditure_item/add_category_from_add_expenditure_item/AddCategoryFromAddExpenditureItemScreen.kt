@@ -28,7 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.expenditure_item.add_expenditure_item.AddExpenditureItemViewModel
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
 
 @Composable
 fun AddCategoryFromAddExpenditureItemScreen(

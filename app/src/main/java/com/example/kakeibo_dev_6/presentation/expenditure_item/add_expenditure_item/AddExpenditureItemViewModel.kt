@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.example.kakeibo_dev_6.domain.repository.CategoryDao
 import com.example.kakeibo_dev_6.domain.repository.ExpenditureItemDao
-import com.example.kakeibo_dev_6.presentation.component.utility.checkInt
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
+import com.example.kakeibo_dev_6.common.utility.checkInt
+import com.example.kakeibo_dev_6.common.utility.toDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch

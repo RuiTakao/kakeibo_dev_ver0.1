@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.component.page
+package com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -31,22 +31,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.kakeibo_dev_6.common.Colors.BASE_COLOR
-import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
-import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
-import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
-import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
-import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
+import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.common.enum.DateProperty
 import com.example.kakeibo_dev_6.common.enum.SelectDate
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
+import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.viewModel.ExpenditureListViewModel
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchArea
+import com.example.kakeibo_dev_6.presentation.component.FAButton
+import com.example.kakeibo_dev_6.presentation.component.MainTopBar
+import com.example.kakeibo_dev_6.common.utility.toDate
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.ExpenditureListViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun ExpenditureDetail(
+fun ExpenditureItemListScreen(
     navController: NavController,
     startDate: String? = null,
     lastDate: String? = null,
@@ -137,7 +137,7 @@ fun ExpenditureDetail(
                 navController.navigate(ScreenRoute.AddExpenditureItem.route)
             })
         },
-        containerColor = Color(BASE_COLOR),
+        containerColor = Color(Colors.BASE_COLOR),
         modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.padding(it)) {
@@ -154,6 +154,7 @@ fun ExpenditureDetail(
         }
     }
 }
+
 
 @Composable
 private fun ItemList(

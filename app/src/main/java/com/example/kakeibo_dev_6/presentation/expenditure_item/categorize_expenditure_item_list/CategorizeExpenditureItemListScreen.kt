@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.component.page
+package com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -44,32 +44,23 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
-import com.example.kakeibo_dev_6.presentation.component.parts.DisplaySwitchArea
-import com.example.kakeibo_dev_6.presentation.component.parts.FAButton
-import com.example.kakeibo_dev_6.presentation.component.parts.MainTopBar
-import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.common.enum.SelectDate
+import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.viewModel.ExpenditureListViewModel
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchArea
+import com.example.kakeibo_dev_6.presentation.component.FAButton
+import com.example.kakeibo_dev_6.presentation.component.MainTopBar
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.ExpenditureListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-/**
- * ドロワー用、テンプレート
- *
- * @param navController NavController
- * @param viewModel ExpenditureListViewModel
- *
- * @return Unit
- */
 @Composable
-fun ExpenditureItemList(
+fun CategorizeExpenditureItemListScreen(
     navController: NavController,
     viewModel: ExpenditureListViewModel = hiltViewModel()
 ) {
-
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
@@ -191,6 +182,7 @@ fun ExpenditureItemList(
     }
 }
 
+
 /**
  * 支出リスト
  *
@@ -229,8 +221,8 @@ private fun ListItem(
                         val categoryId = it.id
                         // 明細ページへ遷移
                         navController.navigate(
-                           ScreenRoute.ExpenditureItemList.route +
-                                   "/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
+                            ScreenRoute.ExpenditureItemList.route +
+                                    "/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
                         )
                     }
                     .clip(RoundedCornerShape(5.dp))

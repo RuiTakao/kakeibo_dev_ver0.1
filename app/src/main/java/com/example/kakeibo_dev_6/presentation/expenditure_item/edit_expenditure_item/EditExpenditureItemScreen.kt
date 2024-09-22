@@ -53,10 +53,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
+import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputCategoryScreen
+import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputContentScreen
 import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputPayDateScreen
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
-import com.example.kakeibo_dev_6.presentation.component.utility.checkInt
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
+import com.example.kakeibo_dev_6.presentation.component.expenditure_item.InputPriceScreen
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
+import com.example.kakeibo_dev_6.common.utility.toDate
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -88,8 +90,10 @@ fun EditExpenditureItemScreen(
         viewModel.viewPayDate =
             if (isExpendItem) yMd.format(editExpendItem!!.payDate.toDate("yyyy-MM-dd")!!) else ""
 
+
         viewModel.editingExpendItem = editExpendItem
     }
+    println(payDate.value)
 
     Scaffold(
         topBar = {
@@ -117,7 +121,7 @@ fun EditExpenditureItemScreen(
                                 navController.popBackStack()
                                 viewModel.payDate = payDate.value
                                 viewModel.price = price.value
-                                viewModel.category_id = categoryId.value
+                                viewModel.categoryId = categoryId.value
                                 viewModel.content = content.value
 
                                 viewModel.updateExpendItem()
@@ -145,28 +149,34 @@ fun EditExpenditureItemScreen(
         ) {
 
             // 日付
-            InputPayDateScreen(payDate = payDate, validationMsg = viewModel.inputValidatePayDateText)
+            InputPayDateScreen(
+                payDate = payDate,
+                validationMsg = viewModel.inputValidatePayDateText
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
+
             // 金額
-            InputPrice(
-                price = price,
-                viewModel = viewModel
-            )
+            InputPriceScreen(price = price, validationMsg = viewModel.inputValidatePriceText)
+
             Spacer(modifier = Modifier.height(16.dp))
+
             // カテゴリー
-            InputCategory(
-                category_id = categoryId,
-                navController = navController,
-                viewModel = viewModel,
-                id = id
+            val categoryList by viewModel.category.collectAsState(initial = emptyList())
+            InputCategoryScreen(
+                categoryId = categoryId,
+                categoryList = categoryList,
+                addCategoryOrder = viewModel.firstCategory,
+                validationMsg = viewModel.inputValidateSelectCategoryText,
+                onClickAddCategory = {
+                    navController.navigate(ScreenRoute.AddCategoryFromEditExpenditureItem.route + "/${id}")
+                }
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             // 内容
-            InputContent(
-                content = content,
-                viewModel = viewModel
-            )
+            InputContentScreen(content = content, validationMsg = viewModel.inputValidateContentText)
         }
     }
 }

@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
 import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress

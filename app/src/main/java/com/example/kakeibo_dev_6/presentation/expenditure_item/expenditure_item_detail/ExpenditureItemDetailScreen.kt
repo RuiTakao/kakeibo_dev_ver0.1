@@ -40,8 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.component.parts.SubTopBar
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
+import com.example.kakeibo_dev_6.presentation.component.SubTopBar
+import com.example.kakeibo_dev_6.common.utility.toDate
 import java.text.SimpleDateFormat
 import java.util.Locale
 

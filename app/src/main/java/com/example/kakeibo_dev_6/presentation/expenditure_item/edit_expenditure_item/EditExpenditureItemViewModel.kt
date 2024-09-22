@@ -50,8 +50,8 @@ import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.example.kakeibo_dev_6.domain.repository.CategoryDao
 import com.example.kakeibo_dev_6.domain.repository.ExpenditureItemDao
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.component.utility.checkInt
-import com.example.kakeibo_dev_6.presentation.component.utility.toDate
+import com.example.kakeibo_dev_6.common.utility.checkInt
+import com.example.kakeibo_dev_6.common.utility.toDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -70,7 +70,7 @@ class EditExpenditureItemViewModel @Inject constructor(
     categoryDao: CategoryDao
 ) : ViewModel() {
     var payDate by mutableStateOf("")
-    var category_id by mutableStateOf("")
+    var categoryId by mutableStateOf("")
     var content by mutableStateOf("")
     var price by mutableStateOf("")
 
@@ -95,7 +95,7 @@ class EditExpenditureItemViewModel @Inject constructor(
             viewModelScope.launch {
                 expendItem.payDate = payDate
                 expendItem.price = price
-                expendItem.categoryId = category_id
+                expendItem.categoryId = categoryId
                 expendItem.content = content
                 expenditureItemDao.updateExpenditureItem(expendItem)
             }
