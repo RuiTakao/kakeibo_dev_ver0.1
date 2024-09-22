@@ -47,10 +47,10 @@ import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.common.enum.SelectDate
 import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.FAButton
 import com.example.kakeibo_dev_6.presentation.component.MainTopBar
-import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchAreaViewModel
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchAreaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

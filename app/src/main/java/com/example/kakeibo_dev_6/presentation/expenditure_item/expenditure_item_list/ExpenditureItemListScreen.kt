@@ -37,11 +37,11 @@ import com.example.kakeibo_dev_6.common.enum.SelectDate
 import com.example.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.example.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.FAButton
 import com.example.kakeibo_dev_6.presentation.component.MainTopBar
 import com.example.kakeibo_dev_6.common.utility.toDate
-import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchAreaViewModel
+import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchAreaViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
