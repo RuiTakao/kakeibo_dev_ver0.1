@@ -17,16 +17,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.kakeibo_dev_6.presentation.category.add_category.AddCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.add_category.AddCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.replace_order_category.ReplaceOrderCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
-import com.example.kakeibo_dev_6.presentation.expenditure_item.add_expenditure_item.AddExpenditureItemScreen
-import com.example.kakeibo_dev_6.presentation.expenditure_item.add_expenditure_item.add_category_from_add_expenditure_item.AddCategoryFromAddExpenditureItemScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list.CategorizeExpenditureItemListScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemScreen
-import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.add_category_from_edit_expenditure_item.AddCategoryFromEditExpenditureItemScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail.ExpenditureItemDetailScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen
 import com.example.kakeibo_dev_6.presentation.ui.theme.Kakeibo_dev_6Theme
@@ -91,7 +87,7 @@ class MainActivity : ComponentActivity() {
                          * カテゴリー追加
                          */
                         composable(route = ScreenRoute.AddCategory.route) {
-                            AddCategoryScreen(navController = navController)
+                            EditCategoryScreen(navController = navController)
                         }
 
                         /**
@@ -167,7 +163,7 @@ class MainActivity : ComponentActivity() {
                          * 支出項目　追加
                          */
                         composable(route = ScreenRoute.AddExpenditureItem.route) {
-                            AddExpenditureItemScreen(navController = navController)
+                            EditExpenditureItemScreen(navController = navController)
                         }
 
                         /**
@@ -178,9 +174,9 @@ class MainActivity : ComponentActivity() {
                             route = ScreenRoute.AddCategoryFromEditExpenditureItem.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
                         ) {
-                            AddCategoryFromEditExpenditureItemScreen(
+                            EditCategoryScreen(
                                 navController = navController,
-                                addExpenditureItemViewModel = viewModel(
+                                editExpenditureItemViewModel = viewModel(
                                     viewModelStoreOwner = remember(it) {
                                         navController.getBackStackEntry(
                                             ScreenRoute.EditExpenditureItem.route +
@@ -196,9 +192,9 @@ class MainActivity : ComponentActivity() {
                          * 追加と一緒にカテゴリーの追加するときのルーティング
                          */
                         composable(route = ScreenRoute.AddCategoryFromAddExpenditureItem.route) {
-                            AddCategoryFromAddExpenditureItemScreen(
+                            EditCategoryScreen(
                                 navController = navController,
-                                addExpenditureItemViewModel = viewModel(
+                                editExpenditureItemViewModel = viewModel(
                                     viewModelStoreOwner = remember(it) {
                                         navController.getBackStackEntry(ScreenRoute.AddExpenditureItem.route)
                                     }

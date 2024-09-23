@@ -38,15 +38,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.presentation.component.SubTopBar
+import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategoryScreen(
     navController: NavController,
     id: Int? = null,
+    editExpenditureItemViewModel: EditExpenditureItemViewModel? = null,
     viewModel: EditCategoryViewModel = hiltViewModel()
 ) {
     val categoryList by viewModel.categoryList.collectAsState(initial = null)
+
+    // カテゴリーの最後尾取得
+    val maxOrderCategory by viewModel.maxOrderCategory.collectAsState(initial = null)
 
     val isUsedCategory by viewModel.isUsedCategory(categoryId = id ?: 0)
         .collectAsState(initial = null)
@@ -59,13 +64,12 @@ fun EditCategoryScreen(
             viewModel.editingCategory = category
         }
     }
-
     val isShowDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             SubTopBar(
-                title = "カテゴリー編集",
+                title = "カテゴリー" + if (id != null) "編集" else "追加",
                 navigation = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -82,7 +86,25 @@ fun EditCategoryScreen(
 
                             // バリデーションに引っかからなかったら登録・更新処理実行
                             if (!viewModel.validate(value = value, id = id ?: 0, categoryList = categoryList)) {
-                                viewModel.updateCategory()
+                                println("start")
+                                if (id != null) {
+                                    println("update")
+                                    viewModel.updateCategory()
+                                } else {
+                                    println("insert")
+                                    maxOrderCategory?.let {
+                                        viewModel.order = maxOrderCategory!!.categoryOrder + 1
+                                    } ?: {
+                                        viewModel.order = 0
+                                    }
+
+                                    if (editExpenditureItemViewModel != null) {
+                                        editExpenditureItemViewModel.addCategoryOrder = viewModel.order
+                                        editExpenditureItemViewModel.addCategoryFlg = true
+                                    }
+
+                                    viewModel.createCategory()
+                                }
                                 navController.popBackStack()
                             }
                         },
@@ -120,7 +142,7 @@ fun EditCategoryScreen(
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
-            if (id != null) {
+            id?.let {
                 val check = isUsedCategory?.size ?: 0
                 Spacer(modifier = Modifier.height(56.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

@@ -30,6 +30,8 @@ class EditCategoryViewModel @Inject constructor(
 
     var inputValidateCategoryText by mutableStateOf("")
 
+    val maxOrderCategory = categoryDao.maxOrderCategory().distinctUntilChanged()
+
     val categoryList = categoryDao.loadAllCategories().distinctUntilChanged()
 
     fun setEditingCategory(id: Int): Flow<Category> {
@@ -43,6 +45,14 @@ class EditCategoryViewModel @Inject constructor(
                 category.categoryName = name
                 categoryDao.updateCategory(category)
             }
+        }
+    }
+
+    // 登録
+    fun createCategory() {
+        viewModelScope.launch {
+            val newCategory = Category(categoryName = name, categoryOrder = order)
+            categoryDao.insertCategory(newCategory)
         }
     }
 
