@@ -94,14 +94,9 @@ class EditExpenditureItemViewModel @Inject constructor(
     /**
      * バリデーション処理
      *
-     * @param payDate String
-     * @param price String
-     * @param categoryId String
-     * @param content String
-     *
      * @return Boolean
      */
-    fun validate(payDate: String, price: String, categoryId: String, content: String): Boolean {
+    fun validate(): Boolean {
 
         // バリデーションエラー数をカウントするフラグ
         var validCount = 0
