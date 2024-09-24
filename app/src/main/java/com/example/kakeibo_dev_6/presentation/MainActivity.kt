@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.kakeibo_dev_6.presentation.category.add_category.AddCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategoryScreen
+import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.category.replace_order_category.ReplaceOrderCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list.CategorizeExpenditureItemListScreen
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             if (!AppLaunchChecker.hasStartedFromLauncher(applicationContext)) {
                 // 初回起動の場合実行
-                val viewModel: AddCategoryViewModel = hiltViewModel()
+                val viewModel: EditCategoryViewModel = hiltViewModel()
                 defaultCategory(viewModel)
             }
 
@@ -208,7 +208,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun defaultCategory(viewModel: AddCategoryViewModel) {
+private fun defaultCategory(viewModel: EditCategoryViewModel) {
 
     viewModel.name = "❓ その他"
     viewModel.order = 7

@@ -49,7 +49,7 @@ class EditExpenditureItemViewModel @Inject constructor(
     /**
      * idパラメーターから取得した支出項目
      *
-     * @param id Int dパラメーター
+     * @param id Int idパラメーター
      *
      * @return Flow<ExpenditureItem>
      */
