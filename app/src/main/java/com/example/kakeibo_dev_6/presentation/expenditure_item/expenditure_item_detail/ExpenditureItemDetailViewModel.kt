@@ -14,20 +14,36 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpenditureItemDetailViewModel @Inject constructor(
     private val expenditureItemDao: ExpenditureItemDao,
-    private val categoryDao: CategoryDao
+    categoryDao: CategoryDao
 ) : ViewModel() {
 
-    val category = categoryDao.loadAllCategories().distinctUntilChanged()
-
-    fun setEditingExpendItem(id: Int): Flow<ExpenditureItem> {
+    /**
+     * 支出項目取得
+     *
+     * @param id Int
+     *
+     * @return Flow<ExpenditureItem>
+     */
+    fun getExpenditureItem(id: Int): Flow<ExpenditureItem> {
         return expenditureItemDao.loadExpenditureItem(id = id).distinctUntilChanged()
     }
 
-    var editingExpendItem: ExpenditureItem? = null
+    // 取得した支出項目保存
+    var expenditureItem: ExpenditureItem? = null
 
-    fun deleteExpendItem(expendItem: ExpenditureItem) {
+    /**
+     * 支出項目削除
+     *
+     * @param expendItem ExpenditureItem
+     *
+     * @return Unit
+     */
+    fun deleteExpenditureItem(expendItem: ExpenditureItem) {
         viewModelScope.launch {
             expenditureItemDao.deleteExpenditureItem(expendItem)
         }
     }
+
+    // カテゴリー一覧取得
+    val categoryList = categoryDao.loadAllCategories().distinctUntilChanged()
 }

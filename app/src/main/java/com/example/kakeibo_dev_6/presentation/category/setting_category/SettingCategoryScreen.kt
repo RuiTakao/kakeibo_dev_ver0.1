@@ -74,8 +74,8 @@ fun SettingCategoryScreen(
         },
         containerColor = Color(Colors.BASE_COLOR),
         modifier = Modifier.fillMaxSize()
-    ) {
-        Column(modifier = Modifier.padding(it)) {
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
             Spacer(modifier = Modifier.height(24.dp))
             LazyColumn(
                 modifier = Modifier.padding(horizontal = 16.dp)
