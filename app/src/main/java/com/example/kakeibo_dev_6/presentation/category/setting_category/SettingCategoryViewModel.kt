@@ -9,9 +9,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingCategoryViewModel @Inject constructor(
-    private val categoryDao: CategoryDao
+    categoryDao: CategoryDao
 ): ViewModel() {
+
+    // カテゴリー一覧取得
     val categoryList = categoryDao.loadAllCategories().distinctUntilChanged()
 
+    // 取得したカテゴリーをViewModelに保存
     var stateCategoryList: List<Category>? = null
 }

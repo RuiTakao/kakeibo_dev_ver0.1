@@ -16,11 +16,19 @@ class ReplaceOrderCategoryViewModel @Inject constructor(
     private val categoryDao: CategoryDao
 ) : ViewModel() {
 
+    // カテゴリーの並び順番号
     var categoryOrder by mutableIntStateOf(0)
 
+    // カテゴリー設定で取得したカテゴリーを保存
     var stateCategoryList: List<Category>? = null
 
-    // 更新
+    /**
+     * 更新
+     *
+     * @param category Category
+     *
+     * @return Unit
+     */
     fun updateCategory(category: Category) {
         viewModelScope.launch {
             category.categoryOrder = categoryOrder

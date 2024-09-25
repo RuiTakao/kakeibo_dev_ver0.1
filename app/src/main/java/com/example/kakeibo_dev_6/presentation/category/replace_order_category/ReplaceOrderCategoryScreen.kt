@@ -36,20 +36,39 @@ import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
+/**
+ * カテゴリー並替え
+ *
+ * @param navController NavController
+ * @param viewModel ReplaceOrderCategoryViewModel
+ * @param settingCategoryViewModel SettingCategoryViewModel
+ *
+ * @return Unit
+ */
 @Composable
 fun ReplaceOrderCategoryScreen(
     navController: NavController,
     viewModel: ReplaceOrderCategoryViewModel = hiltViewModel(),
     settingCategoryViewModel: SettingCategoryViewModel
 ) {
-    val data = remember { mutableStateOf(settingCategoryViewModel.stateCategoryList) }
 
+    // カテゴリー一覧取得
+    val categoryList = remember { mutableStateOf(settingCategoryViewModel.stateCategoryList) }
+
+    // カテゴリー並び替えUI
     val state = rememberReorderableLazyListState(
         onMove = { from, to ->
-            data.value = data.value!!.toMutableList().apply {
-                add(to.index, removeAt(from.index))
+
+            categoryList.value?.let {
+
+                // カテゴリーをUIで入れ替えるとリストの中身も入れ替える処理
+                categoryList.value = it.toMutableList().apply {
+                    add(to.index, removeAt(from.index))
+                }
+
+                // 入れ替わったカテゴリーをViewModelに保存
+                viewModel.stateCategoryList = categoryList.value
             }
-            viewModel.stateCategoryList = data.value
         }
     )
 
@@ -58,7 +77,13 @@ fun ReplaceOrderCategoryScreen(
             SubTopBar(
                 title = "カテゴリー並替え",
                 navigation = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(
+                        onClick = {
+
+                            // 前の画面に戻る
+                            navController.popBackStack()
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "戻る",
@@ -69,17 +94,40 @@ fun ReplaceOrderCategoryScreen(
                 actions = {
                     IconButton(
                         onClick = {
+
+                            // カテゴリーの一括更新処理　並び順更新
                             viewModel.stateCategoryList?.let {
-                                var i = viewModel.stateCategoryList?.size ?: 0
-                                if (i != 0) {
-                                    i++
+
+                                // リストに格納されているカテゴリーを一つずつ取得し、並び順番号を付与していく
+                                // 並び順は降順で並べていくので、リストの最初のカテゴリーの並び順番号にはリストのサイズ数の値を付与
+                                // 二番目以降はリストのサイズ数から一ずつ減算した値を付与していく
+
+                                // カテゴリー数を取得
+                                var categoryListSize = viewModel.stateCategoryList?.size ?: 0
+
+                                // nullエラー対策
+                                // カテゴリー数が0の場合は処理しない
+                                if (categoryListSize != 0) {
+
+                                    // リストだと0スタートになるので数値を合わせる為、カテゴリー数に+1する
+                                    categoryListSize++
+
+                                    // カテゴリー一覧をループして並び順を更新する
                                     viewModel.stateCategoryList?.forEach {
-                                        viewModel.categoryOrder = i
+
+                                        // 並び順格納
+                                        viewModel.categoryOrder = categoryListSize
+
+                                        // 並び順更新処理
                                         viewModel.updateCategory(it)
-                                        i--
+
+                                        // 次ループのカテゴリーの並び順に減算した並び順番号を格納する為、カテゴリー数に-1する
+                                        categoryListSize--
                                     }
                                 }
                             }
+
+                            // 前の画面に戻る
                             navController.popBackStack()
                         }
                     ) {
@@ -94,8 +142,11 @@ fun ReplaceOrderCategoryScreen(
         },
         containerColor = Color(Colors.BASE_COLOR),
         modifier = Modifier.fillMaxSize()
-    ) {
-        Column(modifier = Modifier.padding(it)) {
+    ) { paddingValues ->
+
+        Column(modifier = Modifier.padding(paddingValues)) {
+
+            // 注意書きテキスト
             Text(
                 text = "長押しでカテゴリーの並替えができます",
                 color = Color.Gray,
@@ -103,6 +154,8 @@ fun ReplaceOrderCategoryScreen(
                     .padding(horizontal = 12.dp)
                     .padding(top = 8.dp)
             )
+
+            // カテゴリー一覧を表示
             LazyColumn(
                 state = state.listState,
                 modifier = Modifier
@@ -111,17 +164,26 @@ fun ReplaceOrderCategoryScreen(
                     .padding(top = 8.dp)
                     .fillMaxSize()
             ) {
-                items(data.value!!, { it.id }) { item ->
+
+                // カテゴリー一覧をループ
+                items(categoryList.value!!, { it.id }) {
+
+                    // 並び替えUIのComposable関数
                     ReorderableItem(
                         reorderableState = state,
-                        key = item.id,
+                        key = it.id,
                         modifier = Modifier
                             .padding(bottom = 12.dp)
                             .padding(horizontal = 12.dp)
                             .fillMaxWidth()
                     ) { isDragging ->
-                        val elevation =
-                            animateDpAsState(if (isDragging) 16.dp else 4.dp)
+
+                        // ドラッグドロップ時の影の操作
+                        val elevation = animateDpAsState(
+                            targetValue = if (isDragging) 16.dp else 4.dp,
+                            label = "ドラッグドロップ時の影"
+                        )
+
                         Row(
                             modifier = Modifier
                                 .shadow(elevation.value)
@@ -131,7 +193,9 @@ fun ReplaceOrderCategoryScreen(
                                 .padding(vertical = 16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(text = item.categoryName, fontSize = 20.sp)
+
+                            // カテゴリー名
+                            Text(text = it.categoryName, fontSize = 20.sp)
                         }
                     }
                 }

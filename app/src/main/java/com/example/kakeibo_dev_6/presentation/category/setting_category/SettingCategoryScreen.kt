@@ -2,12 +2,9 @@ package com.example.kakeibo_dev_6.presentation.category.setting_category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,116 +35,160 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kakeibo_dev_6.common.Colors
-import com.example.kakeibo_dev_6.domain.model.Category
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
 import com.example.kakeibo_dev_6.presentation.component.SubTopBar
 import kotlinx.coroutines.launch
 
+/**
+ * カテゴリー設定画面
+ *
+ * @param navController NavController
+ * @param viewModel SettingCategoryViewModel
+ *
+ * @return Unit
+ */
 @Composable
 fun SettingCategoryScreen(
     navController: NavController,
     viewModel: SettingCategoryViewModel = hiltViewModel()
 ) {
-    val categories by viewModel.categoryList.collectAsState(initial = emptyList())
 
-    viewModel.stateCategoryList = categories
+    // カテゴリー一覧取得
+    val categoryList by viewModel.categoryList.collectAsState(initial = emptyList())
+
+    // カテゴリー並び変えで使用する為、取得したカテゴリー一覧をViewModelに保存
+    viewModel.stateCategoryList = categoryList
 
     Scaffold(
         topBar = {
             SubTopBar(
                 title = "カテゴリー設定",
                 navigation = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "戻る", tint = Color(0xFF854A2A))
-                    }
+                    IconButton(
+                        onClick = {
+
+                            // 前の画面に戻る
+                            navController.popBackStack()
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "戻る",
+                                tint = Color(0xFF854A2A)
+                            )
+                        }
+                    )
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate(ScreenRoute.AddCategory.route) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.AddBox,
-                            contentDescription = "カテゴリ追加",
-                            tint = Color(0xFF854A2A)
-                        )
-                    }
+                    IconButton(
+                        onClick = {
+
+                            // カテゴリー追加画面へ遷移
+                            navController.navigate(ScreenRoute.AddCategory.route)
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Outlined.AddBox,
+                                contentDescription = "カテゴリ追加",
+                                tint = Color(0xFF854A2A)
+                            )
+                        }
+                    )
                 }
             )
         },
         containerColor = Color(Colors.BASE_COLOR),
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Spacer(modifier = Modifier.height(24.dp))
-            LazyColumn(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                items(items = categories) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .padding(bottom = 12.dp)
-                            .background(Color.White)
-                            .padding(start = 16.dp)
-                            .padding(vertical = 4.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+
+        // カテゴリー一覧
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(top = 24.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+
+            // カテゴリー一覧表示
+            items(items = categoryList) {
+
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .padding(bottom = 12.dp)
+                        .background(Color.White)
+                        .padding(start = 16.dp)
+                        .padding(vertical = 4.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    // カテゴリー名
+                    Text(
+                        text = it.categoryName,
+                        fontSize = 20.sp
+                    )
+
+                    // コンテキストメニュー表示非表示切り替え
+                    val scope = rememberCoroutineScope()
+                    var showMenu by remember { mutableStateOf(false) }
+
+                    // コンテキストメニュー
+                    IconButton(
+                        onClick = {
+
+                            // コンテキストメニュー表示
+                            scope.launch {
+                                showMenu.apply {
+                                    showMenu = true
+                                }
+                            }
+                        }
                     ) {
-                        Text(text = it.categoryName, fontSize = 20.sp)
-                        SettingDropDownMenu(
-                            category = it,
-                            onClickEdit = {
-                                navController.navigate( ScreenRoute.EditCategory.route + "/${it.id}")
-                            },
-                            onClickReplaceOrderCategory = { navController.navigate(ScreenRoute.ReplaceOrderCategory.route) }
+
+                        // コンテキストメニュー表示アイコン
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "編集"
                         )
+
+                        // コンテキストメニュー
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = {
+
+                                // コンテキストメニュー非表示
+                                showMenu = false
+                            },
+                        ) {
+                            TextButton(
+                                onClick = {
+
+                                    // コンテキストメニュー非表示
+                                    showMenu = false
+
+                                    // 編集画面に遷移
+                                    navController.navigate(ScreenRoute.EditCategory.route + "/${it.id}")
+                                },
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                content = { Text(text = "編集") }
+                            )
+                            TextButton(
+                                onClick = {
+
+                                    // コンテキストメニュー非表示
+                                    showMenu = false
+
+                                    // カテゴリー並替え画面に遷移
+                                    navController.navigate(ScreenRoute.ReplaceOrderCategory.route)
+                                },
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                content = { Text(text = "並替え") }
+                            )
+                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SettingDropDownMenu(
-    category: Category,
-    onClickEdit: (Category) -> Unit,
-    onClickReplaceOrderCategory: () -> Unit
-) {
-    val scope = rememberCoroutineScope()
-    var showMenu by remember { mutableStateOf(false) }
-
-    IconButton(onClick = {
-        scope.launch {
-            showMenu.apply {
-                showMenu = true
-            }
-        }
-    }) {
-        Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = "編集"
-        )
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-        ) {
-            TextButton(
-                onClick = {
-                    showMenu = false
-                    onClickEdit(category)
-                },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(text = "編集")
-            }
-            TextButton(
-                onClick = {
-                    showMenu = false
-                    onClickReplaceOrderCategory()
-                },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(text = "並替え")
             }
         }
     }
