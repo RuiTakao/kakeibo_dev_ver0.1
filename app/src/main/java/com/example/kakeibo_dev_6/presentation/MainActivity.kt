@@ -21,7 +21,7 @@ import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategor
 import com.example.kakeibo_dev_6.presentation.category.edit_category.EditCategoryViewModel
 import com.example.kakeibo_dev_6.presentation.category.replace_order_category.ReplaceOrderCategoryScreen
 import com.example.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
-import com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list.CategorizeExpenditureItemListScreen
+import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.CategorizeExpenditureItemListScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail.ExpenditureItemDetailScreen
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen
@@ -208,17 +208,25 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * デフォルトのカテゴリー設定
+ * 初回起動時のみ
+ *
+ * @param viewModel EditCategoryViewModel
+ *
+ * @return Unit
+ */
 private fun defaultCategory(viewModel: EditCategoryViewModel) {
 
-    viewModel.name = "❓ その他"
+    viewModel.name = "🏠 生活費"
     viewModel.order = 7
     viewModel.createCategory()
 
-    viewModel.name = "📺 家具・家電"
+    viewModel.name = "🛍 日用品費"
     viewModel.order = 6
     viewModel.createCategory()
 
-    viewModel.name = "👪 交際費"
+    viewModel.name = "🎾 娯楽費"
     viewModel.order = 5
     viewModel.createCategory()
 
@@ -226,15 +234,15 @@ private fun defaultCategory(viewModel: EditCategoryViewModel) {
     viewModel.order = 4
     viewModel.createCategory()
 
-    viewModel.name = "🎾 娯楽費"
+    viewModel.name = "👪 交際費"
     viewModel.order = 3
     viewModel.createCategory()
 
-    viewModel.name = "🛍 日用品費"
+    viewModel.name = "📺 家具・家電"
     viewModel.order = 2
     viewModel.createCategory()
 
-    viewModel.name = "🏠 生活費"
+    viewModel.name = "❓ その他"
     viewModel.order = 1
     viewModel.createCategory()
 }

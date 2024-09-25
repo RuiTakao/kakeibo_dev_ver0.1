@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.expenditure_item.component
+package com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class DisplaySwitchAreaViewModel @Inject constructor(
+class ExpenditureItemListViewModel @Inject constructor(
     private val categorizeExpenditureItemDao: CategorizeExpenditureItemDao,
     private val expenditureItemJoinCategoryDao: ExpenditureItemJoinCategoryDao,
     categoryDao: CategoryDao,

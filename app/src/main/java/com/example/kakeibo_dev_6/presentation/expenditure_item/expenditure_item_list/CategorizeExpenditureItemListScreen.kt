@@ -1,4 +1,4 @@
-package com.example.kakeibo_dev_6.presentation.expenditure_item.categorize_expenditure_item_list
+package com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -47,10 +47,9 @@ import com.example.kakeibo_dev_6.common.Colors
 import com.example.kakeibo_dev_6.common.enum.SelectDate
 import com.example.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.example.kakeibo_dev_6.presentation.ScreenRoute
-import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchArea
+import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
 import com.example.kakeibo_dev_6.presentation.component.FAButton
 import com.example.kakeibo_dev_6.presentation.component.MainTopBar
-import com.example.kakeibo_dev_6.presentation.expenditure_item.component.DisplaySwitchAreaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -59,7 +58,7 @@ import java.util.Locale
 @Composable
 fun CategorizeExpenditureItemListScreen(
     navController: NavController,
-    viewModel: DisplaySwitchAreaViewModel = hiltViewModel()
+    viewModel: ExpenditureItemListViewModel = hiltViewModel()
 ) {
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
@@ -196,7 +195,7 @@ fun CategorizeExpenditureItemListScreen(
 private fun ListItem(
     listItem: List<CategorizeExpenditureItem>,
     navController: NavController,
-    viewModel: DisplaySwitchAreaViewModel
+    viewModel: ExpenditureItemListViewModel
 ) {
     LazyColumn(
         modifier = Modifier
