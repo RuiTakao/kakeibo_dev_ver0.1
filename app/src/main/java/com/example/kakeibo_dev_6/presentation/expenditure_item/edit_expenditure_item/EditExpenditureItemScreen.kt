@@ -212,7 +212,7 @@ fun EditExpenditureItemScreen(
             // 日付選択フィールド
             Box(
                 modifier = Modifier
-                    .size(280.dp, 50.dp)
+                    .size(320.dp, 50.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(
                         BorderStroke(1.dp, Color.LightGray),
@@ -342,7 +342,7 @@ fun EditExpenditureItemScreen(
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
-                    .width(280.dp)
+                    .width(320.dp)
             )
 
             // バリデーションメッセージ
@@ -401,7 +401,7 @@ fun EditExpenditureItemScreen(
             Box(
                 contentAlignment = Alignment.CenterStart,
                 modifier = Modifier
-                    .size(280.dp, 50.dp)
+                    .size(320.dp, 50.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(
                         BorderStroke(1.dp, Color.LightGray),
@@ -528,7 +528,7 @@ fun EditExpenditureItemScreen(
                     viewModel.content = it
                 },
                 modifier = Modifier
-                    .width(280.dp)
+                    .size(320.dp, 104.dp)
             )
 
             // バリデーションメッセージ
