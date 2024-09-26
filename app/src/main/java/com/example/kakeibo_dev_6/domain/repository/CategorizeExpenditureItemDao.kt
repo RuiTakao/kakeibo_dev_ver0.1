@@ -9,17 +9,25 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CategorizeExpenditureItemDao {
 
+    /**
+     * 支出項目一覧をカテゴリー毎に取得
+     *
+     * @param startDate String
+     * @param endDate String
+     *
+     * @return Flow<List<CategorizeExpenditureItem>>
+     */
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "" +
                 "SELECT id, categoryName, SUM(price) AS price, COUNT(categoryId) AS categoryId, payDate, categoryOrder FROM CategorizeExpenditureItem " +
-                "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :firstDay AND :lastDay " +
+                "WHERE strftime('%Y-%m-%d', payDate) BETWEEN :startDate AND :endDate " +
                 "GROUP BY categoryName " +
                 "ORDER BY categoryOrder DESC" +
                 ""
     )
     fun categorizeExpenditureItem(
-        firstDay: String,
-        lastDay: String
+        startDate: String,
+        endDate: String
     ): Flow<List<CategorizeExpenditureItem>>
 }

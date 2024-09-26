@@ -62,59 +62,14 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenRoute.CategorizeExpenditureItemList.route
                     ) {
 
-                        /** カテゴリー */
-                        /**
-                         * カテゴリー設定ページ
-                         */
-                        composable(route = ScreenRoute.SettingCategory.route) {
-                            SettingCategoryScreen(navController = navController)
-                        }
-
-                        /**
-                         * カテゴリー編集
-                         */
-                        composable(
-                            route = ScreenRoute.EditCategory.route + "/{id}",
-                            arguments = listOf(navArgument("id") { type = NavType.IntType })
-                        ) { backStackEntry ->
-                            EditCategoryScreen(
-                                navController = navController,
-                                id = backStackEntry.arguments?.getInt("id")
-                            )
-                        }
-
-                        /**
-                         * カテゴリー追加
-                         */
-                        composable(route = ScreenRoute.AddCategory.route) {
-                            EditCategoryScreen(navController = navController)
-                        }
-
-                        /**
-                         * カテゴリー並替え
-                         */
-                        composable(route = ScreenRoute.ReplaceOrderCategory.route) {
-                            ReplaceOrderCategoryScreen(
-                                navController = navController,
-                                settingCategoryViewModel = viewModel(
-                                    viewModelStoreOwner = remember(it) {
-                                        navController.getBackStackEntry(ScreenRoute.SettingCategory.route)
-                                    }
-                                )
-                            )
-                        }
-
                         /** 支出項目 */
-                        /**
-                         * 支出項目一覧ページ（カテゴリー毎）
-                         */
+
+                        // 支出項目一覧ページ（カテゴリー毎）
                         composable(route = ScreenRoute.CategorizeExpenditureItemList.route) {
                             CategorizeExpenditureItemListScreen(navController = navController)
                         }
 
-                        /**
-                         * 支出項目一覧ページ（明細）
-                         */
+                        // 支出項目一覧ページ（明細）
                         composable(
                             route = ScreenRoute.ExpenditureItemList.route + "/{categoryId}/{dateProperty}/{startDate}/{lastDate}",
                             arguments = listOf(
@@ -133,9 +88,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        /**
-                         * 支出項目　詳細
-                         */
+                        // 支出項目　詳細
                         composable(
                             route = ScreenRoute.ExpenditureItemDetail.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -146,9 +99,25 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        /**
-                         * 支出項目　編集
-                         */
+                        // 支出項目　追加
+                        composable(route = ScreenRoute.AddExpenditureItem.route) {
+                            EditExpenditureItemScreen(navController = navController)
+                        }
+
+                        // 支出項目　追加
+                        // 追加と一緒にカテゴリーの追加するときのルーティング
+                        composable(route = ScreenRoute.AddCategoryFromAddExpenditureItem.route) {
+                            EditCategoryScreen(
+                                navController = navController,
+                                editExpenditureItemViewModel = viewModel(
+                                    viewModelStoreOwner = remember(it) {
+                                        navController.getBackStackEntry(ScreenRoute.AddExpenditureItem.route)
+                                    }
+                                )
+                            )
+                        }
+
+                        // 支出項目　編集
                         composable(
                             route = ScreenRoute.EditExpenditureItem.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -159,17 +128,8 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        /**
-                         * 支出項目　追加
-                         */
-                        composable(route = ScreenRoute.AddExpenditureItem.route) {
-                            EditExpenditureItemScreen(navController = navController)
-                        }
-
-                        /**
-                         * 支出項目　編集
-                         * 編集と一緒にカテゴリーの追加するときのルーティング
-                         */
+                        // 支出項目　編集
+                        // 編集と一緒にカテゴリーの追加するときのルーティング
                         composable(
                             route = ScreenRoute.AddCategoryFromEditExpenditureItem.route + "/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -187,16 +147,36 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        /**
-                         * 支出項目　追加
-                         * 追加と一緒にカテゴリーの追加するときのルーティング
-                         */
-                        composable(route = ScreenRoute.AddCategoryFromAddExpenditureItem.route) {
+                        /** カテゴリー */
+
+                        // カテゴリー設定ページ
+                        composable(route = ScreenRoute.SettingCategory.route) {
+                            SettingCategoryScreen(navController = navController)
+                        }
+
+                        // カテゴリー追加
+                        composable(route = ScreenRoute.AddCategory.route) {
+                            EditCategoryScreen(navController = navController)
+                        }
+
+                        // カテゴリー編集
+                        composable(
+                            route = ScreenRoute.EditCategory.route + "/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.IntType })
+                        ) { backStackEntry ->
                             EditCategoryScreen(
                                 navController = navController,
-                                editExpenditureItemViewModel = viewModel(
+                                id = backStackEntry.arguments?.getInt("id")
+                            )
+                        }
+
+                        // カテゴリー並替え
+                        composable(route = ScreenRoute.ReplaceOrderCategory.route) {
+                            ReplaceOrderCategoryScreen(
+                                navController = navController,
+                                settingCategoryViewModel = viewModel(
                                     viewModelStoreOwner = remember(it) {
-                                        navController.getBackStackEntry(ScreenRoute.AddExpenditureItem.route)
+                                        navController.getBackStackEntry(ScreenRoute.SettingCategory.route)
                                     }
                                 )
                             )

@@ -76,7 +76,7 @@ fun CategorizeExpenditureItemListScreen(
     // カテゴリー毎にグルーピングした支出リストを抽出
     val listItem by viewModel.categorizeExpenditureItem(
         startDate = selectStartDate,
-        lastDate = selectLastDate
+        endDate = selectLastDate
     ).collectAsState(initial = emptyList())
 
     // 金額合計

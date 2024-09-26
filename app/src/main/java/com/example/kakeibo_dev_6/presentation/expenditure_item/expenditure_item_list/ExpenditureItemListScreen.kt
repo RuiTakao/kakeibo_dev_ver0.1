@@ -78,9 +78,9 @@ fun ExpenditureItemListScreen(
                 startDate.toDate("yyyy-MM-dd")
             } ?: viewModel.customOfStartDate
 
-            viewModel.customOfLastDate = lastDate?.let {
+            viewModel.customOfEndDate = lastDate?.let {
                 lastDate.toDate("yyyy-MM-dd")
-            } ?: viewModel.customOfLastDate
+            } ?: viewModel.customOfEndDate
         }
 
         // 遷移時の処理終了
@@ -99,8 +99,8 @@ fun ExpenditureItemListScreen(
     // 支出の登録されている日付を取得
     val gropePayDate by viewModel.gropePayDate(
         startDate = selectStartDate,
-        lastDate = selectLastDate,
-        sort = viewModel.sort,
+        endDate = selectLastDate,
+        sort = viewModel.sortOfPayDate,
         categoryId = viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 
@@ -108,8 +108,8 @@ fun ExpenditureItemListScreen(
     // 支出一覧をカテゴリーと結合し抽出
     val expenditureItemList by viewModel.expenditureItemList(
         firstDay = selectStartDate,
-        lastDay = selectLastDate,
-        sort = viewModel.sort,
+        endDate = selectLastDate,
+        sort = viewModel.sortOfPayDate,
         categoryId = viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 

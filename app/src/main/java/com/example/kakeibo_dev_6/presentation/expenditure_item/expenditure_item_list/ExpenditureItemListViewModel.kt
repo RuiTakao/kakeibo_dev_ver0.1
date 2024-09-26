@@ -38,18 +38,28 @@ class ExpenditureItemListViewModel @Inject constructor(
     private val expenditureItemDao: ExpenditureItemDao
 ) : ViewModel() {
 
+    /** カテゴリー毎・明細　共通処理 */
+
+    // 表示期間選択ステータス
     var dateProperty by mutableStateOf(DateProperty.WEEK.name)
     var selectCategory by mutableIntStateOf(0)
-    var sort by mutableStateOf(false)
+
+    // 支出日の並び順のステータス
+    var sortOfPayDate by mutableStateOf(false)
+
+    // カテゴリー毎から明細へ遷移した時
     var pageTransitionFlg by mutableStateOf(true)
 
     val category = categoryDao.loadAllCategories().distinctUntilChanged()
 
+    // 表示期間の基準日
     var standardOfStartDate by mutableStateOf(Date())
 
+    // カスタム日選択時の開始日
     var customOfStartDate by mutableStateOf(defaultCustomOfStartDate())
 
-    var customOfLastDate by mutableStateOf(Date())
+    // カスタム日選択時の終了日
+    var customOfEndDate by mutableStateOf(Date())
     private fun defaultCustomOfStartDate(): Date {
         val firstDayOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
         val dateStr =
@@ -90,45 +100,53 @@ class ExpenditureItemListViewModel @Inject constructor(
 
     fun categorizeExpenditureItem(
         startDate: String,
-        lastDate: String
+        endDate: String
     ): Flow<List<CategorizeExpenditureItem>> {
         return categorizeExpenditureItemDao.categorizeExpenditureItem(
-            firstDay = startDate,
-            lastDay = lastDate
+            startDate = startDate,
+            endDate = endDate
         ).distinctUntilChanged()
     }
 
     fun gropePayDate(
         startDate: String,
-        lastDate: String,
+        endDate: String,
         categoryId: Int,
         sort: Boolean
     ): Flow<List<ExpenditureItem>> {
         return if (sort) {
-            expenditureItemDao.gropePayDateAsc(startDate, lastDate, categoryId).distinctUntilChanged()
+            expenditureItemDao.gropePayDateAsc(
+                startDate = startDate,
+                endDate = endDate,
+                categoryId = categoryId
+            ).distinctUntilChanged()
         } else {
-            expenditureItemDao.gropePayDateDesc(startDate, lastDate, categoryId).distinctUntilChanged()
+            expenditureItemDao.gropePayDateDesc(
+                startDate = startDate,
+                endDate = endDate,
+                categoryId = categoryId
+            ).distinctUntilChanged()
         }
     }
 
     fun expenditureItemList(
         firstDay: String,
-        lastDay: String,
+        endDate: String,
         categoryId: Int,
         sort: Boolean
     ): Flow<List<ExpenditureItemJoinCategory>> {
         return if (sort) {
             expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderAsc(
-                firstDay = firstDay,
-                lastDay = lastDay,
-                category = categoryId
+                startDate = firstDay,
+                endDate = endDate,
+                categoryId = categoryId
             )
                 .distinctUntilChanged()
         } else {
             expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderDesc(
-                firstDay = firstDay,
-                lastDay = lastDay,
-                category = categoryId
+                startDate = firstDay,
+                endDate = endDate,
+                categoryId = categoryId
             )
                 .distinctUntilChanged()
         }
@@ -194,7 +212,7 @@ class ExpenditureItemListViewModel @Inject constructor(
             /* カスタム */
             // カスタム日付用に保存している開始日と終了日をセット
             DateProperty.CUSTOM.name ->
-                return "${df.format(customOfStartDate)} 〜 ${df.format(customOfLastDate)}"
+                return "${df.format(customOfStartDate)} 〜 ${df.format(customOfEndDate)}"
         }
         return ""
     }
@@ -337,7 +355,7 @@ class ExpenditureItemListViewModel @Inject constructor(
         return if (dateProperty == DateProperty.CUSTOM.name) {
             when (selectDate) {
                 SelectDate.START -> df.format(customOfStartDate)
-                SelectDate.LAST -> df.format(customOfLastDate)
+                SelectDate.LAST -> df.format(customOfEndDate)
             }
         } else {
             df.format(standardOfStartDate)
