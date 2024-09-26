@@ -60,6 +60,7 @@ import java.util.Date
  *
  * @return Unit
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplaySwitchArea(
     totalTax: Int,
@@ -75,9 +76,79 @@ fun DisplaySwitchArea(
 
         // 日、週、月、カスタムボタンエリア
         // 一行目のレイアウト
-        ChangeDurationDateRow(viewModel = viewModel)
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
+                .padding(top = 8.dp)
+        ) {
 
-        /* 二行目、三行目のレイアウト */
+            /* 日ボタン */
+            ChangeDurationDateText(
+                changeDurationDateTextProperty = DateProperty.DAY.name,
+                selectedDateProperty = viewModel.dateProperty,
+                onClick = {
+                    viewModel.dateProperty = DateProperty.DAY.name
+
+                    /*
+                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
+                     */
+                    viewModel.initStandardDate()
+                }
+            )
+
+            // 週ボタン
+            ChangeDurationDateText(
+                changeDurationDateTextProperty = DateProperty.WEEK.name,
+                selectedDateProperty = viewModel.dateProperty,
+                onClick = {
+                    viewModel.dateProperty = DateProperty.WEEK.name
+
+                    /*
+                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
+                     */
+                    viewModel.initStandardDate()
+                }
+            )
+
+            // 月ボタン
+            ChangeDurationDateText(
+                changeDurationDateTextProperty = DateProperty.MONTH.name,
+                selectedDateProperty = viewModel.dateProperty,
+                onClick = { viewModel.dateProperty = DateProperty.MONTH.name }
+            )
+
+            // カスタムボタン
+
+            // DatePickerの表示非表示の判定
+            val visible = remember { mutableStateOf(false) }
+
+            // DatePickerでデフォルトで設定しておく日付
+            val state = rememberDateRangePickerState(
+                viewModel.customOfStartDate.time,
+                viewModel.customOfEndDate.time
+            )
+
+            ChangeDurationDateCustom(
+                selectedDateProperty = viewModel.dateProperty,
+                visible = visible,
+                state = state,
+                onClick = {
+                    // DatePickerを閉じる
+                    visible.value = false
+                    // カスタムを選択状態にする
+                    viewModel.dateProperty = DateProperty.CUSTOM.name
+                    // 選択した開始日をカスタム日付用の変数に保存
+                    viewModel.customOfStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
+                    // 選択した終了日をカスタム日付用の変数に保存
+                    viewModel.customOfEndDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
+                }
+            )
+        }
+
+        // 二行目、三行目のレイアウト
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -85,13 +156,13 @@ fun DisplaySwitchArea(
                 .padding(vertical = 16.dp)
         ) {
 
-            /* 前へボタン（過去に移動） */
+            // 前へボタン（過去に移動）
             PrevButton(
                 enabled = viewModel.dateProperty != DateProperty.CUSTOM.name,
                 onClick = { viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV) }
             )
 
-            /* 真ん中のレイアウト */
+            // 真ん中のレイアウト
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                 // 日付の表示（表示期間）
@@ -110,17 +181,15 @@ fun DisplaySwitchArea(
                 )
             }
 
-            /* 次へボタン（未来へ移動） */
+            // 次へボタン（未来へ移動）
             NextButton(
                 enabled = viewModel.isNextButtonEnabled(),
                 onClick = { viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT) }
             )
         }
 
-        /*
-        明細画面のみ表示
-        四行目のレイアウト
-         */
+        // 明細画面のみ表示
+        // 四行目のレイアウト
         if (searchArea) {
 
             Row(
@@ -132,105 +201,19 @@ fun DisplaySwitchArea(
                     .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
             ) {
 
-                /* 絞り込みドロップダウン（カテゴリー毎） */
+                // 絞り込みドロップダウン（カテゴリー毎）
+
+                // 全カテゴリー取得
+                val categoryList by viewModel.category.collectAsState(initial = emptyList())
                 SelectCategoryBox(viewModel = viewModel)
 
-                /* 左右の余白 */
+                // 左右の余白
                 Spacer(modifier = Modifier.width(8.dp))
 
-                /* 並び替えドロップダウン（登録日付順） */
+                // 並び替えドロップダウン（登録日付順）
                 SelectDateSortBox(viewModel = viewModel)
             }
         }
-    }
-}
-
-/**
- * 日、週、月、カスタムボタンのエリア
- *
- * @param viewModel DisplaySwitchAreaViewModel
- *
- * @return Unit
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ChangeDurationDateRow(viewModel: ExpenditureItemListViewModel) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier
-            .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
-            .padding(top = 8.dp)
-    ) {
-
-        /* 日ボタン */
-        ChangeDurationDateText(
-            changeDurationDateTextProperty = DateProperty.DAY.name,
-            selectedDateProperty = viewModel.dateProperty,
-            onClick = {
-                viewModel.dateProperty = DateProperty.DAY.name
-
-                /*
-                日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
-                日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
-                 */
-                viewModel.initStandardDate()
-            }
-        )
-
-        /* 週ボタン */
-        ChangeDurationDateText(
-            changeDurationDateTextProperty = DateProperty.WEEK.name,
-            selectedDateProperty = viewModel.dateProperty,
-            onClick = {
-                viewModel.dateProperty = DateProperty.WEEK.name
-
-                /*
-                日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
-                日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
-                 */
-                viewModel.initStandardDate()
-            }
-        )
-
-        /* 月ボタン */
-        ChangeDurationDateText(
-            changeDurationDateTextProperty = DateProperty.MONTH.name,
-            selectedDateProperty = viewModel.dateProperty,
-            onClick = { viewModel.dateProperty = DateProperty.MONTH.name }
-        )
-
-        /* カスタムボタン */
-
-        // DatePickerの表示非表示の判定
-        val visible = remember { mutableStateOf(false) }
-
-        // DatePickerでデフォルトで設定しておく日付
-        val state = rememberDateRangePickerState(
-            viewModel.customOfStartDate.time,
-            viewModel.customOfEndDate.time
-        )
-
-        // 選択した開始日を取得
-        val getStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
-
-        // 選択した終了日を取得
-        val getLastDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
-
-        ChangeDurationDateCustom(
-            changeDurationDateTextProperty = DateProperty.MONTH.name,
-            visible = visible,
-            state = state,
-            onClick = {
-                // DatePickerを閉じる
-                visible.value = false
-                // カスタムを選択状態にする
-                viewModel.dateProperty = DateProperty.CUSTOM.name
-                // 選択した開始日をカスタム日付用の変数に保存
-                viewModel.customOfStartDate = getStartDate
-                // 選択した終了日をカスタム日付用の変数に保存
-                viewModel.customOfEndDate = getLastDate
-            }
-        )
     }
 }
 
@@ -257,7 +240,7 @@ private fun ChangeDurationDateText(
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                /* ボタンのテキスト */
+                // ボタンのテキスト
                 Text(
                     text = when (changeDurationDateTextProperty) {
                         DateProperty.DAY.name -> "日"
@@ -270,7 +253,7 @@ private fun ChangeDurationDateText(
                     color = if (!enabled) Color(0xFF854A2A) else Color.Gray
                 )
 
-                /* 選択時のアンダーバー */
+                // 選択時のアンダーバー
                 Spacer(
                     modifier = Modifier
                         .padding(top = 2.dp)
@@ -289,7 +272,7 @@ private fun ChangeDurationDateText(
 /**
  * カスタムボタン
  *
- * @param changeDurationDateTextProperty String
+ * @param selectedDateProperty String
  * @param visible MutableState<Boolean>
  * @param state DateRangePickerState
  * @param onClick () -> Unit
@@ -299,14 +282,14 @@ private fun ChangeDurationDateText(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChangeDurationDateCustom(
-    changeDurationDateTextProperty: String,
+    selectedDateProperty: String,
     visible: MutableState<Boolean>,
     state: DateRangePickerState,
     onClick: () -> Unit
 ) {
 
     // 選択、未選択の判定
-    val selected = changeDurationDateTextProperty == DateProperty.CUSTOM.name
+    val selected = selectedDateProperty == DateProperty.CUSTOM.name
 
     IconButton(
         onClick = {
@@ -482,18 +465,18 @@ private fun SelectCategoryBox(viewModel: ExpenditureItemListViewModel) {
                     }
                 )
                 // 全カテゴリーをコンテキストメニューに表示
-                categories.forEach { selectOption ->
+                categories.forEach {
                     DropdownMenuItem(
-                        text = { Text(text = selectOption.categoryName) },
+                        text = { Text(text = it.categoryName) },
                         onClick = {
                             // コンテキストメニューを非表示
                             expanded.value = false
                             // 選択したカテゴリーIDを格納 表示用
-                            selectCategoryId.intValue = selectOption.id
+                            selectCategoryId.intValue = it.id
                             // 選択したカテゴリー名を格納 表示用
-                            selectCategoryName.value = selectOption.categoryName
+                            selectCategoryName.value = it.categoryName
                             // 選択したカテゴリーIDを格納 絞込用
-                            viewModel.selectCategory = selectOption.id
+                            viewModel.selectCategory = it.id
                         }
                     )
                 }
