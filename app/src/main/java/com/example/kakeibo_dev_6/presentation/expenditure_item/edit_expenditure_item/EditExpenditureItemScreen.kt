@@ -1,5 +1,6 @@
 package com.example.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,6 +59,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -97,8 +99,16 @@ fun EditExpenditureItemScreen(
 
                 // カテゴリー追加から戻って来た場合は初期値設定しない
                 if (!viewModel.addCategoryFlg) {
+
                     // 日付　DatePickerを開いたとき、前日の日付と被ってズレる為、12:00:00を付け加える
-                    viewModel.payDate = it.payDate + " 12:00:00"
+                    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+                    val localDate = LocalDate.parse(
+                        df.format(it.payDate.toDate("yyyy-MM-dd")!!),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    )
+
+                    viewModel.payDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
+
                     // 金額
                     viewModel.price = it.price
                     // 内容
@@ -113,9 +123,13 @@ fun EditExpenditureItemScreen(
     } else {
         // 登録
 
-        //登録の場合は日付に本日の日付を入れておく
-        val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
-        viewModel.payDate = df.format(Date())
+        // カテゴリー追加から戻って来た場合は初期値設定しない
+        if (!viewModel.addCategoryFlg) {
+
+            //登録の場合は日付に本日の日付を入れておく
+            val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+            viewModel.payDate = df.format(Date())
+        }
     }
 
     Scaffold(
@@ -142,7 +156,16 @@ fun EditExpenditureItemScreen(
 
                                 // 前の画面に戻る
                                 navController.popBackStack()
+                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
+                                val localDate = LocalDate.parse(
+                                    df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                )
+
+                                viewModel.payDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                                Log.d("保存時のpayDate確認", viewModel.payDate)
                                 // idがnullかnotNullで追加処理、編集処理の判定をする
                                 if (id != null) {
                                     // 更新
@@ -250,11 +273,24 @@ fun EditExpenditureItemScreen(
                                         // 日付選択ダイアログ非表示
                                         visible = false
 
-                                        // 選択下日付をViewModelに保存
+                                        // 選択した日付をViewModelに保存
                                         viewModel.payDate =
-                                            getDate?.let { getDate.toString() + " 12:00:00" }
-                                                ?: if (viewModel.payDate == "") LocalDate.now()
-                                                    .toString() + " 12:00:00" else viewModel.payDate + " 12:00:00"
+                                            getDate?.let {
+                                                getDate.format(
+                                                    DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00")
+                                                )
+                                            }
+                                                ?: if (viewModel.payDate == "") {
+                                                    LocalDate.now()
+                                                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
+                                                } else {
+                                                    val localDate = LocalDate.parse(
+                                                        viewModel.payDate,
+                                                        DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00")
+                                                    )
+                                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
+                                                }
+
                                     },
                                     content = { Text(text = "OK") }
                                 )
