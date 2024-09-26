@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kakeibo_dev_6.common.enum.DateProperty
 import com.example.kakeibo_dev_6.common.enum.SwitchDate
+import com.example.kakeibo_dev_6.domain.model.Category
 import com.example.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -88,12 +89,12 @@ fun DisplaySwitchArea(
                 changeDurationDateTextProperty = DateProperty.DAY.name,
                 selectedDateProperty = viewModel.dateProperty,
                 onClick = {
+
+                    // 選択した日付プロパティをViewModelに保存する
                     viewModel.dateProperty = DateProperty.DAY.name
 
-                    /*
-                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
-                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
-                     */
+                    // 日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    // 日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
                     viewModel.initStandardDate()
                 }
             )
@@ -103,12 +104,12 @@ fun DisplaySwitchArea(
                 changeDurationDateTextProperty = DateProperty.WEEK.name,
                 selectedDateProperty = viewModel.dateProperty,
                 onClick = {
+
+                    // 選択した日付プロパティをViewModelに保存する
                     viewModel.dateProperty = DateProperty.WEEK.name
 
-                    /*
-                    日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
-                    日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
-                     */
+                    // 日付の移動後、選択期間を変更した場合、基準日が本日以降の日付になってしまう事がある為
+                    // 日、週で切り替えた場合は基準日が本日以降になっていないか確認し、修正する
                     viewModel.initStandardDate()
                 }
             )
@@ -117,7 +118,11 @@ fun DisplaySwitchArea(
             ChangeDurationDateText(
                 changeDurationDateTextProperty = DateProperty.MONTH.name,
                 selectedDateProperty = viewModel.dateProperty,
-                onClick = { viewModel.dateProperty = DateProperty.MONTH.name }
+                onClick = {
+
+                    // 選択した日付プロパティをViewModelに保存する
+                    viewModel.dateProperty = DateProperty.MONTH.name
+                }
             )
 
             // カスタムボタン
@@ -136,14 +141,20 @@ fun DisplaySwitchArea(
                 visible = visible,
                 state = state,
                 onClick = {
+
                     // DatePickerを閉じる
                     visible.value = false
-                    // カスタムを選択状態にする
+
+                    // 選択した日付プロパティをViewModelに保存する
                     viewModel.dateProperty = DateProperty.CUSTOM.name
-                    // 選択した開始日をカスタム日付用の変数に保存
-                    viewModel.customOfStartDate = state.selectedStartDateMillis?.let { Date(it) } ?: Date()
-                    // 選択した終了日をカスタム日付用の変数に保存
-                    viewModel.customOfEndDate = state.selectedEndDateMillis?.let { Date(it) } ?: Date()
+
+                    // 選択した開始日をViewModelのカスタム日付に保存
+                    viewModel.customOfStartDate =
+                        state.selectedStartDateMillis?.let { Date(it) } ?: Date()
+
+                    // 選択した終了日をViewModelのカスタム日付に保存
+                    viewModel.customOfEndDate =
+                        state.selectedEndDateMillis?.let { Date(it) } ?: Date()
                 }
             )
         }
@@ -159,7 +170,11 @@ fun DisplaySwitchArea(
             // 前へボタン（過去に移動）
             PrevButton(
                 enabled = viewModel.dateProperty != DateProperty.CUSTOM.name,
-                onClick = { viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV) }
+                onClick = {
+
+                    // 過去の日付に移動する処理
+                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV)
+                }
             )
 
             // 真ん中のレイアウト
@@ -184,7 +199,11 @@ fun DisplaySwitchArea(
             // 次へボタン（未来へ移動）
             NextButton(
                 enabled = viewModel.isNextButtonEnabled(),
-                onClick = { viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT) }
+                onClick = {
+
+                    // 未来の日付に移動する処理
+                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT)
+                }
             )
         }
 
@@ -205,13 +224,28 @@ fun DisplaySwitchArea(
 
                 // 全カテゴリー取得
                 val categoryList by viewModel.category.collectAsState(initial = emptyList())
-                SelectCategoryBox(viewModel = viewModel)
+                SelectCategoryBox(
+                    categoryList = categoryList,
+                    id = viewModel.selectCategoryId,
+                    setId = {
+
+                        // 選択したカテゴリーIDをViewModelに保存する
+                        viewModel.selectCategoryId = it
+                    }
+                )
 
                 // 左右の余白
                 Spacer(modifier = Modifier.width(8.dp))
 
                 // 並び替えドロップダウン（登録日付順）
-                SelectDateSortBox(viewModel = viewModel)
+                SelectDateSortBox(
+                    sortFlg = viewModel.sortOfPayDate,
+                    setSortFlag = {
+
+                        // 選択した支出日の並び順をViewModelに保存する
+                        viewModel.sortOfPayDate = it
+                    }
+                )
             }
         }
     }
@@ -232,6 +266,7 @@ private fun ChangeDurationDateText(
     selectedDateProperty: String,
     onClick: () -> Unit
 ) {
+
     // 選択、未選択の判定
     val enabled = selectedDateProperty != changeDurationDateTextProperty
 
@@ -297,7 +332,7 @@ private fun ChangeDurationDateCustom(
         }
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            /* ボタンのアイコン */
+            // ボタンのアイコン
             Icon(
                 imageVector = Icons.Default.CalendarMonth,
                 contentDescription = null,
@@ -305,7 +340,7 @@ private fun ChangeDurationDateCustom(
                 tint = if (selected) Color(0xFF854A2A) else Color.Gray
             )
 
-            /* 選択時のアンダーバー */
+            // 選択時のアンダーバー
             Spacer(
                 modifier = Modifier
                     .padding(top = 2.dp)
@@ -316,10 +351,10 @@ private fun ChangeDurationDateCustom(
         }
     }
 
-    /* DatePickerの制御 */
+    // DatePickerの制御
     if (visible.value) {
 
-        /* DatePickerのダイアログ */
+        // DatePickerのダイアログ
         DatePickerDialog(
             onDismissRequest = {
                 visible.value = false
@@ -327,7 +362,7 @@ private fun ChangeDurationDateCustom(
             confirmButton = {}
         ) {
             Box(contentAlignment = Alignment.BottomEnd) {
-                /* DatePicker */
+                // DatePicker
                 DateRangePicker(
                     state = state,
                     // カレンダービューのみ許可、テキストフィールドは表示不可にする
@@ -335,13 +370,14 @@ private fun ChangeDurationDateCustom(
                     // DatePickerに表示される日付のフォーマット、M月d日
                     dateFormatter = DatePickerFormatter(selectedDateSkeleton = "Md"),
                     dateValidator = {
+
                         // 未来日の選択を不可にするためのバリデーション
                         !Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                             .toLocalDate().isAfter(LocalDate.now())
                     }
                 )
 
-                /* 日付確定ボタン */
+                // 日付確定ボタン
                 Button(
                     onClick = onClick,
                     modifier = Modifier.padding(16.dp),
@@ -407,23 +443,31 @@ private fun NextButton(enabled: Boolean, onClick: () -> Unit) {
 /**
  * カテゴリー毎に絞り込み
  *
- * @param viewModel: DisplaySwitchAreaViewModel
+ * @param categoryList: List<Category>
+ * @param id Int
+ * @param setId (Int) -> Unit
  *
  * @return Unit
  */
 @Composable
-private fun SelectCategoryBox(viewModel: ExpenditureItemListViewModel) {
+private fun SelectCategoryBox(
+    categoryList: List<Category>,
+    id: Int,
+    setId: (Int) -> Unit
+) {
 
     // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }
+
     // 選択されているカテゴリーのID
-    val selectCategoryId = remember { mutableIntStateOf(viewModel.selectCategory) }
+    val selectCategoryId = remember { mutableIntStateOf(id) }
+
     // 選択されているカテゴリー名の表示
     val selectCategoryName = remember { mutableStateOf("すべて") }
+
     // 全カテゴリー取得
-    val categories by viewModel.category.collectAsState(initial = emptyList())
     // 初期表示時の表示用のカテゴリー名を取得
-    categories.forEach {
+    categoryList.forEach {
         if (it.id == selectCategoryId.intValue) {
             selectCategoryName.value = it.categoryName
         }
@@ -432,117 +476,165 @@ private fun SelectCategoryBox(viewModel: ExpenditureItemListViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { expanded.value = !expanded.value },
-        content = {
-            Text(
-                text = selectCategoryName.value,
-                modifier = Modifier.padding(start = 10.dp),
-                color = Color(0xFF854A2A)
+        modifier = Modifier.clickable {
+            expanded.value = !expanded.value
+        }
+    ) {
+
+        // 選択したカテゴリー名
+        Text(
+            text = selectCategoryName.value,
+            modifier = Modifier.padding(start = 10.dp),
+            color = Color(0xFF854A2A)
+        )
+
+        // カテゴリー選択アイコン
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "選択アイコン",
+            tint = Color(0xFF854A2A)
+        )
+
+        // ドロップダウンメニュー
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+
+            // 全カテゴリーを検索するアイテム
+            DropdownMenuItem(
+                text = { Text(text = "すべて") },
+                onClick = {
+
+                    // コンテキストメニューを非表示
+                    expanded.value = false
+
+                    // 選択したカテゴリーIDを格納 表示用
+                    // 0の場合はすべて
+                    selectCategoryId.intValue = 0
+
+                    // 選択したカテゴリー名を格納 表示用
+                    selectCategoryName.value = "すべて"
+
+                    // 選択したカテゴリーIDを格納 絞込用
+                    // 0の場合はすべて
+                    setId(0)
+                }
             )
-            Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = "選択アイコン",
-                tint = Color(0xFF854A2A)
-            )
-            DropdownMenu(
-                expanded = expanded.value,
-                onDismissRequest = { expanded.value = false }
-            ) {
-                // 全カテゴリーを検索する
+
+            // 全カテゴリーをコンテキストメニューに表示
+            categoryList.forEach {
+
+                // 選択したカテゴリーを検索するアイテム
                 DropdownMenuItem(
-                    text = { Text(text = "すべて") },
+                    text = { Text(text = it.categoryName) },
                     onClick = {
+
                         // コンテキストメニューを非表示
                         expanded.value = false
+
                         // 選択したカテゴリーIDを格納 表示用
-                        // 0の場合はすべて
-                        selectCategoryId.intValue = 0
+                        selectCategoryId.intValue = it.id
+
                         // 選択したカテゴリー名を格納 表示用
-                        selectCategoryName.value = "すべて"
+                        selectCategoryName.value = it.categoryName
+
                         // 選択したカテゴリーIDを格納 絞込用
-                        // 0の場合はすべて
-                        viewModel.selectCategory = 0
+                        setId(it.id)
                     }
                 )
-                // 全カテゴリーをコンテキストメニューに表示
-                categories.forEach {
-                    DropdownMenuItem(
-                        text = { Text(text = it.categoryName) },
-                        onClick = {
-                            // コンテキストメニューを非表示
-                            expanded.value = false
-                            // 選択したカテゴリーIDを格納 表示用
-                            selectCategoryId.intValue = it.id
-                            // 選択したカテゴリー名を格納 表示用
-                            selectCategoryName.value = it.categoryName
-                            // 選択したカテゴリーIDを格納 絞込用
-                            viewModel.selectCategory = it.id
-                        }
-                    )
-                }
             }
         }
-    )
+    }
 }
 
 /**
  * 入力日付の並び替え
  *
- * @param viewModel: DisplaySwitchAreaViewModel
+ * @param sortFlg Boolean
+ * @param setSortFlag (Boolean) -> Unit
  *
  * @return Unit
  */
 @Composable
-private fun SelectDateSortBox(viewModel: ExpenditureItemListViewModel) {
+private fun SelectDateSortBox(
+    sortFlg: Boolean,
+    setSortFlag: (Boolean) -> Unit
+) {
 
     // コンテキストメニュー表示非表示の判定
     val expanded = remember { mutableStateOf(false) }
+
     // 表示順の判定Booleanで判定
-    val sortOfPayDate = remember { mutableStateOf(viewModel.sortOfPayDate) }
+    val sortOfPayDate = remember { mutableStateOf(sortFlg) }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { expanded.value = !expanded.value },
-        content = {
-            Text(
-                text = "日付${if (sortOfPayDate.value) "昇順" else "降順"}",
-                modifier = Modifier.padding(start = 10.dp),
-                color = Color(0xFF854A2A)
+        modifier = Modifier.clickable {
+
+            // コンテキストメニューの表示非表示切り替え
+            expanded.value = !expanded.value
+        }
+    ) {
+
+        // 選択した支出日の並び順
+        Text(
+            text = "日付${if (sortOfPayDate.value) "昇順" else "降順"}",
+            modifier = Modifier.padding(start = 10.dp),
+            color = Color(0xFF854A2A)
+        )
+
+        // カテゴリー選択アイコン
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "選択アイコン",
+            tint = Color(0xFF854A2A)
+        )
+
+        // ドロップダウンメニュー
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+
+                // コンテキストメニューを非表示
+                expanded.value = false
+            }
+        ) {
+
+            // 支出日項目降順にするアイテム
+            DropdownMenuItem(
+                text = { Text(text = "日付降順") },
+                onClick = {
+
+                    // コンテキストメニューを非表示
+                    expanded.value = false
+
+                    // 選択した表示順を格納 表示用
+                    sortOfPayDate.value = false
+
+                    // 選択した表示順を格納 並替え用
+                    setSortFlag(false)
+                }
             )
-            Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = "選択アイコン",
-                tint = Color(0xFF854A2A)
-            )
-            DropdownMenu(
-                expanded = expanded.value,
-                onDismissRequest = { expanded.value = false },
-                content = {
-                    DropdownMenuItem(
-                        text = { Text(text = "日付降順") },
-                        onClick = {
-                            // コンテキストメニューを非表示
-                            expanded.value = false
-                            // 選択した表示順を格納 表示用
-                            sortOfPayDate.value = false
-                            // 選択した表示順を格納 並替え用
-                            viewModel.sortOfPayDate = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "日付昇順") },
-                        onClick = {
-                            // コンテキストメニューを非表示
-                            expanded.value = false
-                            // 選択した表示順を格納 表示用
-                            sortOfPayDate.value = true
-                            // 選択した表示順を格納 並替え用
-                            viewModel.sortOfPayDate = true
-                        }
-                    )
+
+            // 支出日項目昇順にするアイテム
+            DropdownMenuItem(
+                text = { Text(text = "日付昇順") },
+                onClick = {
+
+                    // コンテキストメニューを非表示
+                    expanded.value = false
+
+                    // 選択した表示順を格納 表示用
+                    sortOfPayDate.value = true
+
+                    // 選択した表示順を格納 並替え用
+                    setSortFlag(true)
                 }
             )
         }
-    )
+    }
 }

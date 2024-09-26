@@ -42,7 +42,7 @@ class ExpenditureItemListViewModel @Inject constructor(
 
     // 表示期間選択ステータス
     var dateProperty by mutableStateOf(DateProperty.WEEK.name)
-    var selectCategory by mutableIntStateOf(0)
+    var selectCategoryId by mutableIntStateOf(0)
 
     // 支出日の並び順のステータス
     var sortOfPayDate by mutableStateOf(false)

@@ -55,17 +55,27 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/**
+ * 支出項目リスト　カテゴリー毎
+ *
+ * @param navController NavController
+ * @param viewModel ExpenditureItemListViewModel
+ *
+ * @return Unit
+ */
 @Composable
 fun CategorizeExpenditureItemListScreen(
     navController: NavController,
     viewModel: ExpenditureItemListViewModel = hiltViewModel()
 ) {
+
     // クエリ絞り込み用のフォーマット
     val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
     // ログ確認用に変数に格納
     val selectStartDate = df.format(viewModel.selectDate(SelectDate.START))
     val selectLastDate = df.format(viewModel.selectDate(SelectDate.LAST))
+
     // 日付が期待通りに絞り込まれているかログで確認
     Log.d(
         "支出項目 支出一覧、日付出力範囲",
@@ -89,11 +99,11 @@ fun CategorizeExpenditureItemListScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    /* ドロワー用、テンプレート */
+    // ドロワー用、テンプレート
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            /* ドロワー */
+            // ドロワー
             Drawer(
                 navController = navController,
                 drawerState = drawerState,
@@ -108,6 +118,7 @@ fun CategorizeExpenditureItemListScreen(
                     navigation = {
                         IconButton(
                             onClick = {
+
                                 // ドロワーの表示非表示の切り替え
                                 scope.launch {
                                     drawerState.apply {
@@ -127,14 +138,19 @@ fun CategorizeExpenditureItemListScreen(
                     actions = {
                         IconButton(
                             onClick = {
+
                                 // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
                                 val startDate = viewModel.setDateParameter(SelectDate.START)
+
                                 // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
                                 val lastDate = viewModel.setDateParameter(SelectDate.LAST)
+
                                 // パラメーターに選択機関をセット
                                 val dateProperty = viewModel.dateProperty
+
                                 // パラメーターにカテゴリーIDセット
                                 val categoryId = 0
+
                                 // 明細ページへ遷移
                                 navController.navigate(
                                     ScreenRoute.ExpenditureItemList.route +
@@ -155,6 +171,7 @@ fun CategorizeExpenditureItemListScreen(
             floatingActionButton = {
                 FAButton(
                     onClick = {
+
                         // 支出追加ページへ遷移
                         navController.navigate(ScreenRoute.AddExpenditureItem.route)
                     }
@@ -164,13 +181,14 @@ fun CategorizeExpenditureItemListScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             Column(modifier = Modifier.padding(it)) {
-                /* 表示切替えエリア */
+
+                // 表示切替えエリア
                 DisplaySwitchArea(
                     totalTax = totalTax,
                     viewModel = viewModel
                 )
 
-                /* 支出リスト */
+                // 支出リスト
                 ListItem(
                     listItem = listItem,
                     navController = navController,
@@ -210,14 +228,19 @@ private fun ListItem(
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 8.dp)
                     .clickable {
+
                         // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
                         val startDate = viewModel.setDateParameter(SelectDate.START)
+
                         // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
                         val lastDate = viewModel.setDateParameter(SelectDate.LAST)
+
                         // パラメーターに選択機関をセット
                         val dateProperty = viewModel.dateProperty
+
                         // パラメーターにカテゴリーIDセット
                         val categoryId = it.id
+
                         // 明細ページへ遷移
                         navController.navigate(
                             ScreenRoute.ExpenditureItemList.route +
@@ -234,12 +257,16 @@ private fun ListItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    /* カテゴリー */
+
+                    // カテゴリー
                     Text(text = it.categoryName, fontSize = 20.sp)
+
                     Column(horizontalAlignment = Alignment.End) {
-                        /* 金額 */
+
+                        // 金額
                         Text(text = "￥${it.price}", fontSize = 20.sp)
-                        /* 支出回数 */
+
+                        // 支出回数
                         Text(
                             text = "支出回数：${it.categoryId}回",
                             fontSize = 14.sp,
@@ -281,6 +308,7 @@ fun Drawer(
                 content = {
                     IconButton(
                         onClick = {
+
                             // ドロワーの表示非表示の切り替え
                             scope.launch {
                                 drawerState.apply {
@@ -305,11 +333,13 @@ fun Drawer(
                 content = {
                     TextButton(
                         onClick = {
+
                             // ドロワー非表示
                             // 遷移後も表示状態になる為、非表示にする処理を入れる
                             scope.launch {
                                 drawerState.apply { close() }
                             }
+
                             // カテゴリー設定へ遷移
                             navController.navigate(ScreenRoute.SettingCategory.route)
                         },

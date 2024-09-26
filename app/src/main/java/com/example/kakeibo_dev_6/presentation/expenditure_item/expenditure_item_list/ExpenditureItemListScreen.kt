@@ -70,7 +70,7 @@ fun ExpenditureItemListScreen(
         // パラメーターから受け取った選択期間をViewModelに保存
         dateProperty?.let { viewModel.dateProperty = dateProperty }
         // パラメーターから受け取ったカテゴリーIDをViewModelに保存
-        categoryId?.let { viewModel.selectCategory = categoryId.toInt() }
+        categoryId?.let { viewModel.selectCategoryId = categoryId.toInt() }
 
         // 選択期間がカスタムの場合はパラメーターから受け取った開始日、最終日をViewModelに保存
         if (dateProperty != null && dateProperty == DateProperty.CUSTOM.name) {
@@ -101,7 +101,7 @@ fun ExpenditureItemListScreen(
         startDate = selectStartDate,
         endDate = selectLastDate,
         sortOfPayDate = viewModel.sortOfPayDate,
-        categoryId = viewModel.selectCategory
+        categoryId = viewModel.selectCategoryId
     ).collectAsState(initial = emptyList())
 
     /** DB */
@@ -110,7 +110,7 @@ fun ExpenditureItemListScreen(
         startDate = selectStartDate,
         endDate = selectLastDate,
         sortOfPayDate = viewModel.sortOfPayDate,
-        categoryId = viewModel.selectCategory
+        categoryId = viewModel.selectCategoryId
     ).collectAsState(initial = emptyList())
 
     // 金額合計
