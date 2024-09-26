@@ -60,6 +60,7 @@ class ExpenditureItemListViewModel @Inject constructor(
 
     // カスタム日選択時の終了日
     var customOfEndDate by mutableStateOf(Date())
+
     private fun defaultCustomOfStartDate(): Date {
         val firstDayOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
         val dateStr =
@@ -93,28 +94,51 @@ class ExpenditureItemListViewModel @Inject constructor(
                 return Date.from(monthOfDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
 
-            DateProperty.CUSTOM.name -> return customOfStartDate
+            DateProperty.CUSTOM.name -> {
+                return when (selectDate) {
+                    SelectDate.START -> customOfStartDate
+                    SelectDate.LAST -> customOfEndDate
+                }
+            }
         }
         return Date()
     }
 
+    /**
+     * カテゴライズした支出項目リスト
+     *
+     * @param startDate String
+     * @param endDate String
+     *
+     * @return Flow<List<CategorizeExpenditureItem>>
+     */
     fun categorizeExpenditureItem(
         startDate: String,
         endDate: String
-    ): Flow<List<CategorizeExpenditureItem>> {
-        return categorizeExpenditureItemDao.categorizeExpenditureItem(
+    ): Flow<List<CategorizeExpenditureItem>> =
+        categorizeExpenditureItemDao.categorizeExpenditureItem(
             startDate = startDate,
             endDate = endDate
         ).distinctUntilChanged()
-    }
 
-    fun gropePayDate(
+
+    /**
+     * 支出日でグループ化した支出項目リスト
+     *
+     * @param startDate String
+     * @param endDate String
+     * @param categoryId Int
+     * @param sortOfPayDate Boolean
+     *
+     * @return Flow<List<ExpenditureItem>>
+     */
+    fun expenditureItemListGropeByPayDate(
         startDate: String,
         endDate: String,
         categoryId: Int,
-        sort: Boolean
-    ): Flow<List<ExpenditureItem>> {
-        return if (sort) {
+        sortOfPayDate: Boolean
+    ): Flow<List<ExpenditureItem>> =
+        if (sortOfPayDate) {
             expenditureItemDao.gropePayDateAsc(
                 startDate = startDate,
                 endDate = endDate,
@@ -127,24 +151,33 @@ class ExpenditureItemListViewModel @Inject constructor(
                 categoryId = categoryId
             ).distinctUntilChanged()
         }
-    }
 
+    /**
+     * 支出項目リスト
+     *
+     * @param startDate String
+     * @param endDate String
+     * @param categoryId Int
+     * @param sortOfPayDate Boolean
+     *
+     * @return Flow<List<ExpenditureItemJoinCategory>>
+     */
     fun expenditureItemList(
-        firstDay: String,
+        startDate: String,
         endDate: String,
         categoryId: Int,
-        sort: Boolean
+        sortOfPayDate: Boolean
     ): Flow<List<ExpenditureItemJoinCategory>> {
-        return if (sort) {
+        return if (sortOfPayDate) {
             expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderAsc(
-                startDate = firstDay,
+                startDate = startDate,
                 endDate = endDate,
                 categoryId = categoryId
             )
                 .distinctUntilChanged()
         } else {
             expenditureItemJoinCategoryDao.loadAllExpenditureItemOrderDesc(
-                startDate = firstDay,
+                startDate = startDate,
                 endDate = endDate,
                 categoryId = categoryId
             )

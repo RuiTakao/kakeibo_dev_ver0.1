@@ -97,19 +97,19 @@ fun ExpenditureItemListScreen(
 
     /** DB */
     // 支出の登録されている日付を取得
-    val gropePayDate by viewModel.gropePayDate(
+    val expenditureItemListGropeByPayDate by viewModel.expenditureItemListGropeByPayDate(
         startDate = selectStartDate,
         endDate = selectLastDate,
-        sort = viewModel.sortOfPayDate,
+        sortOfPayDate = viewModel.sortOfPayDate,
         categoryId = viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 
     /** DB */
     // 支出一覧をカテゴリーと結合し抽出
     val expenditureItemList by viewModel.expenditureItemList(
-        firstDay = selectStartDate,
+        startDate = selectStartDate,
         endDate = selectLastDate,
-        sort = viewModel.sortOfPayDate,
+        sortOfPayDate = viewModel.sortOfPayDate,
         categoryId = viewModel.selectCategory
     ).collectAsState(initial = emptyList())
 
@@ -146,7 +146,7 @@ fun ExpenditureItemListScreen(
 
             /* 支出リスト */
             ItemList(
-                parentItem = gropePayDate,
+                parentItem = expenditureItemListGropeByPayDate,
                 childItemList = expenditureItemList,
                 navController = navController
             )
