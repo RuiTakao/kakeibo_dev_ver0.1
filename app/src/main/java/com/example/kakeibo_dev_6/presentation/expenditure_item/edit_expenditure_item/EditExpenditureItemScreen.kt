@@ -510,11 +510,11 @@ fun EditExpenditureItemScreen(
                 )
             }
 
-            // 内容
+            // 支出内容
 
             // 入力項目名
             Text(
-                text = "内容",
+                text = "支出内容",
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .padding(bottom = 4.dp),
