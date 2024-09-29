@@ -11,11 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -124,7 +126,7 @@ fun ExpenditureItemListScreen(
             MainTopBar(title = "支出項目 明細", navigation = {
                 IconButton(onClick = { navController.popBackStack() }, content = {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "戻る",
                         tint = Color(0xFF854A2A)
                     )
@@ -253,12 +255,17 @@ private fun ChildItemList(
             content = {
                 Column(
                     content = {
+
                         // 支出内容
                         Text(
                             text = it.content,
                             fontSize = 20.sp,
-                            lineHeight = 0.sp
+                            lineHeight = 0.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.width(200.dp)
                         )
+
                         // カテゴリー
                         Text(
                             text = it.categoryName,
@@ -268,6 +275,7 @@ private fun ChildItemList(
                         )
                     }
                 )
+
                 // 金額
                 Text(text = "￥${it.price}", fontSize = 20.sp)
             }

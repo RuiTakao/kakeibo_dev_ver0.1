@@ -13,10 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
@@ -405,7 +405,7 @@ private fun PrevButton(enabled: Boolean, onClick: () -> Unit) {
         enabled = enabled,
         content = {
             Icon(
-                imageVector = Icons.Default.KeyboardArrowLeft,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = null,
                 // クリック不可の場合は透過
                 tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
@@ -431,7 +431,7 @@ private fun NextButton(enabled: Boolean, onClick: () -> Unit) {
         enabled = enabled,
         content = {
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 // クリック不可の場合は透過
                 tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
