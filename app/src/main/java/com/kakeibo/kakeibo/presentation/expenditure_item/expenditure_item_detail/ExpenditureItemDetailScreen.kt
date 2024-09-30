@@ -36,9 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo.common.Colors
+import com.kakeibo.kakeibo.common.utility.toDate
 import com.kakeibo.kakeibo.presentation.ScreenRoute
 import com.kakeibo.kakeibo.presentation.component.SubTopBar
-import com.kakeibo.kakeibo.common.utility.toDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -202,7 +202,7 @@ fun ExpenditureItemDetailScreen(
 
                 // 詳細項目名
                 Text(
-                    text = "内容",
+                    text = "支出内容",
                     color = Color.Gray,
                     modifier = Modifier
                         .padding(top = 16.dp)
