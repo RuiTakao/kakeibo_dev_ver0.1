@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.kakeibo_dev_6"
+    namespace = "com.kakeibo.kakeibo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.kakeibo_dev_6"
+        applicationId = "com.kakeibo.kakeibo"
         minSdk = 31
         targetSdk = 34
         versionCode = 1
