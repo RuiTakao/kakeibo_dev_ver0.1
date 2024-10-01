@@ -251,9 +251,29 @@ class ExpenditureItemListViewModel @Inject constructor(
     }
 
     /**
+     * Prevボタンのクリック不可判定
+     * 二か月前の日付は閲覧不可
+     *
+     * @return Boolean
+     */
+    fun isPrevButtonEnabled(): Boolean {
+
+        // 比較用に基準日をLocalDate型にしておく
+        val standardDate =
+            standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+        // カスタム日が選択された、または二か月前の日付は不可
+        return if (dateProperty == DateProperty.CUSTOM.name) {
+            false
+        } else {
+            LocalDate.now().minusMonths(1).isBefore(standardDate)
+        }
+    }
+
+    /**
      * Nextボタンのクリック不可判定
      *
-     * @return Unit
+     * @return Boolean
      */
     fun isNextButtonEnabled(): Boolean {
 

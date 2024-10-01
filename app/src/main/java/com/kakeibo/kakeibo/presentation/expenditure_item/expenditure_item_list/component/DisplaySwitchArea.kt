@@ -50,6 +50,8 @@ import com.kakeibo.kakeibo.presentation.expenditure_item.expenditure_item_list.E
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
 import java.util.Date
 
 /**
@@ -169,7 +171,7 @@ fun DisplaySwitchArea(
 
             // 前へボタン（過去に移動）
             PrevButton(
-                enabled = viewModel.dateProperty != DateProperty.CUSTOM.name,
+                enabled = viewModel.isPrevButtonEnabled(),
                 onClick = {
 
                     // 過去の日付に移動する処理
@@ -371,9 +373,8 @@ private fun ChangeDurationDateCustom(
                     dateFormatter = DatePickerFormatter(selectedDateSkeleton = "Md"),
                     dateValidator = {
 
-                        // 未来日の選択を不可にするためのバリデーション
-                        !Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                            .toLocalDate().isAfter(LocalDate.now())
+                        // 未来日と二か月前の月の選択を不可にするためのバリデーション
+                        dateRangePickerDateValidator(it)
                     }
                 )
 
@@ -386,6 +387,33 @@ private fun ChangeDurationDateCustom(
             }
         }
     }
+}
+
+/**
+ * 未来日と二か月前の月の選択を不可にするためのバリデーション
+ *
+ * @param selectDates Long 選択できる日にち
+ *
+ * @return Boolean
+ */
+private fun dateRangePickerDateValidator(selectDates: Long): Boolean {
+
+    // 先月の月の初めを求める変数
+    val calendar = Calendar.getInstance()
+    // 今月から減算する
+    calendar.add(Calendar.MONTH, -1)
+    // 先月の日付
+    val prevMonth = calendar.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    // 先月の月の初め
+    val prevFirstDayOfMonth = prevMonth.with(TemporalAdjusters.firstDayOfMonth())
+
+    // selectDatesをLocalDateに変換
+    val selectDatesToLocalDate =
+        Instant.ofEpochMilli(selectDates).atZone(ZoneId.systemDefault()).toLocalDate()
+
+    // Bool値を返す
+    return !selectDatesToLocalDate.isAfter(LocalDate.now()) &&
+            !selectDatesToLocalDate.isBefore(prevFirstDayOfMonth)
 }
 
 /**
