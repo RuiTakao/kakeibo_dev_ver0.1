@@ -401,7 +401,7 @@ private fun dateRangePickerDateValidator(selectDates: Long): Boolean {
     // 先月の月の初めを求める変数
     val calendar = Calendar.getInstance()
     // 今月から減算する
-    calendar.add(Calendar.MONTH, -1)
+    calendar.add(Calendar.MONTH, -2)
     // 先月の日付
     val prevMonth = calendar.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
     // 先月の月の初め

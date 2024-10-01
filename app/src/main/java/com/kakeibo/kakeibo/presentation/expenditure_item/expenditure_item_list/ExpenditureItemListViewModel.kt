@@ -266,7 +266,7 @@ class ExpenditureItemListViewModel @Inject constructor(
         return if (dateProperty == DateProperty.CUSTOM.name) {
             false
         } else {
-            LocalDate.now().minusMonths(1).isBefore(standardDate)
+            LocalDate.now().minusMonths(2).isBefore(standardDate)
         }
     }
 
