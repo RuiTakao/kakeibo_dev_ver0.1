@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.kakeibo_dev_6"
+    namespace = "com.kakeibo.kakeibo_dev_6"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.kakeibo_dev_6"
+        applicationId = "com.kakeibo.kakeibo_dev_6"
         minSdk = 31
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
