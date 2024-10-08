@@ -165,9 +165,11 @@ fun EditCategoryScreen(
                 onValueChange = {
 
                     // 入力テキストをViewModelに保存
-                    viewModel.name = it
+                    // 文字数10文字まで
+                    if (it.length <= 10) viewModel.name = it
                 },
                 label = { Text(text = "カテゴリー名を入力してください") },
+                singleLine = true, // 改行禁止
                 modifier = Modifier
                     .padding(8.dp)
                     .padding(top = 16.dp)
@@ -196,7 +198,7 @@ fun EditCategoryScreen(
                 val isCheckUsedCategory = categoryUsedInExpenditureItemList?.size ?: 0
 
                 // その他のカテゴリーのIDか判定
-                val isOtherCategory = id == 1
+                val isOtherCategory = id == 7
 
                 // カテゴリーが削除可能か判定
                 val isCheckUnDeletableCategory = isCheckUsedCategory > 0 || isOtherCategory

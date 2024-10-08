@@ -45,11 +45,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
 import com.kakeibo.kakeibo_dev_6.common.enum.SelectDate
+import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
 import com.kakeibo.kakeibo_dev_6.presentation.component.FAButton
 import com.kakeibo.kakeibo_dev_6.presentation.component.MainTopBar
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -264,7 +265,7 @@ private fun ListItem(
                     Column(horizontalAlignment = Alignment.End) {
 
                         // 金額
-                        Text(text = "￥${it.price}", fontSize = 20.sp)
+                        Text(text = "￥${priceFormat(it.price)}", fontSize = 20.sp)
 
                         // 支出回数
                         Text(
@@ -343,13 +344,16 @@ fun Drawer(
                             // カテゴリー設定へ遷移
                             navController.navigate(ScreenRoute.SettingCategory.route)
                         },
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = 8.dp),
                         content = {
                             Text(
                                 text = "カテゴリ設定",
                                 fontSize = 16.sp,
                                 color = Color(0xFFEEDCB3),
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
                             )
                         }
                     )

@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
 import com.kakeibo.kakeibo_dev_6.common.enum.SwitchDate
+import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.domain.model.Category
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
 import java.time.Instant
@@ -192,7 +193,7 @@ fun DisplaySwitchArea(
                 // 合計金額（表示額合計）
                 // 三行目のレイアウト
                 Text(
-                    text = "使用額 ￥${totalTax}",
+                    text = "使用額 ￥${priceFormat(totalTax.toString())}",
                     fontSize = 16.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )

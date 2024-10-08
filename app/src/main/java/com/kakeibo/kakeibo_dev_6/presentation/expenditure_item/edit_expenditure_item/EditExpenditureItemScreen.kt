@@ -107,7 +107,8 @@ fun EditExpenditureItemScreen(
                         DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     )
 
-                    viewModel.payDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
+                    viewModel.payDate =
+                        localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
 
                     // 金額
                     viewModel.price = it.price
@@ -163,7 +164,8 @@ fun EditExpenditureItemScreen(
                                     DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                 )
 
-                                viewModel.payDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                viewModel.payDate =
+                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
                                 Log.d("保存時のpayDate確認", viewModel.payDate)
                                 // idがnullかnotNullで追加処理、編集処理の判定をする
@@ -337,10 +339,16 @@ fun EditExpenditureItemScreen(
             // テキストフィールド 数値のみ
             TextField(
                 value = viewModel.price,
-                onValueChange = {
-                    viewModel.price = it
+                onValueChange = { inputText ->
+
+                    // 半角英数値または12文字以内でしか入力できないようにする
+                    if (
+                        inputText.filter { it in '0'..'9' }.length == inputText.length &&
+                        inputText.length < 13
+                    ) viewModel.price = inputText
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true, // 改行禁止
                 modifier = Modifier
                     .width(320.dp)
             )

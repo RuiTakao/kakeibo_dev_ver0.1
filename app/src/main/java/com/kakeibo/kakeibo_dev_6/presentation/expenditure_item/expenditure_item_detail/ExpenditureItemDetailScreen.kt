@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
+import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
@@ -170,7 +171,7 @@ fun ExpenditureItemDetailScreen(
 
                 // 詳細項目
                 Text(
-                    text = "￥${viewModel.expenditureItem?.price ?: 0}",
+                    text = "￥${priceFormat(viewModel.expenditureItem?.price ?: "0")}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

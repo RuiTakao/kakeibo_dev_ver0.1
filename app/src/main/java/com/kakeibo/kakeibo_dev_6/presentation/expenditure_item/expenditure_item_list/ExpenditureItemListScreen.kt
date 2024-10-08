@@ -36,13 +36,14 @@ import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
 import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
 import com.kakeibo.kakeibo_dev_6.common.enum.SelectDate
+import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
+import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
 import com.kakeibo.kakeibo_dev_6.presentation.component.FAButton
 import com.kakeibo.kakeibo_dev_6.presentation.component.MainTopBar
-import com.kakeibo.kakeibo_dev_6.common.utility.toDate
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.DisplaySwitchArea
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -277,7 +278,7 @@ private fun ChildItemList(
                 )
 
                 // 金額
-                Text(text = "￥${it.price}", fontSize = 20.sp)
+                Text(text = "￥${priceFormat(it.price)}", fontSize = 20.sp)
             }
         )
     }

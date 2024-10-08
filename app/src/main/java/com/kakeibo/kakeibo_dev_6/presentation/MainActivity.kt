@@ -198,6 +198,7 @@ class MainActivity : ComponentActivity() {
  */
 private fun defaultCategory(viewModel: EditCategoryViewModel) {
 
+    // その他のidは7で固定されていて、7のidは削除不可にしている為、ここのカテゴリーの並び順は変更しない
     viewModel.name = "🏠 生活費"
     viewModel.order = 7
     viewModel.createCategory()
@@ -222,6 +223,10 @@ private fun defaultCategory(viewModel: EditCategoryViewModel) {
     viewModel.order = 2
     viewModel.createCategory()
 
+    /**-----------------------------------------------------------------
+     その他のidは7で固定する為、ここは動かさない
+     初期のカテゴリーを追加する場合はこのカテゴリーの後に追加していく
+     ------------------------------------------------------------------*/
     viewModel.name = "❓ その他"
     viewModel.order = 1
     viewModel.createCategory()
