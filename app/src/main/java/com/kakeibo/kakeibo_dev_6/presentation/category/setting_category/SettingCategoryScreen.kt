@@ -201,12 +201,13 @@ fun SettingCategoryScreen(
                             // 削除ダイアログ表示ボタンの表示非表示判定フラグ
                             var notDeleteCategory = false
                             // 支出項目で使用されているまたはその他は削除不可
-                            expenditureItemList.forEach { expenditureItem ->
-                                if (
-                                    expenditureItem.categoryId == it.id.toString() ||
-                                    it.id == 7
-                                ) {
-                                    notDeleteCategory = true
+                            if (it.id == 7) {
+                                notDeleteCategory = true
+                            } else {
+                                expenditureItemList.forEach { expenditureItem ->
+                                    if (expenditureItem.categoryId == it.id.toString()) {
+                                        notDeleteCategory = true
+                                    }
                                 }
                             }
 
