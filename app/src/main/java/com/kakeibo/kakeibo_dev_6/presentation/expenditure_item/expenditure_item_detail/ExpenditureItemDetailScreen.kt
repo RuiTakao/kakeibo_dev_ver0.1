@@ -211,8 +211,9 @@ fun ExpenditureItemDetailScreen(
                 )
 
                 // 詳細項目
+                val content = viewModel.expenditureItem?.content ?: ""
                 Text(
-                    text = viewModel.expenditureItem?.content ?: "",
+                    text = if (content != "") content else "？",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

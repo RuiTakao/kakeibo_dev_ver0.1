@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kakeibo.kakeibo_dev_6.common.utility.checkInt
+import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.kakeibo.kakeibo_dev_6.domain.repository.CategoryDao
 import com.kakeibo.kakeibo_dev_6.domain.repository.ExpenditureItemDao
-import com.kakeibo.kakeibo_dev_6.common.utility.checkInt
-import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -127,10 +127,7 @@ class EditExpenditureItemViewModel @Inject constructor(
 
         // 内容のバリデーション
         inputValidateContentText =
-            if (content == "") {
-                validCount++
-                "内容が未入力です。"
-            } else if (content.length > 50) {
+            if (content.length > 50) {
                 validCount++
                 "内容は50文字以内で入力してください。"
             } else ""

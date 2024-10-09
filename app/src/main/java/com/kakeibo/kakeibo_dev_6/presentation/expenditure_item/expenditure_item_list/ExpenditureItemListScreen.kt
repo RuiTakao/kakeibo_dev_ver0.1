@@ -259,7 +259,7 @@ private fun ChildItemList(
 
                         // 支出内容
                         Text(
-                            text = it.content,
+                            text = if (it.content != "") it.content else "？",
                             fontSize = 20.sp,
                             lineHeight = 0.sp,
                             maxLines = 1,
