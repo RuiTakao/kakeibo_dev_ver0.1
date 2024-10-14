@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
 import com.kakeibo.kakeibo_dev_6.common.enum.SelectDate
 import com.kakeibo.kakeibo_dev_6.common.enum.SwitchDate
+import com.kakeibo.kakeibo_dev_6.common.utility.is_registered_user.isRegisteredUserReferenceDatePrevButton
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.domain.model.CategorizeExpenditureItem
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItem
@@ -266,7 +267,7 @@ class ExpenditureItemListViewModel @Inject constructor(
         return if (dateProperty == DateProperty.CUSTOM.name) {
             false
         } else {
-            LocalDate.now().minusMonths(2).isBefore(standardDate)
+            isRegisteredUserReferenceDatePrevButton(standardDate)
         }
     }
 

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
+import com.kakeibo.kakeibo_dev_6.common.utility.is_registered_user.isRegisteredUserReferenceEditDate
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
@@ -306,10 +307,9 @@ fun EditExpenditureItemScreen(
                             showModeToggle = false,
                             dateValidator = {
 
-                                // 未来日付を選択不可にするバリデーション
-                                !Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                                    .toLocalDate()
-                                    .isAfter(LocalDate.now())
+                                // 未来日と二か月前の月の選択を不可にするためのバリデーション
+                                // 課金ユーザーは無制限
+                                isRegisteredUserReferenceEditDate(it)
                             }
                         )
                     }
@@ -547,7 +547,6 @@ fun EditExpenditureItemScreen(
                     fontSize = 14.sp
                 )
             }
-
         }
     }
 }

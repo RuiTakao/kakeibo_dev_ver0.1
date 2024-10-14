@@ -45,14 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
 import com.kakeibo.kakeibo_dev_6.common.enum.SwitchDate
+import com.kakeibo.kakeibo_dev_6.common.utility.is_registered_user.isRegisteredUserReferenceCustomDate
 import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.domain.model.Category
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.TemporalAdjusters
-import java.util.Calendar
 import java.util.Date
 
 /**
@@ -375,7 +371,8 @@ private fun ChangeDurationDateCustom(
                     dateValidator = {
 
                         // 未来日と二か月前の月の選択を不可にするためのバリデーション
-                        dateRangePickerDateValidator(it)
+                        // 課金ユーザーは無制限
+                        isRegisteredUserReferenceCustomDate(it)
                     }
                 )
 
@@ -388,33 +385,6 @@ private fun ChangeDurationDateCustom(
             }
         }
     }
-}
-
-/**
- * 未来日と二か月前の月の選択を不可にするためのバリデーション
- *
- * @param selectDates Long 選択できる日にち
- *
- * @return Boolean
- */
-private fun dateRangePickerDateValidator(selectDates: Long): Boolean {
-
-    // 先月の月の初めを求める変数
-    val calendar = Calendar.getInstance()
-    // 今月から減算する
-    calendar.add(Calendar.MONTH, -2)
-    // 先月の日付
-    val prevMonth = calendar.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-    // 先月の月の初め
-    val prevFirstDayOfMonth = prevMonth.with(TemporalAdjusters.firstDayOfMonth())
-
-    // selectDatesをLocalDateに変換
-    val selectDatesToLocalDate =
-        Instant.ofEpochMilli(selectDates).atZone(ZoneId.systemDefault()).toLocalDate()
-
-    // Bool値を返す
-    return !selectDatesToLocalDate.isAfter(LocalDate.now()) &&
-            !selectDatesToLocalDate.isBefore(prevFirstDayOfMonth)
 }
 
 /**
