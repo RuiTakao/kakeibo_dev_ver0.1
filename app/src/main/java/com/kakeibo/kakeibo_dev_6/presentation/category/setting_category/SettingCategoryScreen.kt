@@ -2,7 +2,6 @@ package com.kakeibo.kakeibo_dev_6.presentation.category.setting_category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +13,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.AddBox
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
+import com.kakeibo.kakeibo_dev_6.presentation.component.DeleteDialog
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
 import kotlinx.coroutines.launch
 
@@ -51,7 +48,6 @@ import kotlinx.coroutines.launch
  *
  * @return Unit
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingCategoryScreen(
     navController: NavController,
@@ -143,7 +139,7 @@ fun SettingCategoryScreen(
                     var showMenu by remember { mutableStateOf(false) }
 
                     // 削除ダイアログ表示非表示フラグ
-                    var isShowDeleteConfirmDialog by remember { mutableStateOf(false) }
+                    val isShowDeleteConfirmDialog = remember { mutableStateOf(false) }
 
                     // コンテキストメニュー
                     IconButton(
@@ -217,7 +213,7 @@ fun SettingCategoryScreen(
                                     onClick = {
 
                                         // カテゴリー削除確認ダイアログ表示
-                                        isShowDeleteConfirmDialog = true
+                                        isShowDeleteConfirmDialog.value = true
 
                                         // 選択したカテゴリーを取得
                                         viewModel.category = it
@@ -228,64 +224,20 @@ fun SettingCategoryScreen(
                             }
 
                             // カテゴリー削除確認ダイアログ
-                            if (isShowDeleteConfirmDialog) {
-                                AlertDialog(
-                                    onDismissRequest = {
-                                        isShowDeleteConfirmDialog = !isShowDeleteConfirmDialog
-                                    }
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .background(
-                                                color = MaterialTheme.colorScheme.background,
-                                                shape = MaterialTheme.shapes.extraLarge
-                                            ),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
+                            if (isShowDeleteConfirmDialog.value) {
 
-                                        // 削除モーダルタイトル
-                                        Text(
-                                            modifier = Modifier.padding(top = 16.dp),
-                                            // 画面表示時に取得したカテゴリー名を表示したいためviewModel.editingCategoryを使用
-                                            text = "${viewModel.category?.categoryName}を削除しますか？"
-                                        )
+                                DeleteDialog(
+                                    isShowDialog = isShowDeleteConfirmDialog,
+                                    title = "${viewModel.category?.categoryName}を削除しますか？",
+                                    onClick = {
+                                        // 削除
 
-                                        Row(
-                                            modifier = Modifier.padding(top = 8.dp),
-                                            horizontalArrangement = Arrangement.End
-                                        ) {
-
-                                            // キャンセルボタン
-                                            TextButton(
-                                                onClick = {
-
-                                                    // 削除処理せずに削除モーダル閉じる
-                                                    isShowDeleteConfirmDialog = false
-
-                                                    // コンテキストメニュー非表示
-                                                    showMenu = false
-
-                                                },
-                                                content = { Text(text = "キャンセル") }
-                                            )
-
-                                            // 削除ボタン
-                                            TextButton(
-                                                onClick = {
-                                                    // 削除
-
-                                                    // 削除処理
-                                                    viewModel.category?.let {
-                                                        viewModel.deleteCategory(it)
-                                                    }
-                                                },
-                                                content = {
-                                                    Text(text = "削除", color = Color.Red)
-                                                }
-                                            )
+                                        // 削除処理
+                                        viewModel.category?.let {
+                                            viewModel.deleteCategory(it)
                                         }
                                     }
-                                }
+                                )
                             }
                         }
                     }

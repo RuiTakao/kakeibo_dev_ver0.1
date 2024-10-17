@@ -1,7 +1,5 @@
 package com.kakeibo.kakeibo_dev_6.presentation.category.edit_category
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,14 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.Colors
+import com.kakeibo.kakeibo_dev_6.presentation.component.DeleteDialog
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemViewModel
 
@@ -54,7 +49,6 @@ import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_
  *
  * @return Unit
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategoryScreen(
     navController: NavController,
@@ -275,56 +269,19 @@ fun EditCategoryScreen(
 
                 // 削除ダイアログ
                 if (isShowDialog.value) {
-                    AlertDialog(onDismissRequest = { isShowDialog.value = !isShowDialog.value }) {
-                        Column(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.background,
-                                    shape = MaterialTheme.shapes.extraLarge
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                    DeleteDialog(
+                        isShowDialog = isShowDialog,
+                        title = "${viewModel.editingCategory!!.categoryName}を削除しますか？",
+                        onClick = {
+                            // 削除
 
-                            // 削除モーダルタイトル
-                            Text(
-                                modifier = Modifier.padding(top = 16.dp),
-                                // 画面表示時に取得したカテゴリー名を表示したいためviewModel.editingCategoryを使用
-                                text = "${viewModel.editingCategory!!.categoryName}を削除しますか？"
-                            )
+                            // 前の画面に戻る
+                            navController.popBackStack()
 
-                            Row(
-                                modifier = Modifier.padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-
-                                // キャンセルボタン
-                                TextButton(
-                                    onClick = {
-
-                                        // 削除処理せずに削除モーダル閉じる
-                                        isShowDialog.value = false
-                                    },
-                                    content = { Text(text = "キャンセル") }
-                                )
-
-                                // 削除ボタン
-                                TextButton(
-                                    onClick = {
-                                        // 削除
-
-                                        // 前の画面に戻る
-                                        navController.popBackStack()
-
-                                        // 削除処理
-                                        viewModel.deleteCategory(viewModel.editingCategory!!)
-                                    },
-                                    content = {
-                                        Text(text = "削除", color = Color.Red)
-                                    }
-                                )
-                            }
+                            // 削除処理
+                            viewModel.deleteCategory(viewModel.editingCategory!!)
                         }
-                    }
+                    )
                 }
             }
         }

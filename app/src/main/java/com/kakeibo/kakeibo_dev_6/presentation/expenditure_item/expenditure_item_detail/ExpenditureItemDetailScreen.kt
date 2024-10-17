@@ -1,9 +1,7 @@
 package com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,21 +10,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,6 +32,7 @@ import com.kakeibo.kakeibo_dev_6.common.Colors
 import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
+import com.kakeibo.kakeibo_dev_6.presentation.component.DeleteDialog
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,7 +47,6 @@ import java.util.Locale
  *
  * @return Unit
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenditureItemDetailScreen(
     navController: NavController,
@@ -243,63 +236,18 @@ fun ExpenditureItemDetailScreen(
             if (isShowDialog.value) {
 
                 // 削除ダイアログ
-                AlertDialog(
-                    onDismissRequest = {
-                        isShowDialog.value = !isShowDialog.value
-                    }
-                ) {
-
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = MaterialTheme.shapes.extraLarge
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        // 削除ダイアログタイトル
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 16.dp),
-                            text = "支出項目を削除しますか？"
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-
-                            // キャンセルボタン
-                            TextButton(
-                                onClick = {
-                                    isShowDialog.value = false
-                                },
-                                content = {
-                                    Text(text = "キャンセル")
-                                }
-                            )
-
-                            // 削除ボタン
-                            TextButton(
-                                onClick = {
-
-                                    // 削除処理
-                                    viewModel.expenditureItem?.let {
-                                        viewModel.deleteExpenditureItem(it)
-                                    }
-
-                                    // 前の画面に戻る
-                                    navController.popBackStack()
-                                },
-                                content = {
-                                    Text(text = "削除", color = Color.Red)
-                                }
-                            )
+                DeleteDialog(isShowDialog = isShowDialog,
+                    title = "支出項目を削除しますか？",
+                    onClick = {
+                        // 削除処理
+                        viewModel.expenditureItem?.let {
+                            viewModel.deleteExpenditureItem(it)
                         }
+
+                        // 前の画面に戻る
+                        navController.popBackStack()
                     }
-                }
+                )
             }
         }
     }
