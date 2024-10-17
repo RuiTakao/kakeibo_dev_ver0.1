@@ -26,9 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,6 +69,19 @@ fun EditCategoryScreen(
     // カテゴリーの最前列取得 カテゴリーの並び順昇順で取得する
     val maxOrderCategory by viewModel.maxOrderCategory.collectAsState(initial = null)
 
+    // フォーカスを当てる変数
+    val focusRequester = remember { FocusRequester() }
+
+    // フォーカスを末尾に配置する為の変数
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = "",
+                selection = TextRange(0)
+            )
+        )
+    }
+
     // idがnullかnotNullで追加画面、編集画面の判定をする
     if (id != null) {
         // 編集
@@ -74,8 +92,11 @@ fun EditCategoryScreen(
         LaunchedEffect(category) {
             // nullエラー回避処理
             category?.let {
+
                 // カテゴリー名
-                viewModel.name = it.categoryName
+                // TextFieldValue型で扱う
+                textFieldValue = TextFieldValue(text = it.categoryName, selection = TextRange(it.categoryName.length))
+                viewModel.name = textFieldValue.text
 
                 // カテゴリーの入力内容保持
                 viewModel.editingCategory = it
@@ -161,12 +182,12 @@ fun EditCategoryScreen(
 
             // カテゴリー名入力フィールド
             TextField(
-                value = viewModel.name,
+                value = textFieldValue,
                 onValueChange = {
 
                     // 入力テキストをViewModelに保存
                     // 文字数10文字まで
-                    if (it.length <= 10) viewModel.name = it
+                    if (it.text.length <= 10) textFieldValue = it
                 },
                 label = { Text(text = "カテゴリー名を入力してください") },
                 singleLine = true, // 改行禁止
@@ -174,7 +195,13 @@ fun EditCategoryScreen(
                     .padding(8.dp)
                     .padding(top = 16.dp)
                     .fillMaxWidth()
+                    .focusRequester(focusRequester)
             )
+
+            // フォーカスを当てる
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
 
             // バリデーションテキスト
             if (viewModel.inputValidateCategoryText != "") {
