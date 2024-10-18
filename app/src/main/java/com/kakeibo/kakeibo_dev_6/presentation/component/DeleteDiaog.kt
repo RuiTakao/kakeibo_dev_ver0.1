@@ -21,6 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * 削除ダイアログ
+ *
+ * @param isShowDialog MutableState<Boolean> ダイアログ表示非表示の切り替え
+ * @param title String ダイアログのタイトル
+ * @param onClick () -> Unit 削除処理
+ *
+ * @return Unit
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteDialog(isShowDialog: MutableState<Boolean>, title: String, onClick: () -> Unit) {
