@@ -137,6 +137,15 @@ class EditExpenditureItemViewModel @Inject constructor(
         return validCount == 0
     }
 
+    /**
+     * 登録ボタンのクリック可不可の処理
+     *
+     * @return Boolean
+     */
+    fun editButtonEnabled (): Boolean {
+       return !(payDate == "" || price == "" || categoryId == "")
+    }
+
     // 支出項目登録、編集中にカテゴリーの追加があったか判定
     var addCategoryFlg by mutableStateOf(false)
     // 支出項目登録、編集中に追加したカテゴリーの並び順

@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -170,45 +171,55 @@ fun EditExpenditureItemScreen(
                     /*------------------
                      * ABテスト、登録ボタン
                      ------------------*/
-//                    IconButton(
-//                        onClick = {
-//                            // 登録処理
-//
-//                            // バリデーション判定
-//                            if (viewModel.validate()) {
-//                                // バリデーションエラー無し
-//
-//                                // 前の画面に戻る
-//                                navController.popBackStack()
-//                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
-//
-//                                val localDate = LocalDate.parse(
-//                                    df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
-//                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                                )
-//
-//                                viewModel.payDate =
-//                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-//
-//                                Log.d("保存時のpayDate確認", viewModel.payDate)
-//                                // idがnullかnotNullで追加処理、編集処理の判定をする
-//                                if (id != null) {
-//                                    // 更新
-//                                    viewModel.updateExpendItem()
-//                                } else {
-//                                    // 登録
-//                                    viewModel.createExpendItem()
-//                                }
-//                            }
-//                        },
-//                        content = {
-//                            Icon(
-//                                imageVector = Icons.Default.Check,
-//                                contentDescription = "登録",
-//                                tint = Color(0xFF854A2A)
-//                            )
-//                        }
-//                    )
+
+                    // 編集時のみ表示
+                    if (id != null) {
+                        IconButton(
+                            onClick = {
+                                // 登録処理
+
+                                // バリデーション判定
+                                if (viewModel.validate()) {
+                                    // バリデーションエラー無し
+
+                                    // 前の画面に戻る
+                                    navController.popBackStack()
+                                    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+
+                                    val localDate = LocalDate.parse(
+                                        df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                    )
+
+                                    viewModel.payDate =
+                                        localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                                    Log.d("保存時のpayDate確認", viewModel.payDate)
+                                    // idがnullかnotNullで追加処理、編集処理の判定をする
+                                    viewModel.updateExpendItem()
+
+                                    /*---------------------
+                                     * ABテスト、登録ボタン
+                                     * 登録もここでするかどうか
+                                     ---------------------*/
+//                                    if (id != null) {
+//                                        // 更新
+//                                        viewModel.updateExpendItem()
+//                                    } else {
+//                                        // 登録
+//                                        viewModel.createExpendItem()
+//                                    }
+                                }
+                            },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "登録",
+                                    tint = Color(0xFF854A2A)
+                                )
+                            }
+                        )
+                    }
                 }
             )
         },
@@ -606,62 +617,77 @@ fun EditExpenditureItemScreen(
                 )
             }
 
-            Column(
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .bringIntoViewRequester(bringIntoViewRequester = bringIntoViewRequester)
-            ) {
-                TextButton(
-                    onClick = {
-                        // 登録処理
+            // 登録時のみ表示
+            if (id == null) {
+                Column(
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .bringIntoViewRequester(bringIntoViewRequester = bringIntoViewRequester)
+                ) {
+                    TextButton(
+                        onClick = {
+                            // 登録処理
 
-                        // バリデーション判定
-                        if (viewModel.validate()) {
-                            // バリデーションエラー無し
+                            // バリデーション判定
+                            if (viewModel.validate()) {
+                                // バリデーションエラー無し
 
-                            // 前の画面に戻る
-                            navController.popBackStack()
-                            val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+                                // 前の画面に戻る
+                                navController.popBackStack()
+                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
-                            val localDate = LocalDate.parse(
-                                df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
-                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                            )
+                                val localDate = LocalDate.parse(
+                                    df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                )
 
-                            viewModel.payDate =
-                                localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                viewModel.payDate =
+                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-                            Log.d("保存時のpayDate確認", viewModel.payDate)
-                            // idがnullかnotNullで追加処理、編集処理の判定をする
-                            if (id != null) {
-                                // 更新
-                                viewModel.updateExpendItem()
-                            } else {
+                                Log.d("保存時のpayDate確認", viewModel.payDate)
+                                // idがnullかnotNullで追加処理、編集処理の判定をする
+
                                 // 登録
                                 viewModel.createExpendItem()
+
+                                /*------------------
+                                 * ABテスト、登録ボタン
+                                 ------------------*/
+//                                if (id != null) {
+//                                    // 更新
+//                                    viewModel.updateExpendItem()
+//                                } else {
+//                                    // 登録
+//                                    viewModel.createExpendItem()
+//                                }
                             }
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(bottom = 32.dp)
-                        .shadow(elevation = 4.dp)
-                        /*------------------
-                         * ABテスト、横幅サイズ
-                         ------------------*/
+                        },
+                        enabled = viewModel.editButtonEnabled(),
+                        modifier = Modifier
+                            .padding(bottom = 32.dp)
+                            .shadow(elevation = if (viewModel.editButtonEnabled()) 4.dp else 0.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(
+                                color = Color(0xFF854A2A)
+                                    // 登録不可の場合はボタン透過
+                                    .copy(alpha = if (viewModel.editButtonEnabled()) 1f else 0.7f)
+                            )
+                            /*------------------
+                             * ABテスト、横幅サイズ
+                             ------------------*/
 //                        .width(320.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(color = Color(0xFF854A2A)),
-                    content = {
-                        Text(
-                            text = "登録",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            letterSpacing = 8.sp
-                        )
-                    }
-                )
+                            .fillMaxWidth(),
+                        content = {
+                            Text(
+                                text = "登録",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                letterSpacing = 8.sp
+                            )
+                        }
+                    )
+                }
             }
         }
     }
