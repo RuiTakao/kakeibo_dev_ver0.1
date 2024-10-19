@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -24,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -49,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
@@ -168,45 +167,48 @@ fun EditExpenditureItemScreen(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            // 登録処理
-
-                            // バリデーション判定
-                            if (viewModel.validate()) {
-                                // バリデーションエラー無し
-
-                                // 前の画面に戻る
-                                navController.popBackStack()
-                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
-
-                                val localDate = LocalDate.parse(
-                                    df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
-                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                )
-
-                                viewModel.payDate =
-                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-                                Log.d("保存時のpayDate確認", viewModel.payDate)
-                                // idがnullかnotNullで追加処理、編集処理の判定をする
-                                if (id != null) {
-                                    // 更新
-                                    viewModel.updateExpendItem()
-                                } else {
-                                    // 登録
-                                    viewModel.createExpendItem()
-                                }
-                            }
-                        },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "登録",
-                                tint = Color(0xFF854A2A)
-                            )
-                        }
-                    )
+                    /*------------------
+                     * ABテスト、登録ボタン
+                     ------------------*/
+//                    IconButton(
+//                        onClick = {
+//                            // 登録処理
+//
+//                            // バリデーション判定
+//                            if (viewModel.validate()) {
+//                                // バリデーションエラー無し
+//
+//                                // 前の画面に戻る
+//                                navController.popBackStack()
+//                                val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+//
+//                                val localDate = LocalDate.parse(
+//                                    df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
+//                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                                )
+//
+//                                viewModel.payDate =
+//                                    localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+//
+//                                Log.d("保存時のpayDate確認", viewModel.payDate)
+//                                // idがnullかnotNullで追加処理、編集処理の判定をする
+//                                if (id != null) {
+//                                    // 更新
+//                                    viewModel.updateExpendItem()
+//                                } else {
+//                                    // 登録
+//                                    viewModel.createExpendItem()
+//                                }
+//                            }
+//                        },
+//                        content = {
+//                            Icon(
+//                                imageVector = Icons.Default.Check,
+//                                contentDescription = "登録",
+//                                tint = Color(0xFF854A2A)
+//                            )
+//                        }
+//                    )
                 }
             )
         },
@@ -244,7 +246,12 @@ fun EditExpenditureItemScreen(
             // 日付選択フィールド
             Box(
                 modifier = Modifier
-                    .size(320.dp, 50.dp)
+                    /*------------------
+                     * ABテスト、横幅サイズ
+                     ------------------*/
+//                    .width(320.dp)
+                    .fillMaxWidth()
+                    .height(50.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(
                         BorderStroke(1.dp, Color.LightGray),
@@ -379,7 +386,11 @@ fun EditExpenditureItemScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true, // 改行禁止
                 modifier = Modifier
-                    .width(320.dp)
+                    /*------------------
+                     * ABテスト、横幅サイズ
+                     ------------------*/
+//                    .width(320.dp)
+                    .fillMaxWidth()
             )
 
             // バリデーションメッセージ
@@ -438,7 +449,12 @@ fun EditExpenditureItemScreen(
             Box(
                 contentAlignment = Alignment.CenterStart,
                 modifier = Modifier
-                    .size(320.dp, 50.dp)
+                    /*------------------
+                     * ABテスト、横幅サイズ
+                     ------------------*/
+//                    .width(320.dp)
+                    .fillMaxWidth()
+                    .height(50.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(
                         BorderStroke(1.dp, Color.LightGray),
@@ -565,7 +581,12 @@ fun EditExpenditureItemScreen(
                     viewModel.content = it
                 },
                 modifier = Modifier
-                    .size(320.dp, 104.dp)
+                    /*------------------
+                     * ABテスト、横幅サイズ
+                     ------------------*/
+//                    .width(320.dp)
+                    .fillMaxWidth()
+                    .height(104.dp)
                     .onFocusEvent {
                         if (it.isFocused) {
                             coroutineScope.launch {
@@ -587,7 +608,7 @@ fun EditExpenditureItemScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = 24.dp)
                     .bringIntoViewRequester(bringIntoViewRequester = bringIntoViewRequester)
             ) {
                 TextButton(
@@ -623,13 +644,21 @@ fun EditExpenditureItemScreen(
                     },
                     modifier = Modifier
                         .padding(bottom = 32.dp)
-                        .width(320.dp)
+                        .shadow(elevation = 4.dp)
+                        /*------------------
+                         * ABテスト、横幅サイズ
+                         ------------------*/
+//                        .width(320.dp)
+                        .fillMaxWidth()
                         .clip(RoundedCornerShape(4.dp))
                         .background(color = Color(0xFF854A2A)),
                     content = {
                         Text(
                             text = "登録",
-                            color = Color.White
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            letterSpacing = 8.sp
                         )
                     }
                 )
