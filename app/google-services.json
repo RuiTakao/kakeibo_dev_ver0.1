@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "234653110109",
+    "project_id": "kakeibo-2e0e0",
+    "storage_bucket": "kakeibo-2e0e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234653110109:android:3d4453f46af656870b62b4",
+        "android_client_info": {
+          "package_name": "com.kakeibo.kakeibo_dev_6"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCqnlxwXYrvKMkYuRDoV_36MiY4l7XJdw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
