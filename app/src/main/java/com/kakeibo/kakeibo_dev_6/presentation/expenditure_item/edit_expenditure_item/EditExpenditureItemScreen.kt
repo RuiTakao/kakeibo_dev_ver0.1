@@ -2,6 +2,7 @@ package com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +52,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,6 +65,8 @@ import com.kakeibo.kakeibo_dev_6.common.utility.is_registered_user.isRegisteredU
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
 import com.kakeibo.kakeibo_dev_6.presentation.component.SubTopBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -80,7 +85,7 @@ import java.util.Locale
  *
  * @return Unit
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditExpenditureItemScreen(
     navController: NavController,
@@ -92,18 +97,9 @@ fun EditExpenditureItemScreen(
     val outFocusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
-    // フォーカスを当てる変数
-    val focusRequester = remember { FocusRequester() }
-
-    // フォーカスを末尾に配置する為の変数
-    var textFieldValue by remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = "",
-                selection = TextRange(0)
-            )
-        )
-    }
+    // フォーカスが当たれば所定の位置にスクロール
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     // idがnullかnotNullで追加画面、編集画面の判定をする
     if (id != null) {
@@ -135,9 +131,7 @@ fun EditExpenditureItemScreen(
                         localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 12:00:00"))
 
                     // 金額
-                    // TextFieldValue型で扱う
-                    textFieldValue = TextFieldValue(text = it.price, selection = TextRange(it.price.length))
-                    viewModel.price = textFieldValue.text
+                    viewModel.price = it.price
 
                     // 内容
                     viewModel.content = it.content
@@ -223,7 +217,7 @@ fun EditExpenditureItemScreen(
                 interactionSource = interactionSource,
                 enabled = true,
                 indication = null,
-                onClick = {outFocusRequester.requestFocus()}
+                onClick = { outFocusRequester.requestFocus() }
             )
             .focusRequester(outFocusRequester)
             .focusTarget()
@@ -373,26 +367,20 @@ fun EditExpenditureItemScreen(
 
             // テキストフィールド 数値のみ
             TextField(
-                value = textFieldValue,
+                value = viewModel.price,
                 onValueChange = { inputText ->
 
                     // 半角英数値または12文字以内でしか入力できないようにする
                     if (
-                        inputText.text.filter { it in '0'..'9' }.length == inputText.text.length &&
-                        inputText.text.length < 13
-                    ) viewModel.price = inputText.text
+                        inputText.filter { it in '0'..'9' }.length == inputText.length &&
+                        inputText.length < 13
+                    ) viewModel.price = inputText
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true, // 改行禁止
                 modifier = Modifier
                     .width(320.dp)
-                    .focusRequester(focusRequester)
             )
-
-            // フォーカスを当てる
-            LaunchedEffect(Unit) {
-                focusRequester.requestFocus()
-            }
 
             // バリデーションメッセージ
             if (viewModel.inputValidatePriceText != "") {
@@ -578,6 +566,14 @@ fun EditExpenditureItemScreen(
                 },
                 modifier = Modifier
                     .size(320.dp, 104.dp)
+                    .onFocusEvent {
+                        if (it.isFocused) {
+                            coroutineScope.launch {
+                                delay(200)
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    }
             )
 
             // バリデーションメッセージ
@@ -586,6 +582,56 @@ fun EditExpenditureItemScreen(
                     text = viewModel.inputValidateContentText,
                     color = Color.Red,
                     fontSize = 14.sp
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .bringIntoViewRequester(bringIntoViewRequester = bringIntoViewRequester)
+            ) {
+                TextButton(
+                    onClick = {
+                        // 登録処理
+
+                        // バリデーション判定
+                        if (viewModel.validate()) {
+                            // バリデーションエラー無し
+
+                            // 前の画面に戻る
+                            navController.popBackStack()
+                            val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
+
+                            val localDate = LocalDate.parse(
+                                df.format(viewModel.payDate.toDate("yyyy-MM-dd")!!),
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            )
+
+                            viewModel.payDate =
+                                localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                            Log.d("保存時のpayDate確認", viewModel.payDate)
+                            // idがnullかnotNullで追加処理、編集処理の判定をする
+                            if (id != null) {
+                                // 更新
+                                viewModel.updateExpendItem()
+                            } else {
+                                // 登録
+                                viewModel.createExpendItem()
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(bottom = 32.dp)
+                        .width(320.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(color = Color(0xFF854A2A)),
+                    content = {
+                        Text(
+                            text = "登録",
+                            color = Color.White
+                        )
+                    }
                 )
             }
         }
