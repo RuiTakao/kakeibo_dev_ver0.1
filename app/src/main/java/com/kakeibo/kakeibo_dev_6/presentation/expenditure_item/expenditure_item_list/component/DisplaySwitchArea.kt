@@ -334,7 +334,7 @@ private fun ChangeDurationDateCustom(
             // ボタンのアイコン
             Icon(
                 imageVector = Icons.Default.CalendarMonth,
-                contentDescription = null,
+                contentDescription = "カスタム日付",
                 // テキストの色、未選択時はグレー
                 tint = if (selected) Color(0xFF854A2A) else Color.Gray
             )
@@ -405,7 +405,7 @@ private fun PrevButton(enabled: Boolean, onClick: () -> Unit) {
         content = {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null,
+                contentDescription = "前の期間",
                 // クリック不可の場合は透過
                 tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
             )
@@ -431,7 +431,7 @@ private fun NextButton(enabled: Boolean, onClick: () -> Unit) {
         content = {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
+                contentDescription = "次の期間",
                 // クリック不可の場合は透過
                 tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
             )
@@ -490,7 +490,7 @@ private fun SelectCategoryBox(
         // カテゴリー選択アイコン
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
-            contentDescription = "選択アイコン",
+            contentDescription = "カテゴリー選択ドロップダウン",
             tint = Color(0xFF854A2A)
         )
 
@@ -586,10 +586,10 @@ private fun SelectDateSortBox(
             color = Color(0xFF854A2A)
         )
 
-        // カテゴリー選択アイコン
+        // 日付並替えアイコン
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
-            contentDescription = "選択アイコン",
+            contentDescription = "日付並替えドロップダウン",
             tint = Color(0xFF854A2A)
         )
 

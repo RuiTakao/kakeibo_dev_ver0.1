@@ -54,6 +54,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -397,6 +399,9 @@ fun EditExpenditureItemScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true, // 改行禁止
                 modifier = Modifier
+                    .semantics{
+                        this.contentDescription = "金額入力"
+                    }
                     /*------------------
                      * ABテスト、横幅サイズ
                      ------------------*/

@@ -15,10 +15,10 @@ android {
 
     defaultConfig {
         applicationId = "com.kakeibo.kakeibo_dev_6"
-        minSdk = 31
+        minSdk = 28
         targetSdk = 34
-        versionCode = 8
-        versionName = "8"
+        versionCode = 9
+        versionName = "9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
