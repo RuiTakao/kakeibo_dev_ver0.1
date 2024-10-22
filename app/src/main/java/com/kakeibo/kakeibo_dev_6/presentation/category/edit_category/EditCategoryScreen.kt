@@ -89,7 +89,10 @@ fun EditCategoryScreen(
 
                 // カテゴリー名
                 // TextFieldValue型で扱う
-                textFieldValue = TextFieldValue(text = it.categoryName, selection = TextRange(it.categoryName.length))
+                textFieldValue = TextFieldValue(
+                    text = it.categoryName,
+                    selection = TextRange(it.categoryName.length)
+                )
                 viewModel.name = textFieldValue.text
 
                 // カテゴリーの入力内容保持
@@ -181,7 +184,10 @@ fun EditCategoryScreen(
 
                     // 入力テキストをViewModelに保存
                     // 文字数10文字まで
-                    if (it.text.length <= 10) textFieldValue = it
+                    if (it.text.length <= 10) {
+                        textFieldValue = it
+                        viewModel.name = it.text
+                    }
                 },
                 label = { Text(text = "カテゴリー名を入力してください") },
                 singleLine = true, // 改行禁止
