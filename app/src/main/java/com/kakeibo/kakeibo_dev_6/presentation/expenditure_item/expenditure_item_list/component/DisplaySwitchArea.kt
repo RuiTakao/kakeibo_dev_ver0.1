@@ -26,14 +26,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,15 +68,59 @@ fun DisplaySwitchArea(
             .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color.White)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
+
+        // 二行目、三行目のレイアウト
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
+        ) {
+
+            // 前へボタン（過去に移動）
+            PrevButton(
+                enabled = viewModel.isPrevButtonEnabled(),
+                onClick = {
+
+                    // 過去の日付に移動する処理
+                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV)
+                }
+            )
+
+            // 真ん中のレイアウト
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                // 日付の表示（表示期間）
+                // 二行目のレイアウト
+                Text(
+                    text = viewModel.durationDateText(),
+                    fontSize = 16.sp
+                )
+            }
+
+            // 次へボタン（未来へ移動）
+            NextButton(
+                enabled = viewModel.isNextButtonEnabled(),
+                onClick = {
+
+                    // 未来の日付に移動する処理
+                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT)
+                }
+            )
+        }
 
         // 日、週、月、カスタムボタンエリア
         // 一行目のレイアウト
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
-                .padding(top = 8.dp)
+                .padding(top = 16.dp)
+                .padding(bottom = 16.dp)
         ) {
 
             /* 日ボタン */
@@ -158,94 +198,30 @@ fun DisplaySwitchArea(
             )
         }
 
-        // 二行目、三行目のレイアウト
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+        Spacer(
             modifier = Modifier
-                .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
-                .padding(vertical = 16.dp)
+                .height(2.dp)
+                .fillMaxWidth()
+                .background(color = Color.LightGray)
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()
         ) {
+            // 合計金額（表示額合計）
+            // 三行目のレイアウト
 
-            // 前へボタン（過去に移動）
-            PrevButton(
-                enabled = viewModel.isPrevButtonEnabled(),
-                onClick = {
+            Text(text = "使用額", modifier = Modifier.padding(end = 8.dp))
 
-                    // 過去の日付に移動する処理
-                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.PREV)
-                }
+            Text(
+                text = "￥${priceFormat(totalTax.toString())}",
+                fontSize = 24.sp,
+//                modifier = Modifier.padding(top = 8.dp)
             )
-
-            // 真ん中のレイアウト
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                // 日付の表示（表示期間）
-                // 二行目のレイアウト
-                Text(
-                    text = viewModel.durationDateText(),
-                    fontSize = 24.sp
-                )
-
-                // 合計金額（表示額合計）
-                // 三行目のレイアウト
-                Text(
-                    text = "使用額 ￥${priceFormat(totalTax.toString())}",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // 次へボタン（未来へ移動）
-            NextButton(
-                enabled = viewModel.isNextButtonEnabled(),
-                onClick = {
-
-                    // 未来の日付に移動する処理
-                    viewModel.onClickSwitchDateButton(switchAction = SwitchDate.NEXT)
-                }
-            )
-        }
-
-        // 明細画面のみ表示
-        // 四行目のレイアウト
-        if (searchArea) {
-
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp)
-                    .fillMaxWidth() // 幅いっぱいに広げたいためfillMaxWidthをmodifierにセットしておく
-            ) {
-
-                // 絞り込みドロップダウン（カテゴリー毎）
-
-                // 全カテゴリー取得
-                val categoryList by viewModel.category.collectAsState(initial = emptyList())
-                SelectCategoryBox(
-                    categoryList = categoryList,
-                    id = viewModel.selectCategoryId,
-                    setId = {
-
-                        // 選択したカテゴリーIDをViewModelに保存する
-                        viewModel.selectCategoryId = it
-                    }
-                )
-
-                // 左右の余白
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // 並び替えドロップダウン（登録日付順）
-                SelectDateSortBox(
-                    sortFlg = viewModel.sortOfPayDate,
-                    setSortFlag = {
-
-                        // 選択した支出日の並び順をViewModelに保存する
-                        viewModel.sortOfPayDate = it
-                    }
-                )
-            }
         }
     }
 }
@@ -269,38 +245,44 @@ private fun ChangeDurationDateText(
     // 選択、未選択の判定
     val enabled = selectedDateProperty != changeDurationDateTextProperty
 
-    TextButton(
-        onClick = onClick,
-        content = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//    TextButton(
+//        onClick = onClick,
+//        content = {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(
+            enabled = enabled,
+            onClick = onClick
+        )
+    ) {
 
-                // ボタンのテキスト
-                Text(
-                    text = when (changeDurationDateTextProperty) {
-                        DateProperty.DAY.name -> "日"
-                        DateProperty.WEEK.name -> "週"
-                        DateProperty.MONTH.name -> "月"
-                        else -> ""
-                    },
-                    fontSize = 16.sp,
-                    // テキストの色、未選択時はグレー
-                    color = if (!enabled) Color(0xFF854A2A) else Color.Gray
-                )
+        // ボタンのテキスト
+        Text(
+            text = when (changeDurationDateTextProperty) {
+                DateProperty.DAY.name -> "日"
+                DateProperty.WEEK.name -> "週"
+                DateProperty.MONTH.name -> "月"
+                else -> ""
+            },
+            fontSize = 16.sp,
+            // テキストの色、未選択時はグレー
+            color = if (!enabled) Color(0xFF854A2A) else Color.Gray
+        )
 
-                // 選択時のアンダーバー
-                Spacer(
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .height(2.dp)
-                        .width(20.dp)
-                        // アンダーバーの色、未選択時は透過
-                        .background(if (!enabled) Color(0xFF854A2A) else Color.Transparent)
-                )
-            }
-        },
-        // 選択時はクリック不可、誤動作防止の為
-        enabled = enabled
-    )
+        // 選択時のアンダーバー
+        Spacer(
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .height(2.dp)
+                .width(20.dp)
+                // アンダーバーの色、未選択時は透過
+                .background(if (!enabled) Color(0xFF854A2A) else Color.Transparent)
+        )
+    }
+//        },
+    // 選択時はクリック不可、誤動作防止の為
+//        enabled = enabled
+//    )
 }
 
 /**
@@ -325,30 +307,32 @@ private fun ChangeDurationDateCustom(
     // 選択、未選択の判定
     val selected = selectedDateProperty == DateProperty.CUSTOM.name
 
-    IconButton(
-        onClick = {
-            visible.value = !visible.value
-        }
+//    IconButton(
+//        onClick = {
+//            visible.value = !visible.value
+//        }
+//    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = { visible.value = !visible.value })
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // ボタンのアイコン
-            Icon(
-                imageVector = Icons.Default.CalendarMonth,
-                contentDescription = "カスタム日付",
-                // テキストの色、未選択時はグレー
-                tint = if (selected) Color(0xFF854A2A) else Color.Gray
-            )
+        // ボタンのアイコン
+        Icon(
+            imageVector = Icons.Default.CalendarMonth,
+            contentDescription = "カスタム日付",
+            // テキストの色、未選択時はグレー
+            tint = if (selected) Color(0xFF854A2A) else Color.Gray
+        )
 
-            // 選択時のアンダーバー
-            Spacer(
-                modifier = Modifier
-                    .padding(top = 2.dp)
-                    .height(2.dp)
-                    .width(20.dp)
-                    .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
-            )
-        }
+        // 選択時のアンダーバー
+        Spacer(
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .height(2.dp)
+                .width(20.dp)
+                .background(if (selected) Color(0xFF854A2A) else Color.Transparent)
+        )
     }
+//    }
 
     // DatePickerの制御
     if (visible.value) {
@@ -399,18 +383,21 @@ private fun ChangeDurationDateCustom(
 @Composable
 private fun PrevButton(enabled: Boolean, onClick: () -> Unit) {
 
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
-        content = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "前の期間",
-                // クリック不可の場合は透過
-                tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
-            )
-        }
-    )
+//    IconButton(
+//        onClick = onClick,
+//        enabled = enabled,
+//        content = {
+    Box(modifier = Modifier.clickable(enabled = enabled, onClick = onClick)) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            contentDescription = "前の期間",
+            // クリック不可の場合は透過
+            tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
+        )
+    }
+
+//        }
+//    )
 }
 
 /**
@@ -425,18 +412,27 @@ private fun PrevButton(enabled: Boolean, onClick: () -> Unit) {
 @Composable
 private fun NextButton(enabled: Boolean, onClick: () -> Unit) {
 
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
-        content = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "次の期間",
-                // クリック不可の場合は透過
-                tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
-            )
-        }
-    )
+//    IconButton(
+//        onClick = onClick,
+//        enabled = enabled,
+//        content = {
+//            Icon(
+//                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+//                contentDescription = "次の期間",
+//                // クリック不可の場合は透過
+//                tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
+//            )
+//        }
+//    )
+
+    Box(modifier = Modifier.clickable(enabled = enabled, onClick = onClick)) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = "次の期間",
+            // クリック不可の場合は透過
+            tint = if (enabled) Color(0xFF854A2A) else Color.Transparent
+        )
+    }
 }
 
 /**
