@@ -6,11 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -63,27 +59,7 @@ fun ExpenditureItemList(navController: NavController, viewModel: ExpenditureItem
 
     DisplaySwitchArea(totalTax = totalTax, viewModel = viewModel)
 
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-    ) {
-
-        val tabSize = LocalConfiguration.current.screenWidthDp.dp / 2
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(tabSize)
-        ) {
-            Text(text = "支出項目", color = Color(0xFF854A2A), fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
-            Spacer(modifier = Modifier.height(2.dp).width(tabSize).background(Color(0xFF854A2A)))
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(tabSize)
-        ) {
-            Text(text = "明細", color = Color.Gray, fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
-            Spacer(modifier = Modifier.height(2.dp).width(tabSize).background(Color.Gray))
-        }
-    }
+    Tab(viewModel = viewModel)
 
     ItemList(listItem = listItem, navController = navController, viewModel = viewModel)
 }
@@ -115,24 +91,7 @@ private fun ItemList(
                     .padding(bottom = 16.dp)
                     .padding(horizontal = 8.dp)
                     .clickable {
-
-                        // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
-                        val startDate = viewModel.setDateParameter(SelectDate.START)
-
-                        // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
-                        val lastDate = viewModel.setDateParameter(SelectDate.LAST)
-
-                        // パラメーターに選択機関をセット
-                        val dateProperty = viewModel.dateProperty
-
-                        // パラメーターにカテゴリーIDセット
-                        val categoryId = it.id
-
-                        // 明細ページへ遷移
-//                        navController.navigate(
-//                            ScreenRoute.ExpenditureItemList.route +
-//                                    "/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
-//                        )
+                        viewModel.switchArea = false
                     }
                     .clip(RoundedCornerShape(5.dp))
                     .background(Color.White)

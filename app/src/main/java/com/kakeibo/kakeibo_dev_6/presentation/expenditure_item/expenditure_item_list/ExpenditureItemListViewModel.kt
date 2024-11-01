@@ -39,6 +39,8 @@ class ExpenditureItemListViewModel @Inject constructor(
     private val expenditureItemDao: ExpenditureItemDao
 ) : ViewModel() {
 
+    var switchArea by mutableStateOf(true)
+
     /** カテゴリー毎・明細　共通処理 */
 
     // 表示期間選択ステータス

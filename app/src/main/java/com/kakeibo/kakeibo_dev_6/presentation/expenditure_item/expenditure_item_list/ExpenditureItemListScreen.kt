@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.ExpenditureItemList
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.ExpenditureItemListTemplate
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.ExpenditureStatement
 
 @Composable
 fun ExpenditureItemListScreen(
@@ -13,7 +14,11 @@ fun ExpenditureItemListScreen(
 ) {
     ExpenditureItemListTemplate(navController = navController) {
 
-        ExpenditureItemList(navController = navController, viewModel = viewModel)
+        if (viewModel.switchArea) {
+            ExpenditureItemList(navController = navController, viewModel = viewModel)
+        } else {
+            ExpenditureStatement(navController = navController, viewModel = viewModel)
+        }
     }
 }
 

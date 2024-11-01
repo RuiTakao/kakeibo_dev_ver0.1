@@ -32,6 +32,7 @@ import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
+import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -77,11 +78,18 @@ fun ExpenditureStatement(navController: NavController, viewModel: ExpenditureIte
 
     DisplaySwitchArea(totalTax = totalTax, viewModel = viewModel)
 
+    Tab(viewModel = viewModel)
+
     ItemList(
         parentItem = expenditureItemListGropeByPayDate,
         dateProperty = viewModel.dateProperty,
         childItemList = expenditureItemList,
-        clickable = {}
+        clickable = {
+            // 支出詳細ページに遷移
+            navController.navigate(
+                route = ScreenRoute.ExpenditureItemDetail.route + "/${it}"
+            )
+        }
     )
 }
 
@@ -169,7 +177,7 @@ private fun ChildItemList(
         Row(
             modifier = Modifier
                 .clickable { clickable(it.id) }
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(vertical = 8.dp, horizontal = 8.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
@@ -190,7 +198,7 @@ private fun ChildItemList(
                         // カテゴリー
                         Text(
                             text = it.categoryName,
-                            modifier = Modifier.padding(16.dp),
+//                            modifier = Modifier.padding(16.dp),
                             fontSize = 14.sp,
                             lineHeight = 0.sp
                         )
