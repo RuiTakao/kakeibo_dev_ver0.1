@@ -1,5 +1,6 @@
 package com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,17 +25,64 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
+import com.kakeibo.kakeibo_dev_6.common.enum.SelectDate
 import com.kakeibo.kakeibo_dev_6.common.utility.priceFormat
 import com.kakeibo.kakeibo_dev_6.common.utility.toDate
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItem
 import com.kakeibo.kakeibo_dev_6.domain.model.ExpenditureItemJoinCategory
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun ExpenditureStatement() {
+fun ExpenditureStatement(navController: NavController, viewModel: ExpenditureItemListViewModel) {
+    // クエリ絞り込み用のフォーマット
+    val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
+    // ログ確認用に変数に格納
+    val selectStartDate = df.format(viewModel.selectDate(SelectDate.START))
+    val selectLastDate = df.format(viewModel.selectDate(SelectDate.LAST))
+
+    // 日付が期待通りに絞り込まれているかログで確認
+    Log.d(
+        "支出項目 支出一覧、日付出力範囲",
+        "$selectStartDate - $selectLastDate"
+    )
+
+    /** DB */
+    // 支出の登録されている日付を取得
+    val expenditureItemListGropeByPayDate by viewModel.expenditureItemListGropeByPayDate(
+        startDate = selectStartDate,
+        endDate = selectLastDate,
+        sortOfPayDate = viewModel.sortOfPayDate,
+        categoryId = viewModel.selectCategoryId
+    ).collectAsState(initial = emptyList())
+
+    /** DB */
+    // 支出一覧をカテゴリーと結合し抽出
+    val expenditureItemList by viewModel.expenditureItemList(
+        startDate = selectStartDate,
+        endDate = selectLastDate,
+        sortOfPayDate = viewModel.sortOfPayDate,
+        categoryId = viewModel.selectCategoryId
+    ).collectAsState(initial = emptyList())
+
+    // 金額合計
+    var totalTax = 0
+    expenditureItemList.forEach {
+        totalTax += it.price.toInt()
+    }
+
+    DisplaySwitchArea(totalTax = totalTax, viewModel = viewModel)
+
+    ItemList(
+        parentItem = expenditureItemListGropeByPayDate,
+        dateProperty = viewModel.dateProperty,
+        childItemList = expenditureItemList,
+        clickable = {}
+    )
 }
 
 @Composable
