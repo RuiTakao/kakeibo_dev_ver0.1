@@ -15,35 +15,53 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListViewModel
+import androidx.navigation.NavController
 
 @Composable
-fun Tab(viewModel: ExpenditureItemListViewModel) {
+fun Tab(navController: NavController, page: String, onClick: () -> Unit) {
+
+    val tabSize = LocalConfiguration.current.screenWidthDp.dp / 2
+
+    var mode = true
+
+    if (page != "item") {
+        mode = false
+    }
+
     Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
     ) {
 
-        val tabSize = LocalConfiguration.current.screenWidthDp.dp / 2
+        TabRow(tabSize = tabSize, text = "支出項目", mode = mode, onClick = {navController.popBackStack()})
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        TabRow(tabSize = tabSize, text = "明細", mode = !mode, onClick = onClick)
+    }
+}
+
+@Composable
+private fun TabRow(tabSize: Dp,text:String, mode: Boolean, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .width(tabSize)
+            .clickable(onClick = onClick, enabled = !mode)
+    ) {
+        Text(
+            text = text,
+            color = if (mode) Color(0xFF854A2A) else Color.Gray,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Spacer(
             modifier = Modifier
+                .height(2.dp)
                 .width(tabSize)
-                .clickable(onClick = {viewModel.switchArea = true})
-        ) {
-            Text(text = "支出項目", color = Color(0xFF854A2A), fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
-            Spacer(modifier = Modifier.height(2.dp).width(tabSize).background(Color(0xFF854A2A)))
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .width(tabSize)
-                .clickable(onClick = {viewModel.switchArea = false})
-        ) {
-            Text(text = "明細", color = Color.Gray, fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
-            Spacer(modifier = Modifier.height(2.dp).width(tabSize).background(Color.Gray))
-        }
+                .background(color = if (mode) Color(0xFF854A2A) else Color.Gray)
+        )
     }
 }

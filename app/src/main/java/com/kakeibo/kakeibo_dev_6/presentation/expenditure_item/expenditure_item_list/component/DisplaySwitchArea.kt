@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +70,7 @@ fun DisplaySwitchArea(
         modifier = Modifier
             .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(color = Color.White)
+            .background(color = Color(0xFFFEFEEE))
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp)
             .padding(bottom = 16.dp)
@@ -204,25 +207,89 @@ fun DisplaySwitchArea(
                 .fillMaxWidth()
                 .background(color = Color.LightGray)
         )
+        
+        if (searchArea) {
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-        ) {
-            // 合計金額（表示額合計）
-            // 三行目のレイアウト
+            val categoryList by viewModel.category.collectAsState(initial = emptyList())
 
-            Text(text = "使用額", modifier = Modifier.padding(end = 8.dp))
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                SelectCategoryBox2(categoryList = categoryList, id = viewModel.selectCategoryId, setId = {
+                    // 選択したカテゴリーIDをViewModelに保存する
+                    viewModel.selectCategoryId = it
+                })
 
-            Text(
-                text = "￥${priceFormat(totalTax.toString())}",
-                fontSize = 24.sp,
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier
+//                        .padding(top = 16.dp)
+//                        .fillMaxWidth()
+                ) {
+                    // 合計金額（表示額合計）
+                    // 三行目のレイアウト
+
+                    Text(text = "使用額", modifier = Modifier.padding(end = 8.dp))
+
+                    Text(
+                        text = "￥${priceFormat(totalTax.toString())}",
+                        fontSize = 20.sp,
 //                modifier = Modifier.padding(top = 8.dp)
-            )
+                    )
+                }
+            }
+        } else {
+
+
+            Box(modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+//                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier
+//                .padding(top = 16.dp)
+//                .fillMaxWidth()
+
+                ) {
+                    // 合計金額（表示額合計）
+                    // 三行目のレイアウト
+
+                    Text(text = "使用額", modifier = Modifier.padding(end = 8.dp))
+
+                    Text(
+                        text = "￥${priceFormat(totalTax.toString())}",
+                        fontSize = 24.sp,
+//                modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
+
+                Row(
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    Text(text = "明細", color = Color(0xFF854A2A))
+                    Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "明細", tint = Color(0xFF854A2A))
+                }
+
+//                TextButton(onClick = { /*TODO*/ },modifier = Modifier.align(Alignment.BottomEnd)) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//
+//                    }
+//                }
+            }
+
+            
+
         }
+
     }
 }
 
@@ -469,25 +536,29 @@ private fun SelectCategoryBox(
     }
 
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable {
-            expanded.value = !expanded.value
-        }
+        modifier = Modifier
+            .clickable {
+                expanded.value = !expanded.value
+            }
+            .fillMaxWidth()
     ) {
 
         // 選択したカテゴリー名
         Text(
             text = selectCategoryName.value,
             modifier = Modifier.padding(start = 10.dp),
-            color = Color(0xFF854A2A)
+            color = Color(0xFF854A2A),
+            fontSize = 20.sp
         )
 
         // カテゴリー選択アイコン
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "カテゴリー選択ドロップダウン",
-            tint = Color(0xFF854A2A)
+            tint = Color(0xFF854A2A),
+            modifier = Modifier.size(24.dp)
         )
 
         // ドロップダウンメニュー
@@ -630,6 +701,120 @@ private fun SelectDateSortBox(
                     setSortFlag(true)
                 }
             )
+        }
+    }
+}
+
+/**
+ * カテゴリー毎に絞り込み
+ *
+ * @param categoryList: List<Category>
+ * @param id Int
+ * @param setId (Int) -> Unit
+ *
+ * @return Unit
+ */
+@Composable
+private fun SelectCategoryBox2(
+    categoryList: List<Category>,
+    id: Int,
+    setId: (Int) -> Unit
+) {
+
+    // コンテキストメニュー表示非表示の判定
+    val expanded = remember { mutableStateOf(false) }
+
+    // 選択されているカテゴリーのID
+    val selectCategoryId = remember { mutableIntStateOf(id) }
+
+    // 選択されているカテゴリー名の表示
+    val selectCategoryName = remember { mutableStateOf("すべて") }
+
+    // 全カテゴリー取得
+    // 初期表示時の表示用のカテゴリー名を取得
+    categoryList.forEach {
+        if (it.id == selectCategoryId.intValue) {
+            selectCategoryName.value = it.categoryName
+        }
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable {
+                expanded.value = !expanded.value
+            }
+//            .fillMaxWidth()
+    ) {
+
+        // 選択したカテゴリー名
+        Text(
+            text = selectCategoryName.value,
+//            modifier = Modifier.padding(start = 10.dp),
+            color = Color.Black,
+            fontSize = 20.sp
+        )
+
+        // カテゴリー選択アイコン
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "カテゴリー選択ドロップダウン",
+            tint = Color(0xFF854A2A),
+            modifier = Modifier.size(24.dp)
+        )
+
+        // ドロップダウンメニュー
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+
+            // 全カテゴリーを検索するアイテム
+            DropdownMenuItem(
+                text = { Text(text = "すべて") },
+                onClick = {
+
+                    // コンテキストメニューを非表示
+                    expanded.value = false
+
+                    // 選択したカテゴリーIDを格納 表示用
+                    // 0の場合はすべて
+                    selectCategoryId.intValue = 0
+
+                    // 選択したカテゴリー名を格納 表示用
+                    selectCategoryName.value = "すべて"
+
+                    // 選択したカテゴリーIDを格納 絞込用
+                    // 0の場合はすべて
+                    setId(0)
+                }
+            )
+
+            // 全カテゴリーをコンテキストメニューに表示
+            categoryList.forEach {
+
+                // 選択したカテゴリーを検索するアイテム
+                DropdownMenuItem(
+                    text = { Text(text = it.categoryName) },
+                    onClick = {
+
+                        // コンテキストメニューを非表示
+                        expanded.value = false
+
+                        // 選択したカテゴリーIDを格納 表示用
+                        selectCategoryId.intValue = it.id
+
+                        // 選択したカテゴリー名を格納 表示用
+                        selectCategoryName.value = it.categoryName
+
+                        // 選択したカテゴリーIDを格納 絞込用
+                        setId(it.id)
+                    }
+                )
+            }
         }
     }
 }

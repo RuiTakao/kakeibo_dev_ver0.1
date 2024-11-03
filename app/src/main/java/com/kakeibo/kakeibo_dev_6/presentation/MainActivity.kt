@@ -24,7 +24,7 @@ import com.kakeibo.kakeibo_dev_6.presentation.category.replace_order_category.Re
 import com.kakeibo.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemScreen
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail.ExpenditureItemDetailScreen
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.CategorizeExpenditureItemListScreen
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen2
 import com.kakeibo.kakeibo_dev_6.presentation.ui.theme.Kakeibo_dev_6_Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
                         // 支出項目一覧ページ（カテゴリー毎）
                         composable(route = ScreenRoute.CategorizeExpenditureItemList.route) {
-                            ExpenditureItemListScreen(navController = navController)
+                            CategorizeExpenditureItemListScreen(navController = navController)
                         }
 
                         // 支出項目一覧ページ（明細）

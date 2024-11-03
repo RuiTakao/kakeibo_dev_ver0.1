@@ -121,7 +121,7 @@ fun ExpenditureItemListTemplate(
         Scaffold(
             topBar = {
                 MainTopBar(
-                    title = "支出項目",
+                    title = "",
                     navigation = {
                         IconButton(
                             onClick = {
