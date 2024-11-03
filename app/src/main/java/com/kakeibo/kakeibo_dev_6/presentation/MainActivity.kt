@@ -24,8 +24,8 @@ import com.kakeibo.kakeibo_dev_6.presentation.category.replace_order_category.Re
 import com.kakeibo.kakeibo_dev_6.presentation.category.setting_category.SettingCategoryScreen
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.edit_expenditure_item.EditExpenditureItemScreen
 import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_detail.ExpenditureItemDetailScreen
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.CategorizeExpenditureItemListScreen
-import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen2
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureItemListScreen
+import com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.ExpenditureStatementScreen
 import com.kakeibo.kakeibo_dev_6.presentation.ui.theme.Kakeibo_dev_6_Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -59,19 +59,19 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         // 支出項目一覧ページ（カテゴリー毎）を最初に表示するページにする
-                        startDestination = ScreenRoute.CategorizeExpenditureItemList.route
+                        startDestination = ScreenRoute.ExpenditureItemList.route
                     ) {
 
                         /** 支出項目 */
 
                         // 支出項目一覧ページ（カテゴリー毎）
-                        composable(route = ScreenRoute.CategorizeExpenditureItemList.route) {
-                            CategorizeExpenditureItemListScreen(navController = navController)
+                        composable(route = ScreenRoute.ExpenditureItemList.route) {
+                            ExpenditureItemListScreen(navController = navController)
                         }
 
                         // 支出項目一覧ページ（明細）
                         composable(
-                            route = ScreenRoute.ExpenditureItemList.route + "/{categoryId}/{dateProperty}/{startDate}/{lastDate}",
+                            route = ScreenRoute.ExpenditureStatement.route + "/{categoryId}/{dateProperty}/{startDate}/{lastDate}",
                             arguments = listOf(
                                 navArgument("categoryId") { type = NavType.StringType },
                                 navArgument("dateProperty") { type = NavType.StringType },
@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                                 navArgument("lastDate") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
-                            ExpenditureItemListScreen2(
+                            ExpenditureStatementScreen(
                                 navController = navController,
                                 categoryId = backStackEntry.arguments?.getString("categoryId"),
                                 dateProperty = backStackEntry.arguments?.getString("dateProperty"),

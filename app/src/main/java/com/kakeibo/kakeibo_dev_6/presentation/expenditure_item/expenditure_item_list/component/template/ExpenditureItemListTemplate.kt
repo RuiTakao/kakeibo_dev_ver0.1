@@ -1,4 +1,4 @@
-package com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component
+package com.kakeibo.kakeibo_dev_6.presentation.expenditure_item.expenditure_item_list.component.template
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

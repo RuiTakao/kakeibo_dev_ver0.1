@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.kakeibo.kakeibo_dev_6.common.enum.DateProperty
+import androidx.navigation.NavController
+import com.kakeibo.kakeibo_dev_6.common.enum.DayOrWeekOrMonth
 import com.kakeibo.kakeibo_dev_6.common.enum.SelectDate
 import com.kakeibo.kakeibo_dev_6.common.enum.SwitchDate
 import com.kakeibo.kakeibo_dev_6.common.utility.is_registered_user.isRegisteredUserReferenceDatePrevButton
@@ -17,6 +18,7 @@ import com.kakeibo.kakeibo_dev_6.domain.repository.CategorizeExpenditureItemDao
 import com.kakeibo.kakeibo_dev_6.domain.repository.CategoryDao
 import com.kakeibo.kakeibo_dev_6.domain.repository.ExpenditureItemDao
 import com.kakeibo.kakeibo_dev_6.domain.repository.ExpenditureItemJoinCategoryDao
+import com.kakeibo.kakeibo_dev_6.presentation.ScreenRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -39,12 +41,10 @@ class ExpenditureItemListViewModel @Inject constructor(
     private val expenditureItemDao: ExpenditureItemDao
 ) : ViewModel() {
 
-    var switchArea by mutableStateOf(true)
-
     /** カテゴリー毎・明細　共通処理 */
 
     // 表示期間選択ステータス
-    var dateProperty by mutableStateOf(DateProperty.WEEK.name)
+    var dayOrWeekOrMonthProperty by mutableStateOf(DayOrWeekOrMonth.WEEK.name)
     var selectCategoryId by mutableIntStateOf(0)
 
     // 支出日の並び順のステータス
@@ -75,10 +75,10 @@ class ExpenditureItemListViewModel @Inject constructor(
         val getDate = Calendar.getInstance()
         getDate.time = standardOfStartDate
 
-        when (dateProperty) {
-            DateProperty.DAY.name -> return getDate.time
+        when (dayOrWeekOrMonthProperty) {
+            DayOrWeekOrMonth.DAY.name -> return getDate.time
 
-            DateProperty.WEEK.name -> {
+            DayOrWeekOrMonth.WEEK.name -> {
                 val amount = when (selectDate) {
                     SelectDate.START -> 1
                     SelectDate.LAST -> 7
@@ -87,7 +87,7 @@ class ExpenditureItemListViewModel @Inject constructor(
                 return getDate.time
             }
 
-            DateProperty.MONTH.name -> {
+            DayOrWeekOrMonth.MONTH.name -> {
                 val standardOfToLocalDate =
                     getDate.time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 val monthOfDate = when (selectDate) {
@@ -97,7 +97,7 @@ class ExpenditureItemListViewModel @Inject constructor(
                 return Date.from(monthOfDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
 
-            DateProperty.CUSTOM.name -> {
+            DayOrWeekOrMonth.CUSTOM.name -> {
                 return when (selectDate) {
                     SelectDate.START -> customOfStartDate
                     SelectDate.LAST -> customOfEndDate
@@ -218,13 +218,13 @@ class ExpenditureItemListViewModel @Inject constructor(
         val df = SimpleDateFormat("M月d日", Locale.JAPANESE)
         val mf = SimpleDateFormat("M月", Locale.JAPANESE)
 
-        when (dateProperty) {
+        when (dayOrWeekOrMonthProperty) {
 
             /* 日 */
-            DateProperty.DAY.name -> return df.format(standardOfStartDate)
+            DayOrWeekOrMonth.DAY.name -> return df.format(standardOfStartDate)
 
             /* 週 */
-            DateProperty.WEEK.name -> {
+            DayOrWeekOrMonth.WEEK.name -> {
                 // 基準日の週の開始日と終了日を求める為、基準日をカレンダークラスのインスタンスに格納する
                 val getDate = Calendar.getInstance()
                 getDate.time = standardOfStartDate
@@ -243,11 +243,11 @@ class ExpenditureItemListViewModel @Inject constructor(
 
             /* 月 */
             // 日付フォーマットで月のみ取得
-            DateProperty.MONTH.name -> return mf.format(standardOfStartDate)
+            DayOrWeekOrMonth.MONTH.name -> return mf.format(standardOfStartDate)
 
             /* カスタム */
             // カスタム日付用に保存している開始日と終了日をセット
-            DateProperty.CUSTOM.name ->
+            DayOrWeekOrMonth.CUSTOM.name ->
                 return "${df.format(customOfStartDate)} 〜 ${df.format(customOfEndDate)}"
         }
         return ""
@@ -266,7 +266,7 @@ class ExpenditureItemListViewModel @Inject constructor(
             standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
         // カスタム日が選択された、または二か月前の日付は不可
-        return if (dateProperty == DateProperty.CUSTOM.name) {
+        return if (dayOrWeekOrMonthProperty == DayOrWeekOrMonth.CUSTOM.name) {
             false
         } else {
             isRegisteredUserReferenceDatePrevButton(standardDate)
@@ -285,15 +285,15 @@ class ExpenditureItemListViewModel @Inject constructor(
             standardOfStartDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
         if (
-            dateProperty == DateProperty.CUSTOM.name || // カスタムが選択されている場合はクリック不可
+            dayOrWeekOrMonthProperty == DayOrWeekOrMonth.CUSTOM.name || // カスタムが選択されている場合はクリック不可
             standardDate.isEqual(LocalDate.now()) // 日付が本日の場合はクリック不可
         ) {
             return false
         } else {
-            when (dateProperty) {
+            when (dayOrWeekOrMonthProperty) {
 
                 // 週が選択されている場合の判定
-                DateProperty.WEEK.name -> {
+                DayOrWeekOrMonth.WEEK.name -> {
 
                     // 基準日をカレンダーインスタンスに格納する
                     val getDate = Calendar.getInstance()
@@ -311,7 +311,7 @@ class ExpenditureItemListViewModel @Inject constructor(
                 }
 
                 // 月が選択されている場合の判定
-                DateProperty.MONTH.name -> {
+                DayOrWeekOrMonth.MONTH.name -> {
                     // 本日の月の開始日
                     val nowIsFirstDayOfMonth =
                         LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())
@@ -340,10 +340,10 @@ class ExpenditureItemListViewModel @Inject constructor(
         // カレンダーインスタンス作成
         val getDate = Calendar.getInstance()
 
-        when (dateProperty) {
+        when (dayOrWeekOrMonthProperty) {
 
             /* 日 */
-            DateProperty.DAY.name -> {
+            DayOrWeekOrMonth.DAY.name -> {
 
                 /*
                 datePropertyが日の場合は開始日を基準に計算
@@ -361,7 +361,7 @@ class ExpenditureItemListViewModel @Inject constructor(
             }
 
             /* 週 */
-            DateProperty.WEEK.name -> {
+            DayOrWeekOrMonth.WEEK.name -> {
 
                 /*
                 datePropertyが週の場合は開始日を基準に計算
@@ -379,7 +379,7 @@ class ExpenditureItemListViewModel @Inject constructor(
             }
 
             /* 月 */
-            DateProperty.MONTH.name -> {
+            DayOrWeekOrMonth.MONTH.name -> {
 
                 /*
                 datePropertyが月の場合は開始日を基準に計算
@@ -405,10 +405,10 @@ class ExpenditureItemListViewModel @Inject constructor(
      *
      * @return String
      */
-    fun setDateParameter(selectDate: SelectDate): String {
+    private fun setDateParameter(selectDate: SelectDate): String {
         val df = SimpleDateFormat("yyyy-MM-dd", Locale.JAPANESE)
 
-        return if (dateProperty == DateProperty.CUSTOM.name) {
+        return if (dayOrWeekOrMonthProperty == DayOrWeekOrMonth.CUSTOM.name) {
             when (selectDate) {
                 SelectDate.START -> df.format(customOfStartDate)
                 SelectDate.LAST -> df.format(customOfEndDate)
@@ -416,5 +416,30 @@ class ExpenditureItemListViewModel @Inject constructor(
         } else {
             df.format(standardOfStartDate)
         }
+    }
+
+    /**
+     * 明細ページへ遷移する関数
+     *
+     * @param navController NavController ナビゲーション
+     * @param categoryId Int カテゴリーID
+     *
+     * @return Unit
+     */
+    fun transitionStatementPage(navController: NavController, categoryId: Int = 0) {
+        // パラメーターに開始日をセット、カスタムの場合はカスタムの開始日をセット
+        val startDate = setDateParameter(SelectDate.START)
+
+        // パラメーターに終了日をセット、カスタムの場合はカスタムの終了日をセット
+        val lastDate = setDateParameter(SelectDate.LAST)
+
+        // パラメーターに選択機関をセット
+        val dateProperty = dayOrWeekOrMonthProperty
+
+        // 明細ページへ遷移
+        navController.navigate(
+            ScreenRoute.ExpenditureStatement.route +
+                    "/${categoryId}/${dateProperty}/${startDate}/${lastDate}"
+        )
     }
 }

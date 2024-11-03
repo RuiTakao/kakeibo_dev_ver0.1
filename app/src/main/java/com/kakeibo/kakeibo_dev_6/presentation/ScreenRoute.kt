@@ -5,10 +5,10 @@ sealed class ScreenRoute(val route: String) {
     /** 支出項目 */
 
     // 支出項目一覧ページ（カテゴリー毎）
-    object CategorizeExpenditureItemList : ScreenRoute("categorize_expenditure_item_list")
+    object ExpenditureItemList : ScreenRoute("expenditure_item_list")
 
     // 支出項目一覧ページ（明細）
-    object ExpenditureItemList : ScreenRoute("expenditure_item_list")
+    object ExpenditureStatement : ScreenRoute("expenditure_statement")
 
     // 支出項目　詳細
     object ExpenditureItemDetail : ScreenRoute("expenditure_item_detail")
