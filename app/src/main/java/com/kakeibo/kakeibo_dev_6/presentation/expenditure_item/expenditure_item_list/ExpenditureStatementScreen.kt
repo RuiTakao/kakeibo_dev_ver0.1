@@ -174,20 +174,32 @@ private fun ItemList(
             .padding(bottom = 80.dp)
     ) {
 
-        itemsIndexed(itemList) {index, item ->
+        val dayOfPriceTotal = itemList.sumOf { it.price.toInt() }
+
+        itemsIndexed(itemList) { index, item ->
 
             val mf = SimpleDateFormat("M月d日", Locale.JAPANESE)
 
             if (index == 0 || item.payDate != itemList[index - 1].payDate) {
-                Text(
-                    text = mf.format(item.payDate.toDate("yyyy-MM-dd")!!),
-                    fontSize = 18.sp,
-                    color = Color.Gray,
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 12.dp)
                         .padding(bottom = 4.dp)
                         .padding(top = 12.dp)
-                )
+                ) {
+                    Text(
+                        text = mf.format(item.payDate.toDate("yyyy-MM-dd")!!),
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                    )
+                    Text(
+                        text = "￥${priceFormat(dayOfPriceTotal.toString())}",
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                    )
+                }
             }
 
             Column(
