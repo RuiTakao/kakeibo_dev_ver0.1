@@ -17,8 +17,8 @@ android {
         applicationId = "com.kakeibo.kakeibo_dev_6"
         minSdk = 29
         targetSdk = 36
-        versionCode = 11
-        versionName = "11.0"
+        versionCode = 12
+        versionName = "12.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
